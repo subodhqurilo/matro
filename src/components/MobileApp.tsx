@@ -28,37 +28,7 @@ export default function MobileApp() {
               </p>
             </div>
 
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Genuine Connections</h3>
-                  <p className="text-gray-600 text-sm">Connect with verified profiles and real people</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Safe & Secure</h3>
-                  <p className="text-gray-600 text-sm">Your privacy and security are our top priority</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <Smartphone className="w-6 h-6 text-red-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Easy to Use</h3>
-                  <p className="text-gray-600 text-sm">Simple, intuitive interface designed for everyone</p>
-                </div>
-              </div>
-            </div>
+           
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg flex items-center space-x-3">

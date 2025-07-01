@@ -58,7 +58,7 @@ export default function SuccessStories() {
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div>
                     <p className="font-semibold text-gray-900">{story.names}</p>
-                    <p className="text-sm text-gray-500">Married in {story.year}</p>
+                 
                   </div>
                 </div>
               </CardContent>
