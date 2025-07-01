@@ -10,6 +10,7 @@ import Step1Form from './steps/Step1';
 import Step2Form from './steps/Step2';
 import Step3Form from './steps/Step3';
 import Step4Form from './steps/Step4';
+import Image from 'next/image';
 
 export default function Hero() {
   const [showStep1, setShowStep1] = useState(false);
@@ -264,10 +265,12 @@ export default function Hero() {
 
         {/* Right Side - Full Height Image */}
         <div className="flex-1 relative hidden lg:block">
-          <img
+          <Image
             src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=800"
             alt="Beautiful bride in traditional attire"
             className="w-full h-full object-cover shadow-2xl"
+            width={800}
+            height={800}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-red-200/30 to-pink-200/30"></div>
         </div>

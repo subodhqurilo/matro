@@ -36,7 +36,7 @@ export default function Navbar() {
         {/* Login Button */}
         <div className="hidden md:block">
           <a
-            href="#"
+            href="/login"
             className="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600 transition-colors duration-200 font-semibold shadow"
           >
             Login
@@ -72,7 +72,7 @@ export default function Navbar() {
             ))}
             <li>
               <a
-                href="#"
+                href="/login"
                 className="block bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600 transition-colors duration-200 font-semibold shadow text-center"
                 onClick={() => setMobileOpen(false)}
               >
