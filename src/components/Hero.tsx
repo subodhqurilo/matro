@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Search, Users, MessageCircle, Star, X } from 'lucide-react';
+import { Heart, Search, Users, MessageCircle, X } from 'lucide-react';
 import Step1Form from './steps/Step1';
 import Step2Form from './steps/Step2';
 import Step3Form from './steps/Step3';
@@ -165,12 +165,12 @@ export default function Hero() {
         <div className="flex-1 bg-gradient-to-r from-red-50 to-pink-50 flex items-center justify-center py-12 lg:py-0">
           <div className="max-w-2xl px-4 sm:px-6 lg:px-8 space-y-8">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight tracking-tight">
                 A Pure Path to Marriage —{" "}
-                <span className="text-red-600">With Love and Trust at Heart</span>
+                <span className="text-red-700">With Love and Trust at Heart</span>
               </h1>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                This is more than just a matrimonial app. It's a heartfelt journey toward 
+              <p className="text-lg text-gray-500 leading-relaxed">
+                This is more than just a matrimonial app. It&apos;s a heartfelt journey toward 
                 companionship, built on honesty, care, and community — without pressure or 
                 payment.
               </p>
@@ -181,7 +181,7 @@ export default function Hero() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    I'm looking for a
+                    I&apos;m looking for a
                   </label>
                   <Select value={searchData.lookingFor} onValueChange={(value) => setSearchData({...searchData, lookingFor: value})}>
                     <SelectTrigger>
@@ -254,10 +254,10 @@ export default function Hero() {
               </div>
 
               <Button 
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3"
+                className="w-full bg-[#b91c1c] hover:bg-red-800 text-white font-semibold py-3 shadow-lg transition-colors duration-200"
                 onClick={() => setShowStep1(true)}
               >
-                Let's Begin
+                Let&apos;s Begin
               </Button>
             </Card>
           </div>
