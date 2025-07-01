@@ -25,9 +25,6 @@ export default function Hero() {
   // Step1 state
   const [selectedProfile, setSelectedProfile] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
-  const [lookingFor, setLookingFor] = useState('');
-  const [ageFrom, setAgeFrom] = useState('');
-  const [ageTo, setAgeTo] = useState('');
 
   // Step2 state
   const [firstName, setFirstName] = useState('');
@@ -117,12 +114,6 @@ export default function Hero() {
                   setSelectedProfile={setSelectedProfile}
                   selectedGender={selectedGender}
                   setSelectedGender={setSelectedGender}
-                  lookingFor={lookingFor}
-                  setLookingFor={setLookingFor}
-                  ageFrom={ageFrom}
-                  setAgeFrom={setAgeFrom}
-                  ageTo={ageTo}
-                  setAgeTo={setAgeTo}
                   handleContinueStep1={handleContinueStep1}
                 />
               )}
@@ -276,7 +267,7 @@ export default function Hero() {
           <img
             src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=800"
             alt="Beautiful bride in traditional attire"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover shadow-2xl"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-red-200/30 to-pink-200/30"></div>
         </div>

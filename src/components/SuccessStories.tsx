@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Star } from 'lucide-react';
+import Image from 'next/image';
 
 export default function SuccessStories() {
   const stories = [
@@ -44,16 +44,18 @@ export default function SuccessStories() {
           {stories.map((story) => (
             <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
               <div className="aspect-video relative">
-                <img
+                <Image
                   src={story.image}
                   alt={`Success story of ${story.names}`}
+                  width={64}
+                  height={64}
                   className="w-full h-full object-cover"
                 />
               </div>
               <CardContent className="p-6 space-y-4">
                
                 <p className="text-gray-600 italic text-sm leading-relaxed">
-                  "{story.quote}"
+                  &quot;{story.quote}&quot;
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@/components/ui/card';
+import Image from 'next/image';
 
 export default function WhyChooseUs() {
   const benefits = [
@@ -39,10 +39,12 @@ export default function WhyChooseUs() {
 
           <div className="relative">
             <div className="relative z-10">
-              <img
+              <Image
                 src="https://images.pexels.com/photos/1702373/pexels-photo-1702373.jpeg?auto=compress&cs=tinysrgb&w=800"
                 alt="Happy couple in traditional attire"
                 className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
+                width={800}
+                height={500}
               />
             </div>
             <div className="absolute -bottom-4 -left-4 w-full h-full bg-gradient-to-tr from-yellow-200 to-orange-200 rounded-2xl -z-10"></div>

@@ -2,9 +2,7 @@
 
 import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { ArrowLeft } from 'lucide-react';
@@ -24,24 +22,12 @@ const Step1Form = ({
   setSelectedProfile,
   selectedGender,
   setSelectedGender,
-  lookingFor,
-  setLookingFor,
-  ageFrom,
-  setAgeFrom,
-  ageTo,
-  setAgeTo,
   handleContinueStep1,
 }: {
   selectedProfile: string;
   setSelectedProfile: (value: string) => void;
   selectedGender: string;
   setSelectedGender: (value: string) => void;
-  lookingFor: string;
-  setLookingFor: (value: string) => void;
-  ageFrom: string;
-  setAgeFrom: (value: string) => void;
-  ageTo: string;
-  setAgeTo: (value: string) => void;
   handleContinueStep1: () => void;
 }) => (
   <>
@@ -93,9 +79,6 @@ const Step1Form = ({
       </RadioGroup>
     </div>
 
-    
-   
-
     <Button 
       onClick={handleContinueStep1}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
@@ -111,12 +94,6 @@ Step1Form.propTypes = {
   setSelectedProfile: PropTypes.func.isRequired,
   selectedGender: PropTypes.string.isRequired,
   setSelectedGender: PropTypes.func.isRequired,
-  lookingFor: PropTypes.string.isRequired,
-  setLookingFor: PropTypes.func.isRequired,
-  ageFrom: PropTypes.string.isRequired,
-  setAgeFrom: PropTypes.func.isRequired,
-  ageTo: PropTypes.string.isRequired,
-  setAgeTo: PropTypes.func.isRequired,
   handleContinueStep1: PropTypes.func.isRequired,
 };
 

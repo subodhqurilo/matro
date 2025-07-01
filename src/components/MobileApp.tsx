@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 
-import { Heart, Shield, Smartphone, Download, Star, Apple, Play, MessageCircle, Badge } from 'lucide-react';
+import { Heart, Star, Apple, Play, MessageCircle, Badge } from 'lucide-react';
 
 export default function MobileApp() {
   return (
@@ -50,7 +50,6 @@ export default function MobileApp() {
 
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               <span className="flex items-center space-x-1">
-                <Download className="w-4 h-4" />
                 <span>50k+ Downloads</span>
               </span>
               <span className="flex items-center space-x-1">

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-export function Select({ value, onValueChange, children, ...props }: { value: string; onValueChange: (value: string) => void; children: React.ReactNode; [key: string]: any }) {
+export function Select({ value, onValueChange, children, ...props }: { value: string; onValueChange: (value: string) => void; children: React.ReactNode; [key: string]: unknown }) {
   return (
     <select
       value={value}
@@ -13,15 +13,18 @@ export function Select({ value, onValueChange, children, ...props }: { value: st
   );
 }
 
-export function SelectTrigger({ children, ...props }: { children: React.ReactNode }) {
+export function SelectTrigger({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
-export function SelectContent({ children, ...props }: { children: React.ReactNode }) {
+
+export function SelectContent({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
+
 export function SelectValue({ placeholder }: { placeholder: string }) {
   return <option value="" disabled hidden>{placeholder}</option>;
 }
+
 export function SelectItem({ value, children }: { value: string; children: React.ReactNode }) {
   return <option value={value}>{children}</option>;
 } 
