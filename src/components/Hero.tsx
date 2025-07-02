@@ -5,11 +5,7 @@ import Step1Form from './steps/Step1';
 import Step2Form from './steps/Step2';
 import Step3Form from './steps/Step3';
 import Step4Form from './steps/Step4';
-interface Card {
-  img: string;
-  text: string;
-  name: string;
-}
+
 const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
