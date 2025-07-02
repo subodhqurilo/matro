@@ -77,7 +77,7 @@ const Home: React.FC = () => {
       {/* Right Side: Image */}
       <div className=" relative flex items-center  justify-end">
         <Image
-          src="/assets/authentic-indian-bride-groom-s-hands-holding-together-traditional-wedding-attire (1).png"
+          src="/assets/heroimage.png"
           alt="hero"
           layout="fill"
           objectFit="cover"
