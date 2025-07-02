@@ -49,7 +49,7 @@ const Home: React.FC = () => {
             With Love and Trust at Heart
           </h1>
           <p className="text-md text-[#757575] mt-6 font-Lato" >
-            This is more than just a matrimonial app. It&apos;s a heartfelt journey toward companionship, built on honesty, care, and community — without pressure or payment.
+            This is more than just a matrimonial app. Its a heartfelt journey toward companionship, built on honesty, care, and community — without pressure or payment.
           </p>
         </div>
       </div>
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
             style={{ letterSpacing: '1px', height: '48px' }}
             onClick={handleOpenModal}
           >
-            Let&apos;s Begin
+            Lets Begin
           </button>
         </div>
       </div>
