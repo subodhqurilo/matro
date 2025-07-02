@@ -11,23 +11,6 @@ interface Card {
   name: string;
 }
 const Home: React.FC = () => {
-  const cards: Card[] = [
-    {
-      img: '/assets/image 1597.png',
-      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
-      name: '– Aarav & Zoya',
-    },
-    {
-      img: '/assets/image 1597.png',
-      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
-      name: '– Aarav & Zoya',
-    },
-    {
-      img: '/assets/image 1597.png',
-      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
-      name: '– Aarav & Zoya',
-    },
-  ];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   // Step 1
@@ -70,7 +53,7 @@ const Home: React.FC = () => {
             With Love and Trust at Heart
           </h1>
           <p className="text-md text-[#757575] mt-6 font-Lato" >
-            This is more than just a matrimonial app. It's a heartfelt journey toward companionship, built on honesty, care, and community — without pressure or payment.
+            This is more than just a matrimonial app. It&apos;s a heartfelt journey toward companionship, built on honesty, care, and community — without pressure or payment.
           </p>
         </div>
       </div>
@@ -141,7 +124,7 @@ const Home: React.FC = () => {
             style={{ letterSpacing: '1px', height: '48px' }}
             onClick={handleOpenModal}
           >
-            Let's Begin
+            Let&apos;s Begin
           </button>
         </div>
       </div>
