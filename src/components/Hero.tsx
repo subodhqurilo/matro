@@ -1,310 +1,217 @@
 'use client';
-
+import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Search, Users, MessageCircle, X } from 'lucide-react';
 import Step1Form from './steps/Step1';
 import Step2Form from './steps/Step2';
 import Step3Form from './steps/Step3';
 import Step4Form from './steps/Step4';
-import Image from 'next/image';
 
-export default function Hero() {
-  const [showStep1, setShowStep1] = useState(false);
+interface Card {
+  img: string;
+  text: string;
+  name: string;
+}
+
+const Home: React.FC = () => {
+  const cards: Card[] = [
+    {
+      img: '/assets/image 1597.png',
+      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
+      name: '– Aarav & Zoya',
+    },
+    {
+      img: '/assets/image 1597.png',
+      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
+      name: '– Aarav & Zoya',
+    },
+    {
+      img: '/assets/image 1597.png',
+      text: 'We met on this app without spending a single rupee. What we found was priceless — trust, comfort, and love.',
+      name: '– Aarav & Zoya',
+    },
+  ];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [searchData, setSearchData] = useState({
-    lookingFor: '',
-    ageFrom: '',
-    ageTo: '',
-    religion: '',
-    motherTongue: ''
-  });
 
-  // Step1 state
-  const [selectedProfile, setSelectedProfile] = useState('');
-  const [selectedGender, setSelectedGender] = useState('');
-
-  // Step2 state
+  // Step 1
+  const [selectedProfile, setSelectedProfile] = useState('myself');
+  const [selectedGender, setSelectedGender] = useState('male');
+  // Step 2
   const [firstName, setFirstName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
-
-  // Step3 state
+  // Step 3
   const [religion, setReligion] = useState('');
   const [community, setCommunity] = useState('');
   const [livingIn, setLivingIn] = useState('');
-
-  // Step4 state
+  // Step 4
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
 
-  const handleContinueStep1 = () => {
-    setCurrentStep(2);
-  };
-  const handleBackToStep1 = () => {
-    setCurrentStep(1);
-  };
-  const handleCloseModal = () => {
-    setShowStep1(false);
-    setCurrentStep(1);
-  };
-
-  const handleContinueStep2 = () => {
-    setCurrentStep(3);
-  };
-
-  const handleContinueStep3 = () => {
-    setCurrentStep(4);
-  };
-
-  const handleBackToStep2 = () => {
-    setCurrentStep(2);
-  };
-
-  const handleBackToStep3 = () => {
-    setCurrentStep(3);
-  };
-
+  const handleContinueStep1 = () => setCurrentStep(2);
+  const handleContinueStep2 = () => setCurrentStep(3);
+  const handleContinueStep3 = () => setCurrentStep(4);
   const handleContinueStep4 = () => {
-    // handle next step or submission for Step4
+    setIsModalOpen(false);
+    setCurrentStep(1);
+    // Optionally reset all fields here
   };
+  const handleBackStep2 = () => setCurrentStep(1);
+  const handleBackStep3 = () => setCurrentStep(2);
+  const handleBackStep4 = () => setCurrentStep(3);
 
-  const features = [
-    {
-      icon: <Users className="w-8 h-8 text-red-600" />,
-      title: "Create your profile",
-      description: "Simple, fast, honest and effective"
-    },
-    {
-      icon: <Search className="w-8 h-8 text-red-600" />,
-      title: "Browse matches",
-      description: "Based on your preferences, not ours"
-    },
-    {
-      icon: <MessageCircle className="w-8 h-8 text-red-600" />,
-      title: "Connect genuinely",
-      description: "With mutual respect and consent"
-    },
-    {
-      icon: <Heart className="w-8 h-8 text-red-600" />,
-      title: "Start your journey",
-      description: "When it feels right, not rushed"
-    }
-  ];
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setCurrentStep(1);
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Step Modal Overlay */}
-      {showStep1 && (
-        <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
-            >
-              <X className="w-6 h-6 text-gray-600" />
-            </button>
-            <div className="p-8">
-              {currentStep === 1 && (
-                <Step1Form
-                  selectedProfile={selectedProfile}
-                  setSelectedProfile={setSelectedProfile}
-                  selectedGender={selectedGender}
-                  setSelectedGender={setSelectedGender}
-                  handleContinueStep1={handleContinueStep1}
-                />
-              )}
-              {currentStep === 2 && (
-                <Step2Form
-                  onBack={handleBackToStep1}
-                  firstName={firstName}
-                  setFirstName={setFirstName}
-                  middleName={middleName}
-                  setMiddleName={setMiddleName}
-                  lastName={lastName}
-                  setLastName={setLastName}
-                  dateOfBirth={dateOfBirth}
-                  setDateOfBirth={setDateOfBirth}
-                  handleContinueStep2={handleContinueStep2}
-                />
-              )}
-              {currentStep === 3 && (
-                <Step3Form
-                  onBack={handleBackToStep2}
-                  religion={religion}
-                  setReligion={setReligion}
-                  community={community}
-                  setCommunity={setCommunity}
-                  livingIn={livingIn}
-                  setLivingIn={setLivingIn}
-                  handleContinueStep3={handleContinueStep3}
-                />
-              )}
-              {currentStep === 4 && (
-                <Step4Form
-                  email={email}
-                  setEmail={setEmail}
-                  phoneNumber={phoneNumber}
-                  setPhoneNumber={setPhoneNumber}
-                  onBack={handleBackToStep3}
-                  handleContinueStep4={handleContinueStep4}
-                />
-              )}
+    <div className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      {/* Left Side: Text */}
+      <div className="bg-gradient-to-r from-red-50 to-pink-50 flex items-center justify-center">
+        <div className="w-full flex flex-col justify-center pl-16 pr-8 py-24">
+          <h1 className="text-3xl  text-[#343434] leading-tight font-Lato">
+            A Pure Path to Marriage — <br />
+            With Love and Trust at Heart
+          </h1>
+          <p className="text-md text-[#757575] mt-6 font-Lato" >
+            This is more than just a matrimonial app. It's a heartfelt journey toward companionship, built on honesty, care, and community — without pressure or payment.
+          </p>
+        </div>
+      </div>
+      {/* Right Side: Image */}
+      <div className="h-[600px] relative flex items-center justify-end">
+        <Image
+          src="/assets/authentic-indian-bride-groom-s-hands-holding-together-traditional-wedding-attire (1).png"
+          alt="hero"
+          layout="fill"
+          objectFit="cover"
+          className="w-full h-full rounded-r-lg object-cover"
+          priority
+        />
+      </div>
+      {/* Search Form: Overlapping, centered below the split */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 top-[480px] z-20 w-full max-w-4xl">
+        <div className="flex items-center justify-evenly gap-6 bg-white px-6 py-5 shadow-2xl border border-gray-200 rounded-lg">
+          <div className="flex flex-col">
+            <label className="text-sm mb-1 font-medium text-[#757575] font-sans">I'm looking for a</label>
+            <select className="border-[#6F0000] border p-2 text-md font-medium rounded min-w-[120px] font-Mulish" style={{ fontWeight: 500, letterSpacing: '0.5px' }}>
+              <option>Women</option>
+              <option>Men</option>
+            </select>
+          </div>
+          <div className="flex items-end gap-2 text-md font-medium font-Mulish" style={{ letterSpacing: '0.5px' }}>
+            <div className="flex flex-col">
+              <label className="text-sm mb-1 font-medium text-[#757575] font-sans">Age</label>
+              <input
+                type="number"
+                min="18"
+                max="99"
+                defaultValue="22"
+                className="border border-[#6F0000] p-2 text-md font-medium rounded w-16 font-Mulish"
+                style={{ fontWeight: 500 }}
+              />
             </div>
+            <div className="pb-2 text-md font-medium font-Mulish" style={{ fontWeight: 500 }}>to</div>
+            <div className="flex flex-col">
+              <label className="invisible font-medium">Age</label>
+              <input
+                type="number"
+                min="18"
+                max="99"
+                defaultValue="27"
+                className="border border-[#6F0000] p-2 text-md font-medium rounded w-16 font-Mulish"
+                style={{ fontWeight: 500 }}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <label className="text-sm mb-1 font-medium text-[#757575] font-sans">Of Religion</label>
+            <select className="border border-[#6F0000] p-2 text-md font-medium rounded min-w-[120px] font-Mulish" style={{ fontWeight: 500, letterSpacing: '0.5px' }}>
+              <option>Hindu</option>
+              <option>Muslim</option>
+              <option>Christian</option>
+            </select>
+          </div>
+          <div className="flex flex-col">
+            <label className="text-sm mb-1 font-medium text-[#757575] font-sans">And Mother Tongue</label>
+            <select className="border border-[#6F0000] p-2 text-md font-medium rounded min-w-[120px] font-Mulish" style={{ fontWeight: 500, letterSpacing: '0.5px' }}>
+              <option>English</option>
+              <option>Hindi</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            className="bg-[#7D0A0A] text-white px-7 py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#5a0707] transition-colors duration-200"
+            style={{ letterSpacing: '1px', height: '48px' }}
+            onClick={handleOpenModal}
+          >
+            Let's Begin
+          </button>
+        </div>
+      </div>
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 backdrop-blur">
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-auto p-6 animate-fade-in">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => setIsModalOpen(false)}
+            >
+              ✕
+            </button>
+            {currentStep === 1 && (
+              <Step1Form
+                selectedProfile={selectedProfile}
+                setSelectedProfile={setSelectedProfile}
+                selectedGender={selectedGender}
+                setSelectedGender={setSelectedGender}
+                handleContinueStep1={handleContinueStep1}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step2Form
+                firstName={firstName}
+                setFirstName={setFirstName}
+                middleName={middleName}
+                setMiddleName={setMiddleName}
+                lastName={lastName}
+                setLastName={setLastName}
+                dateOfBirth={dateOfBirth}
+                setDateOfBirth={setDateOfBirth}
+                onBack={handleBackStep2}
+                handleContinueStep2={handleContinueStep2}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step3Form
+                religion={religion}
+                setReligion={setReligion}
+                community={community}
+                setCommunity={setCommunity}
+                livingIn={livingIn}
+                setLivingIn={setLivingIn}
+                onBack={handleBackStep3}
+                handleContinueStep3={handleContinueStep3}
+              />
+            )}
+            {currentStep === 4 && (
+              <Step4Form
+                email={email}
+                setEmail={setEmail}
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                onBack={handleBackStep4}
+                handleContinueStep4={handleContinueStep4}
+              />
+            )}
           </div>
         </div>
       )}
-
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col lg:flex-row">
-        {/* Left Side - Content */}
-        <div className="flex-1 bg-gradient-to-r from-red-50 to-pink-50 flex items-center justify-center py-12 lg:py-0">
-          <div className="max-w-2xl px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-5xl lg:text-7xl font-extrabold text-gray-900 leading-tight tracking-tight">
-                A Pure Path to Marriage —{" "}
-                <span className="text-red-700">With Love and Trust at Heart</span>
-              </h1>
-              <p className="text-lg text-gray-500 leading-relaxed">
-                This is more than just a matrimonial app. It&apos;s a heartfelt journey toward 
-                companionship, built on honesty, care, and community — without pressure or 
-                payment.
-              </p>
-            </div>
-
-            {/* Search Form */}
-            <Card className="p-6 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    I&apos;m looking for a
-                  </label>
-                  <Select value={searchData.lookingFor} onValueChange={(value) => setSearchData({...searchData, lookingFor: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={"bride"}>Bride</SelectItem>
-                      <SelectItem value={"groom"}>Groom</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Age</label>
-                  <div className="flex items-center space-x-2">
-                    <Input 
-                      placeholder="22" 
-                      className="w-16"
-                      value={searchData.ageFrom}
-                      onChange={(e) => setSearchData({...searchData, ageFrom: e.target.value})}
-                    />
-                    <span className="text-gray-500">to</span>
-                    <Input 
-                      placeholder="30" 
-                      className="w-16"
-                      value={searchData.ageTo}
-                      onChange={(e) => setSearchData({...searchData, ageTo: e.target.value})}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Of Religion</label>
-                  <Select value={searchData.religion} onValueChange={(value) => setSearchData({...searchData, religion: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Any" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={"hindu"}>Hindu</SelectItem>
-                      <SelectItem value={"muslim"}>Muslim</SelectItem>
-                      <SelectItem value={"christian"}>Christian</SelectItem>
-                      <SelectItem value={"sikh"}>Sikh</SelectItem>
-                      <SelectItem value={"buddhist"}>Buddhist</SelectItem>
-                      <SelectItem value={"jain"}>Jain</SelectItem>
-                      <SelectItem value={"other"}>Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">And Mother Tongue</label>
-                  <Select value={searchData.motherTongue} onValueChange={(value) => setSearchData({...searchData, motherTongue: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="English" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={"english"}>English</SelectItem>
-                      <SelectItem value={"hindi"}>Hindi</SelectItem>
-                      <SelectItem value={"bengali"}>Bengali</SelectItem>
-                      <SelectItem value={"tamil"}>Tamil</SelectItem>
-                      <SelectItem value={"telugu"}>Telugu</SelectItem>
-                      <SelectItem value={"marathi"}>Marathi</SelectItem>
-                      <SelectItem value={"gujarati"}>Gujarati</SelectItem>
-                      <SelectItem value={"kannada"}>Kannada</SelectItem>
-                      <SelectItem value={"malayalam"}>Malayalam</SelectItem>
-                      <SelectItem value={"punjabi"}>Punjabi</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Button 
-                className="w-full bg-[#b91c1c] hover:bg-red-800 text-white font-semibold py-3 shadow-lg transition-colors duration-200"
-                onClick={() => setShowStep1(true)}
-              >
-                Let&apos;s Begin
-              </Button>
-            </Card>
-          </div>
-        </div>
-
-        {/* Right Side - Full Height Image */}
-        <div className="flex-1 relative hidden lg:block">
-          <Image
-            src="https://images.pexels.com/photos/1024993/pexels-photo-1024993.jpeg?auto=compress&cs=tinysrgb&w=800"
-            alt="Beautiful bride in traditional attire"
-            className="w-full h-full object-cover shadow-2xl"
-            width={800}
-            height={800}
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-red-200/30 to-pink-200/30"></div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-16 lg:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              How It Works
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Your journey to finding the perfect life partner in simple steps
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="text-center p-8 hover:shadow-lg transition-all duration-300 border-0 bg-white group hover:-translate-y-2">
-                <CardContent className="space-y-4">
-                  <div className="flex justify-center mb-4">
-                    <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center group-hover:bg-red-100 transition-colors">
-                      {feature.icon}
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
-}
+};
+
+export default Home;
