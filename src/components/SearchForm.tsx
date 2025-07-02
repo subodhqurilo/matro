@@ -24,7 +24,7 @@ export default function SearchForm({ onBegin }: SearchFormProps) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1">
-            I'm looking for a
+            I&apos;m looking for a
           </label>
           <Select
             value={searchData.lookingFor}
@@ -131,7 +131,7 @@ export default function SearchForm({ onBegin }: SearchFormProps) {
         className="w-full bg-[#b91c1c] hover:bg-red-800 text-white font-semibold py-2 text-sm shadow-lg transition-colors duration-200"
         onClick={onBegin}
       >
-        Let's Begin
+        Let&apos;s Begin
       </Button>
     </Card>
   );
