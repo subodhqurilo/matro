@@ -68,7 +68,7 @@ const Home: React.FC = () => {
       <div className="absolute left-1/2 transform -translate-x-1/2 top-[480px] z-20 w-full max-w-4xl">
         <div className="flex items-center justify-evenly gap-6 bg-white px-6 py-5 shadow-2xl border border-gray-200 rounded-lg">
           <div className="flex flex-col">
-            <label className="text-sm mb-1 font-medium text-[#757575] font-sans">I'm looking for a</label>
+            <label className="text-sm mb-1 font-medium text-[#757575] font-sans">Im looking for a</label>
             <select className="border-[#6F0000] border p-2 text-md font-medium rounded min-w-[120px] font-Mulish" style={{ fontWeight: 500, letterSpacing: '0.5px' }}>
               <option>Women</option>
               <option>Men</option>
