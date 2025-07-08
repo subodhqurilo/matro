@@ -50,7 +50,7 @@ const Step2Form = ({
           placeholder="Enter your first name"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
-          className="w-full"
+          className="w-full bg-white"
           required
         />
       </div>
@@ -63,7 +63,7 @@ const Step2Form = ({
           placeholder="Enter your middle name (optional)"
           value={middleName}
           onChange={(e) => setMiddleName(e.target.value)}
-          className="w-full"
+          className="w-full bg-white"
         />
       </div>
 
@@ -75,7 +75,7 @@ const Step2Form = ({
           placeholder="Enter your last name"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
-          className="w-full"
+          className="w-full bg-white"
           required
         />
       </div>
@@ -89,7 +89,7 @@ const Step2Form = ({
             type="date"
             value={dateOfBirth}
             onChange={(e) => setDateOfBirth(e.target.value)}
-            className="w-full pr-10"
+            className="w-full pr-10 bg-white"
             required
           />
           <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />

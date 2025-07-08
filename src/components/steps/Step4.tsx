@@ -44,7 +44,7 @@ const Step4Form = ({
             placeholder="Enter your email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full pr-10"
+            className="w-full pr-10 bg-white"
             required
           />
           <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -61,7 +61,7 @@ const Step4Form = ({
             placeholder="Enter your phone number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full pr-10"
+            className="w-full pr-10 bg-white"
             required
           />
           <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />

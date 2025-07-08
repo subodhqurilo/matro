@@ -4,11 +4,11 @@ import Image from 'next/image';
 
 export default function WhyChooseUs() {
   const benefits = [
-    { icon: "💖", title: "100% Free" },
-    { icon: "🚫", title: "No Pressure, No Ads" },
-    { icon: "✅", title: "Verified Profiles" },
-    { icon: "🤝", title: "Respectful Community" },
-    { icon: "💑", title: "Focused on Real Marriages" }
+    { img: "/Images/Rings.png", title: "100% Free" },
+    { img: "/Images/Rings.png", title: "No Pressure, No Ads" },
+    { img: "/Images/Rings.png", title: "Verified Profiles" },
+    { img: "/Images/Rings.png", title: "Respectful Community" },
+    { img: "/Images/Rings.png", title: "Focused on Real Marriages" }
   ];
 
   return (
@@ -24,7 +24,11 @@ export default function WhyChooseUs() {
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-start space-x-4 group">
                     <div className="text-2xl flex-shrink-0 transform group-hover:scale-110 transition-transform">
-                      {benefit.icon}
+                     <Image
+                     src= {benefit.img}
+                     alt={`Rings`}
+                     width={30}
+                     height={30}/>
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">
@@ -40,7 +44,7 @@ export default function WhyChooseUs() {
           <div className="relative">
             <div className="relative z-10">
               <Image
-                src="https://images.pexels.com/photos/1702373/pexels-photo-1702373.jpeg?auto=compress&cs=tinysrgb&w=800"
+                src="/Images/Image1.png"
                 alt="Happy couple in traditional attire"
                 className="rounded-2xl shadow-2xl w-full h-[500px] object-cover"
                 width={800}

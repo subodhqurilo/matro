@@ -76,7 +76,7 @@ const Step3Form = ({
             placeholder="Enter your community"
             value={community}
             onChange={(e) => setCommunity(e.target.value)}
-            className="w-full"
+            className="w-full bg-white"
           />
         </div>
 
@@ -88,7 +88,7 @@ const Step3Form = ({
             placeholder="Enter your city or country"
             value={livingIn}
             onChange={(e) => setLivingIn(e.target.value)}
-            className="w-full"
+            className="w-full bg-white"
             required
           />
         </div>

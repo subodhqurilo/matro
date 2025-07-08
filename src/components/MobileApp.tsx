@@ -62,15 +62,17 @@ export default function MobileApp() {
           <div className="relative flex justify-center">
             <div className="relative">
               {/* Phone Mockup */}
-              <div className="w-80 h-[600px] bg-gray-900 rounded-[3rem] p-2 shadow-2xl">
-                <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
+              <div className="w-80 h-[600px] bg-gray-900  rounded-[3rem] p-2 shadow-2xl">
+                <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative ">
                   {/* Status Bar */}
                   <div className="bg-red-600 h-12 flex items-center justify-center">
                     <div className="text-white text-sm font-medium">Pure Hearts</div>
                   </div>
+
+                  <img className="w-full h-full object-cover  " src="/Images/MobileImage.png" alt="App Screenshot" />
                   
                   {/* App Content */}
-                  <div className="p-6 space-y-6">
+                  {/* <div className="p-6 space-y-6">
                     <div className="text-center">
                       <div className="w-20 h-20 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <Heart className="w-10 h-10 text-red-600" />
@@ -104,7 +106,7 @@ export default function MobileApp() {
                     <div className="bg-red-600 text-white p-4 rounded-lg text-center">
                       <div className="text-sm font-medium">Start Your Journey</div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               
