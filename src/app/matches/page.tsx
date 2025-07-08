@@ -1,6 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { Check, X, MapPin, Briefcase, GraduationCap, Heart, MessageCircle, Star } from 'lucide-react';
+import Tabs from '../../components/matches/Tabs';
+import ProfilesGrid from '../../components/matches/ProfilesGrid';
+import EmptyState from '../../components/matches/EmptyState';
 
 interface Profile {
   id: string;
@@ -144,156 +147,19 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-pink-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
-      
-
         {/* Tabs */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-pink-600 shadow-md transform scale-105'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
-                }`}
-              >
-                {tab.label}
-                {tab.count > 0 && (
-                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-bold ${
-                    activeTab === tab.id
-                      ? 'bg-pink-100 text-pink-700'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
+        <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* Profiles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleProfiles.map((profile) => (
-            <div
-              key={profile.id}
-              className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group hover:scale-105"
-            >
-              {/* Profile Image */}
-              <div className="relative h-64 overflow-hidden">
-                <img
-                  src={profile.image}
-                  alt={profile.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                />
-                <div className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                </div>
-                {profile.verified && (
-                  <div className="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-                    Verified
-                  </div>
-                )}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                  <div className="text-white">
-                    <h3 className="text-xl font-bold">{profile.name}</h3>
-                    <p className="text-sm opacity-90">{profile.lastSeen}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile Details */}
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-lg font-semibold text-gray-800">
-                      {profile.age} Years
-                    </span>
-                    <span className="text-gray-500">•</span>
-                    <span className="text-gray-600">{profile.height}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-4 h-4 text-gray-400" />
-                    <span className="text-sm text-gray-600">{profile.location}</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center space-x-3">
-                    <Briefcase className="w-4 h-4 text-gray-400" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-800">{profile.profession}</p>
-                      <p className="text-xs text-gray-500">Earns {profile.salary}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <GraduationCap className="w-4 h-4 text-gray-400" />
-                    <p className="text-sm text-gray-600">{profile.education}</p>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <MessageCircle className="w-4 h-4 text-gray-400" />
-                    <p className="text-sm text-gray-600">{profile.languages.join(', ')}</p>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                {activeTab === 'received' && (
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => handleDecline(profile.id)}
-                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-4 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 group"
-                    >
-                      <X className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      <span>Decline</span>
-                    </button>
-                    <button
-                      onClick={() => handleAccept(profile.id)}
-                      className="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white py-3 px-4 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 group shadow-lg"
-                    >
-                      <Check className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                      <span>Accept</span>
-                    </button>
-                  </div>
-                )}
-
-                {activeTab === 'accepted' && (
-                  <div className="text-center">
-                    <div className="bg-emerald-50 text-emerald-700 py-3 px-4 rounded-2xl font-medium">
-                      ✓ Accepted
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'deleted' && (
-                  <div className="text-center">
-                    <div className="bg-gray-50 text-gray-600 py-3 px-4 rounded-2xl font-medium">
-                      ✗ Declined
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {visibleProfiles.length === 0 && (
-          <div className="text-center py-16">
-            <div className="bg-gray-100 rounded-full w-24 h-24 mx-auto mb-6 flex items-center justify-center">
-              <Heart className="w-12 h-12 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">No matches found</h3>
-            <p className="text-gray-600">
-              {activeTab === 'received' && 'New matches will appear here'}
-              {activeTab === 'accepted' && 'Your accepted matches will appear here'}
-              {activeTab === 'sent' && 'Your sent requests will appear here'}
-              {activeTab === 'deleted' && 'Your declined matches will appear here'}
-            </p>
-          </div>
+        {visibleProfiles.length > 0 ? (
+          <ProfilesGrid
+            profiles={visibleProfiles}
+            activeTab={activeTab}
+            onAccept={handleAccept}
+            onDecline={handleDecline}
+          />
+        ) : (
+          <EmptyState activeTab={activeTab} />
         )}
       </div>
     </div>
