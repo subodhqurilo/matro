@@ -4,6 +4,7 @@ import { Phone, Video, Info, Menu } from 'lucide-react';
 import { Conversation, Message } from '@/types/chat';
 import MessageInput from './MessageInput';
 import MessageBubble from './MessageBubble';
+import Image from 'next/image';
 
 interface ChatAreaProps {
   conversation: Conversation;
@@ -32,9 +33,11 @@ export default function ChatArea({
             </button>
             
             <div className="relative">
-              <img
+              <Image
                 src={conversation?.avatar || "/default-avatar.png"}
                 alt={conversation?.name || "User"}
+                width={40}
+                height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
               {conversation.isOnline && (

@@ -2,6 +2,7 @@
 
 import { Search, X } from 'lucide-react';
 import { Conversation } from '@/types/chat';
+import Image from 'next/image';
 
 interface MessageSidebarProps {
   conversations: Conversation[];
@@ -56,9 +57,11 @@ export default function MessageSidebar({
           >
             <div className="flex items-center space-x-3">
               <div className="relative">
-                <img
+                <Image
                   src={conversation.avatar}
                   alt={conversation.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 {conversation.isOnline && (

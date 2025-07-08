@@ -1,6 +1,7 @@
 "use client";
 
 import { Message } from '@/types/chat';
+import Image from 'next/image';
 
 interface MessageBubbleProps {
   message: Message;
@@ -13,9 +14,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}>
       <div className={`flex max-w-xs lg:max-w-md ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end space-x-2`}>
         {!isMe && (
-          <img
+          <Image
             src={message.avatar}
             alt={message.sender}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full object-cover"
           />
         )}
@@ -37,9 +40,11 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         </div>
         
         {isMe && (
-          <img
+          <Image
             src={message.avatar}
             alt={message.sender}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full object-cover"
           />
         )}
