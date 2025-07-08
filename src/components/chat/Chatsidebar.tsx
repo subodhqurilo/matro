@@ -1,3 +1,4 @@
+import Image from "next/image";
 
 type User = {
   id: string;
@@ -24,7 +25,13 @@ export default function ChatSidebar({ users, onSelectUser }: ChatSidebarProps) {
             onClick={() => onSelectUser(user)}
             className="flex items-center gap-3 rounded-2xl px-10 py-10 hover:bg-gray-100 cursor-pointer mt-10  border-2 shadow-2xl"
           >
-            <img src={user.avatar} className="w-10 h-10 rounded-full" />
+            <Image
+              src={user.avatar}
+              alt={`${user.name}'s avatar`}
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full"
+            />
             <div>
               <p className="font-medium">{user.name}</p>
               <p className="text-sm text-gray-500">{user.lastMessage}</p>

@@ -1,10 +1,9 @@
-
-
 import MessageBubble from "./MessageBubble";
 import ChatInput from "./ChatInput";
 import { BsFillCameraVideoFill } from "react-icons/bs";
 import { IoIosInformationCircle } from "react-icons/io";
 import { BsFillTelephoneFill } from "react-icons/bs";
+import Image from "next/image";
 
 type User = {
   avatar: string;
@@ -36,7 +35,13 @@ export default function ChatWindow({ user, messages }: ChatWindowProps) {
     
       <div className="flex fixed items-center  bg-white  w-[1000px] justify-between px-6 py-4 border-b">
         <div className="flex items-center gap-4">
-          <img src={user.avatar} className="w-10 h-10 rounded-full" />
+          <Image
+            src={user.avatar}
+            alt={`${user.name}'s avatar`}
+            width={40}
+            height={40}
+            className="w-10 h-10 rounded-full"
+          />
           <div>
             <p className="font-bold">{user.name}</p>
             <p className="text-xs text-gray-500">#{user.userId}</p>

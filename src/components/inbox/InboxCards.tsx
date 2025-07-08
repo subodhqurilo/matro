@@ -1,4 +1,6 @@
 // components/InboxCard.tsx
+import Image from "next/image";
+
 interface Profile {
   avatar: string;
   name: string;
@@ -23,9 +25,11 @@ export default function InboxCard({ profile }: InboxCardProps) {
     <div className="border rounded-xl p-4 flex justify-between items-center shadow-sm bg-white mb-4">
     
       <div className="flex gap-4">
-        <img
+        <Image
           src={profile.avatar}
           alt={profile.name}
+          width={80}
+          height={80}
           className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-blue-400 object-cover"
         />
         <div className="text-sm sm:text-base">
