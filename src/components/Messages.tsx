@@ -65,7 +65,7 @@ export default function MessagesPage() {
 
   return (
     <div className="flex h-screen">
-      <ChatSidebar users={mockUsers} onSelectUser={setSelectedUser} />
+      {/* <ChatSidebar users={mockUsers} onSelectUser={setSelectedUser} /> */}
       <ChatWindow user={selectedUser} messages={mockMessages} />
     </div>
   );
