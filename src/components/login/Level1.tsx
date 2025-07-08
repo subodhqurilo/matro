@@ -4,15 +4,13 @@ import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Lock, Link } from 'lucide-react';
-import Step1Form from '../steps/Step1';
+import { Mail, Lock } from 'lucide-react';
 
 type Level1FormProps = {
   email: string;
   setEmail: (value: string) => void;
   password: string;
   setPassword: (value: string) => void;
-  onBack: () => void;
   handleContinueLevel1: () => void;
 };
 
@@ -21,7 +19,6 @@ const Level1Form = ({
   setEmail,
   password,
   setPassword,
-  onBack,
   handleContinueLevel1,
 }: Level1FormProps) => (
   <>
@@ -83,7 +80,7 @@ const Level1Form = ({
       Login
     </Button>
 
-    <p className=' items-center justify-center text-sm text-gray-600 mt-6 font-Inter'>Don't have account ?  Signup here</p>
+    <p className=' items-center justify-center text-sm text-gray-600 mt-6 font-Inter'>Don&apos;t have account ?  Signup here</p>
   </>
 );
 
@@ -92,7 +89,6 @@ Level1Form.propTypes = {
   setEmail: PropTypes.func.isRequired,
   password: PropTypes.string.isRequired,
   setPassword: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
   handleContinueLevel1: PropTypes.func.isRequired,
 };
 

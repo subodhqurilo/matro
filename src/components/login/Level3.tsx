@@ -3,8 +3,7 @@
 import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { InputOTP, InputOTPGroup, InputOTPSlot,InputOTPSeparator } from '@/components/ui/input-otp';
-import { Label } from '@/components/ui/label';
-import { ArrowLeft, KeyRound } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 type Level3FormProps = {
   otp: string;
@@ -64,7 +63,7 @@ const Level3Form = ({
 
     
       <p className="text-sm text-gray-600 mb-6 font-Montserrat text-center">
-        Didn't receive OTP?{' '}
+        Didn&apos;t receive OTP?{' '}
         <button
           type="button"
           onClick={handleResendOtp}
