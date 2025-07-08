@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import ChatWindow from "./chat/ChatWindow";
+// import ChatWindow from "./chat/ChatWindow";
 
 const mockUsers = [
   {
@@ -62,7 +62,7 @@ export default function MessagesPage() {
 
   return (
     <div className="flex h-screen">
-      <ChatWindow user={selectedUser} messages={mockMessages} />
+      {/* <ChatWindow user={selectedUser} messages={mockMessages} /> */}  hello
     </div>
   );
 }
