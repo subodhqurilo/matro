@@ -5,33 +5,21 @@ export default function SuccessStories() {
   const stories = [
     {
       id: 1,
-<<<<<<< HEAD
       img: "/Images/Rectangle 34624457.png",
-=======
-      img: "/assets/Rectangle 34624457.png",
->>>>>>> b31abe8dd13a01fd566a4f3fe9d94018265124ce
       quote: "We found each other through this wonderful platform. The process was smooth, respectful, and we felt safe throughout our journey.",
       names: "- Raj & Priya",
       year: "2024"
     },
     {
       id: 2,
-<<<<<<< HEAD
       img: "/Images/Rectangle 34624458.png",
-=======
-      img: "/assets/Rectangle 34624458.png",
->>>>>>> b31abe8dd13a01fd566a4f3fe9d94018265124ce
       quote: "The genuine connections and verified profiles made all the difference. We're grateful for finding our perfect match here.",
       names: "- Amit & Sneha",
       year: "2024"
     },
     {
       id: 3,
-<<<<<<< HEAD
       img: "/Images/Rectangle 34624459.png",
-=======
-      img: "/assets/Rectangle 34624459.png",
->>>>>>> b31abe8dd13a01fd566a4f3fe9d94018265124ce
       quote: "A platform that truly understands the importance of marriage. We couldn't be happier with our journey together.",
       names: "- Vikram & Kavya",
       year: "2023"
@@ -62,10 +50,7 @@ export default function SuccessStories() {
                 />
               </div>
               <CardContent className="p-6 space-y-4">
-<<<<<<< HEAD
                
-=======
->>>>>>> b31abe8dd13a01fd566a4f3fe9d94018265124ce
                 <p className="text-gray-600 font-Lato text-sm leading-relaxed">
                   &quot;{story.quote}&quot;
                 </p>
