@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { Check, X, MapPin, Briefcase, GraduationCap, Heart, MessageCircle, Star } from 'lucide-react';
 import Tabs from '../../components/matches/Tabs';
 import ProfilesGrid from '../../components/matches/ProfilesGrid';
 import EmptyState from '../../components/matches/EmptyState';
