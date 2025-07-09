@@ -125,7 +125,7 @@ export default function MatrimonialApp() {
 
                 <div className="space-y-1 text-sm">
                   <p className="text-gray-700">
-                    <span className="font-medium">{profile.age} Yrs</span> . {profile.height}" . {profile.caste}
+                    <span className="font-medium">{profile.age} Yrs</span> . {profile.height}&quot; . {profile.caste}
                   </p>
                   <p className="text-gray-700">
                     {profile.profession} . {profile.salary}
