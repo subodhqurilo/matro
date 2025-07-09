@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { Check, X, MapPin, Briefcase, GraduationCap, MessageCircle, Star } from 'lucide-react';
 
 interface Profile {
@@ -29,10 +30,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile, activeTab, onAccept,
   >
     {/* Profile Image */}
     <div className="relative h-64 overflow-hidden">
-      <img
+      <Image
         src={profile.image}
         alt={profile.name}
-        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+        fill
+        className="object-cover transition-transform duration-300 group-hover:scale-110"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
       <div className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-md">
         <Star className="w-4 h-4 text-yellow-500 fill-current" />
