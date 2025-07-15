@@ -1,8 +1,8 @@
 'use client';
 import React, { useState } from 'react';
-import Tabs from '../../components/matches/Tabs';
-import ProfilesGrid from '../../components/matches/ProfilesGrid';
-import EmptyState from '../../components/matches/EmptyState';
+import Tabs from '../../../components/matches/Tabs';
+import ProfilesGrid from '../../../components/matches/ProfilesGrid';
+import EmptyState from '../../../components/matches/EmptyState';
 
 interface Profile {
   id: string;
