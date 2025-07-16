@@ -88,6 +88,7 @@ const AstroDetailsSection: React.FC<AstroDetailsSectionProps> = ({ astroDetails 
               className="bg-rose-700 hover:bg-rose-800 text-white"
             >
               Save
+              
             </Button>
           </div>
         </form>
