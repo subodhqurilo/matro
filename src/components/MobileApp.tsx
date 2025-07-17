@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-
+import Image from 'next/image';
 import { Heart, Star, Apple, Play, MessageCircle, Badge } from 'lucide-react';
 
 export default function MobileApp() {
@@ -69,7 +69,14 @@ export default function MobileApp() {
                     <div className="text-white text-sm font-medium">Pure Hearts</div>
                   </div>
 
-                  <img className="w-full h-full object-cover  " src="/Images/MobileImage.png" alt="App Screenshot" />
+                  <Image 
+                    className="w-full h-full object-cover" 
+                    src="/Images/MobileImage.png" 
+                    alt="App Screenshot"
+                    width={320}
+                    height={600}
+                    priority
+                  />
                   
                   {/* App Content */}
                   {/* <div className="p-6 space-y-6">

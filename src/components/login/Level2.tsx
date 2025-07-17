@@ -67,7 +67,7 @@ const Level2Form = ({
       Login
     </Button>
 
-    <p className=' text-sm text-gray-600 mt-6'>Don't have account ? Signup here</p>
+    <p className=' text-sm text-gray-600 mt-6'>Don&apos;t have account ? Signup here</p>
   </>
 );
 

@@ -135,7 +135,6 @@ export default function Navbar() {
                 setEmail={setEmail}
                 password={password}
                 setPassword={setPassword}
-                onBack={() => setIsModalOpen(false)}
                 handleContinueLevel1={handleContinueLevel1}
               />
             )}
