@@ -1,14 +1,17 @@
 import React from 'react';
-import ProfilePhotoSection from '@/components/profiles/ProfilePhotoSection';
-import AboutMeSection from '@/components/profiles/AboutMeSection';
-import EducationSection from '@/components/profiles/EducationSection';
-import CareerSection from '@/components/profiles/CareerSection';
-import AstroDetailsSection from '@/components/profiles/AstroDetailsSection';
-import StatsSection from '@/components/profiles/StatsSection';
-import BasicInfoSection from '@/components/profiles/BasicInfoSection';
-import ReligiousInfoSection from '@/components/profiles/ReligiousInfoSection';
-import FamilyInfoSection from '@/components/profiles/FamilyInfoSection';
-import LifestyleInfoSection from '@/components/profiles/LifestyleInfoSection';
+import ProfilePhotoSection from '@/app/(dashboard)/profiles/_components/ProfilePhotoSection';
+
+import StatsSection from '@/app/(dashboard)/profiles/_components/StatsSection';
+
+import ReligiousInfoSection from '@/app/(dashboard)/profiles/_components/ReligiousInfoSection';
+
+import LifestyleInfoSection from '@/app/(dashboard)/profiles/_components/LifestyleInfoSection';
+import AboutMeSection from './_components/AboutMeSection';
+import EducationSection from './_components/EducationSection';
+import CareerSection from './_components/CareerSection';
+import AstroDetailsSection from './_components/AstroDetailsSection';
+import BasicInfoSection from './_components/BasicInfoSection';
+import FamilyInfoSection from './_components/FamilyInfoSection';
 
 const ProfilePage: React.FC = () => {
   const stats = [
