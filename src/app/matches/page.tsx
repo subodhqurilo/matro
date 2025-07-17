@@ -2,11 +2,8 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Heart, X, Send } from "lucide-react"
+import { Heart, X, Send} from "lucide-react"
 import Image from "next/image"
-import Accepted from "@/components/Accepted"
-import Sent from '@/components/Sent'
-
 interface Profile {
   id: string
   name: string
@@ -23,6 +20,7 @@ interface Profile {
   image: string
   
 }
+
 const profiles: Profile[] = [
   {
     id: "1",
@@ -57,33 +55,35 @@ const profiles: Profile[] = [
  
   },
 ]
+
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("All Matches")
   const tabs = [
-    { name: "Received", count: 32 },
-    { name: "Accepted", count: null },
-    { name: "Sent", count: null },
-    { name: "Deleted", count: null },
-   
+    { name: "All Matches", count: 32 },
+    { name: "Newly Matches", count: null },
+    { name: "Profiles with photo", count: null },
+    { name: "Mutual Matches", count: null },
+    { name: "Verified", count: null },
   ]
   return (
+    <>
     <div className="min-h-screen bg-gray-50  ">
       {/* Navigation Tabs */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="flex gap-10 overflow-x-auto items-center justify-evenly">
+          <div className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
-                className={`py-4 px-2 whitespace-nowrap text-sm font-medium border-b-2 transition-colors font-Lato  ${
+                className={`py-4 px-2 whitespace-nowrap text-sm font-medium border-b-2 transition-colors font-Lato ${
                   activeTab === tab.name
                     ? "border-red-500 text-red-600"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
                 {tab.name}
-                {tab.count && `(${tab.count})`} 
+                {tab.count && `(${tab.count})`}
               </button>
             ))}
           </div>
@@ -166,8 +166,10 @@ export default function MatrimonialApp() {
           </Card>
         ))}
       </div>
-      <Accepted/>
-     <Sent/>
+  
     </div>
+    
+   
+    </>
   )
 }

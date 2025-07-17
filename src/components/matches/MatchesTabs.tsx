@@ -1,11 +1,11 @@
 
-type InboxProps = {
+type MatchesProps = {
   selected: string;
   onChange: (tab: string) => void;
 };
 
-export default function Inbox({ selected, onChange }: InboxProps) {
-  const tabs = ["Received", "Accepted", "Sent", "Deleted"];
+export default function Matches({ selected, onChange }: MatchesProps) {
+  const tabs = ["All Matches", "Newly Matches", "Profile With Photo", "Mutual Matches","Verified"];
 
   return (
     <div className="flex gap-6 border-b text-sm sm:text-base px-4 py-2  w-full shadow-2xs">

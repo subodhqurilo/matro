@@ -2,8 +2,7 @@
 'use client';
 
 import { useState } from "react";
-import ChatSidebar from "./chat/Chatsidebar";
-import ChatWindow from "./chat/ChatWindow";
+import ChatWindow from "@/components/chat/ChatWindow";
 
 
 const mockUsers = [
