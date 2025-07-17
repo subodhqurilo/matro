@@ -4,7 +4,6 @@ import { Edit3 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input'; // Not used, but for consistency
 import Modal from './Modal';
 
 const initialAbout = `I am a software engineer by profession and a creative thinker at heart. I value intellect, honesty, and kindness. Outside of work, I enjoy reading, exploring new places, and spending quality time with family. I am looking for someone who is respectful, supportive, and shares a positive outlook towards life.`;

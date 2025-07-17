@@ -1,6 +1,6 @@
 import React from 'react';
-import { X } from 'lucide-react';
 import CircularProgress from '../_components/CircularProgress';
+import Image from 'next/image';
 
 interface UserDetail {
   label: string;
@@ -48,22 +48,28 @@ const CompatibilityCard: React.FC = () => {
           <div className="flex justify-center items-center  mb-10">
             {/* Female Profile */}
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <img
+              <Image
                 src="https://images.pexels.com/photos/3671083/pexels-photo-3671083.jpeg?auto=compress&cs=tinysrgb&w=400"
                 alt="Female profile"
+                width={96}
+                height={96}
                 className="w-full h-full object-cover"
               />
             </div>
             {/* Connector with Rings and Score */}
             <div className="flex flex-col items-center ">
-              <img
+              <Image
                 src="/Images/Rings.png"
                 alt="Rings"
+                width={31}
+                height={31}
                 className="w-[31px] mt-5"
               />
-              <img
+              <Image
                 src="/Images/Dotted.png"
                 alt="Dotted line"
+                width={100}
+                height={10}
                 className=" w-[100px] object-contain "
               />
               <div className="text-4xl font-bold text-pink-500 mt-1">
@@ -72,9 +78,11 @@ const CompatibilityCard: React.FC = () => {
             </div>
             {/* Male Profile */}
             <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <img
+              <Image
                 src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=400"
                 alt="Male profile"
+                width={96}
+                height={96}
                 className="w-full h-full object-cover"
               />
             </div>

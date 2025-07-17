@@ -113,7 +113,7 @@ export default function MatrimonialApp() {
                 </div>
                 <div className="space-y-1 text-sm mt-2 text-regular">
                   <p className="text-[#1E1E1E]">
-                    <span className="font-Lato">{profile.age} Yrs</span> . {profile.height}" . {profile.caste}
+                    <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
                   </p>
                   <p className="text-[#1E1E1E]">
                     {profile.profession} . {profile.salary}

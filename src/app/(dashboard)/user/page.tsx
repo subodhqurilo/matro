@@ -1,5 +1,6 @@
 import React from 'react';
-import { Check, Heart, Star, MapPin, Phone, Mail, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon, X } from 'lucide-react';
+import { Check, Heart, Star, MapPin, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon, X } from 'lucide-react';
+import Image from 'next/image';
 
 function App() {
   const similarProfiles = [
@@ -167,9 +168,11 @@ function App() {
               </p>
             </div>
             <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-purple-200">
-              <img 
+              <Image 
                 src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
                 alt="Profile" 
+                width={64}
+                height={64}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -183,9 +186,11 @@ function App() {
             <div className="hidden lg:block bg-white rounded-2xl shadow-lg p-6">
               <div className="text-center">
                 <div className="relative w-48 h-48 mx-auto mb-4">
-                  <img 
+                  <Image 
                     src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop" 
                     alt="Profile" 
+                    width={192}
+                    height={192}
                     className="w-full h-full object-cover rounded-full border-4 border-purple-200"
                   />
                   <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-2 rounded-full">
@@ -210,15 +215,17 @@ function App() {
                 {similarProfiles.map((profile) => (
                   <div key={profile.id} className="flex-shrink-0 w-48 bg-gradient-to-b from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                     <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
-                      <img 
+                      <Image 
                         src={profile.image} 
                         alt={profile.name} 
+                        width={64}
+                        height={64}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="text-center">
                       <h4 className="font-semibold text-sm text-gray-800">{profile.name}</h4>
-                      <p className="text-xs text-gray-600 mb-1">{profile.age}, {profile.height}, {profile.religion}</p>
+                      <p className="text-xs text-gray-600 mb-1">{profile.age}, {profile.height.replace(/'/g, "&apos;")}, {profile.religion}</p>
                       <p className="text-xs text-gray-600 mb-1">{profile.job}</p>
                       <p className="text-xs text-purple-600 font-medium mb-1">{profile.income}</p>
                       <p className="text-xs text-gray-500">{profile.education}</p>
@@ -247,15 +254,19 @@ function App() {
                   <div key={index} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                        <img 
+                        <Image 
                           src={profile.image} 
                           alt={profile.name} 
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-sm text-gray-800 truncate">{profile.name}</h4>
-                        <p className="text-xs text-gray-600">{profile.age} Yrs, {profile.height}, {profile.location}</p>
+                        <p className="text-xs text-gray-600">
+                          <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.location}
+                        </p>
                         <p className="text-xs text-gray-600">{profile.profession}, {profile.income}</p>
                         <p className="text-xs text-gray-500">{profile.education}</p>
                       </div>
@@ -357,7 +368,7 @@ function App() {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">About Myself</h2>
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
                 <p className="text-gray-700 leading-relaxed">
-                  I am a passionate software engineer with a love for technology and innovation. I believe in maintaining a perfect balance between personal and professional life. Family values are very important to me, and I enjoy spending quality time with loved ones. I am looking for a life partner who shares similar values, is understanding, and believes in growing together in life's journey. I enjoy reading, traveling, and exploring new cuisines. I believe in honesty, respect, and mutual understanding as the foundation of a strong relationship.
+                  I am a passionate software engineer with a love for technology and innovation. I believe in maintaining a perfect balance between personal and professional life. Family values are very important to me, and I enjoy spending quality time with loved ones. I am looking for a life partner who shares similar values, is understanding, and believes in growing together in life&apos;s journey. I enjoy reading, traveling, and exploring new cuisines. I believe in honesty, respect, and mutual understanding as the foundation of a strong relationship.
                 </p>
               </div>
             </div>

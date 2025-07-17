@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, X } from 'lucide-react';
 import CircularProgress from '../../profiles/_components/CircularProgress';
+import Image from 'next/image';
 
 interface UserDetail {
   label: string;
@@ -61,9 +62,11 @@ const CompatibilityCard: React.FC = () => {
             <div className="relative">
               {/* Female profile */}
               <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white">
-                <img 
-                  src="https://images.pexels.com/photos/3671083/pexels-photo-3671083.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                  alt="Female profile" 
+                <Image
+                  src="https://images.pexels.com/photos/3671083/pexels-photo-3671083.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="Female profile"
+                  width={96}
+                  height={96}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -80,9 +83,11 @@ const CompatibilityCard: React.FC = () => {
               
               {/* Male profile */}
               <div className="absolute top-0 left-40 w-24 h-24 rounded-full overflow-hidden shadow-lg border-4 border-white">
-                <img 
-                  src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=400" 
-                  alt="Male profile" 
+                <Image
+                  src="https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=400"
+                  alt="Male profile"
+                  width={96}
+                  height={96}
                   className="w-full h-full object-cover"
                 />
               </div>
