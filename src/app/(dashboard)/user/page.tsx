@@ -1,6 +1,8 @@
 import React from 'react';
 import { Check, Heart, Star, MapPin, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon, X } from 'lucide-react';
 import Image from 'next/image';
+import Modal from '../../../components/ui/Modal';
+import CompatibilityCard from '../../../components/CompatibilityCard';
 
 function App() {
   const similarProfiles = [
@@ -153,8 +155,13 @@ function App() {
     }
   ];
 
+  const [astroOpen, setAstroOpen] = React.useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 font-['Inter',system-ui,sans-serif]">
+      <Modal open={astroOpen} onClose={() => setAstroOpen(false)}>
+        <CompatibilityCard />
+      </Modal>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Mobile Header */}
         <div className="lg:hidden bg-white rounded-2xl shadow-lg p-6 mb-6">
@@ -295,7 +302,7 @@ function App() {
                   <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                     Your & Him
                   </button>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" onClick={() => setAstroOpen(true)}>
                     Astro
                   </button>
                   <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
@@ -311,7 +318,7 @@ function App() {
               <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-medium transition-colors">
                 Your & Him
               </button>
-              <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors">
+              <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors" onClick={() => setAstroOpen(true)}>
                 Astro
               </button>
               <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">

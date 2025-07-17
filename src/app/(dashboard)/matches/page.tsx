@@ -18,6 +18,10 @@ interface Profile {
   location: string
   languages: string[]
   image: string
+  isNew?: boolean
+  hasPhoto?: boolean
+  isMutual?: boolean
+  isVerified?: boolean
 }
 const profiles: Profile[] = [
   {
@@ -34,6 +38,10 @@ const profiles: Profile[] = [
     location: "Delhi",
     languages: ["Hindi", "English"],
     image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isNew: true,
+    hasPhoto: true,
+    isMutual: true,
+    isVerified: true,
   },
   {
     id: "2",
@@ -49,6 +57,10 @@ const profiles: Profile[] = [
     location: "Delhi",
     languages: ["Hindi", "English"],
     image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
+    isNew: false,
+    hasPhoto: true,
+    isMutual: false,
+    isVerified: false,
   },
 ]
 export default function MatrimonialApp() {
@@ -60,6 +72,25 @@ export default function MatrimonialApp() {
     { name: "Mutual Matches", count: null },
     { name: "Verified", count: null },
   ]
+
+  // Filtering logic based on activeTab
+  const getFilteredProfiles = () => {
+    switch (activeTab) {
+      case "All Matches":
+        return profiles
+      case "Newly Matches":
+        return profiles.filter((p) => p.isNew)
+      case "Profiles with photo":
+        return profiles.filter((p) => p.hasPhoto)
+      case "Mutual Matches":
+        return profiles.filter((p) => p.isMutual)
+      case "Verified":
+        return profiles.filter((p) => p.isVerified)
+      default:
+        return profiles
+    }
+  }
+  const filteredProfiles = getFilteredProfiles()
   return (
     <>
     <div className="min-h-screen bg-gray-50  ">
@@ -86,7 +117,7 @@ export default function MatrimonialApp() {
       </div>
       {/* Profile Cards */}
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
-        {profiles.map((profile) => (
+        {filteredProfiles.map((profile) => (
           <Card key={profile.id} className="p-6 bg-white rounded-lg border border-[#7D0A0A]">
             <div className="flex items-start space-x-6">
               {/* Profile Image */}
