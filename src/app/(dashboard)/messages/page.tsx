@@ -3,8 +3,8 @@
 import { useState } from 'react';
 
 import { Conversation, Message } from '@/types/chat';
-import MessageSidebar from '@/components/chat/MessageSidebar';
-import ChatArea from '@/components/chat/ChatArea';
+import MessageSidebar from '@/app/(dashboard)/messages/_components/MessageSidebar';
+import ChatArea from '@/app/(dashboard)/messages/_components/ChatArea';
 
 const conversations: Conversation[] = [
   {
