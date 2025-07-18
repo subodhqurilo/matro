@@ -8,6 +8,7 @@ import ChatArea from '@/app/(dashboard)/messages/_components/ChatArea';
 
 const conversations: Conversation[] = [
   {
+
     id: 1,
     name: "Ananya Sharma",
     avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
