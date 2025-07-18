@@ -1,3 +1,4 @@
+"use client" 
 import React from 'react';
 import { Check, Heart, Star, MapPin, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon, X } from 'lucide-react';
 import Image from 'next/image';
