@@ -222,7 +222,7 @@ export default function MatrimonialApp() {
                 </div>
                 <div className="space-y-1 text-sm mt-2 text-regular">
                   <p className="text-[#1E1E1E]">
-                    <span className="font-Lato">{profile.age} Yrs</span> . {profile.height} . {profile.caste}
+                    <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
                   </p>
                   <p className="text-[#1E1E1E]">
                     {profile.profession} . {profile.salary}
@@ -290,9 +290,11 @@ export default function MatrimonialApp() {
                         className="bg-transparent border-none p-0 hover:bg-transparent"
                       >
                         {activeTab === "Sent" ? (
-                          <img
+                          <Image
                             src="/assets/pending.png"
                             alt="Pending"
+                            width={20}
+                            height={20}
                             className="h-[20px] w-[20px] text-black group-hover:text-white"
                           />
                         ) : (

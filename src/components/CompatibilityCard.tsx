@@ -1,6 +1,6 @@
 import React from 'react';
-import CircularProgress from '../_components/CircularProgress';
 import Image from 'next/image';
+import CircularProgress from '../app/(dashboard)/profiles/_components/CircularProgress';
 
 interface UserDetail {
   label: string;
@@ -14,6 +14,7 @@ interface CompatibilityParam {
   maxScore: number;
   color: string;
 }
+
 const CompatibilityCard: React.FC = () => {
   const userDetails: UserDetail[] = [
     { label: 'Time of Birth', value: '08:00 AM', bgColor: 'bg-pink-100' },
@@ -37,7 +38,6 @@ const CompatibilityCard: React.FC = () => {
   return (
     <div className="min-h-screen bg-white p-4">
       <div className="max-w-4xl mx-auto">
-        {/* Close Button */}
         {/* Card */}
         <div className="bg-[#F9F9F9] rounded-2xl shadow-xl p-8">
           {/* Title */}
@@ -130,10 +130,5 @@ const CompatibilityCard: React.FC = () => {
     </div>
   );
 };
-export default CompatibilityCard;
 
-
-
-
-
-
+export default CompatibilityCard; 

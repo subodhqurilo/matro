@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PhoneCall, X, MessageCircleMore } from "lucide-react"
+import { PhoneCall, X } from "lucide-react"
 // import { PiPhoneCallThin } from "react-icons/pi";
 import Image from "next/image"
 interface Profile {
@@ -111,7 +111,7 @@ export default function Accepted() {
                                 </div>
                                 <div className="space-y-1 text-sm mt-2 text-regular">
                                     <p className="text-[#1E1E1E]">
-                                        <span className="font-Lato">{profile.age} Yrs</span> . {profile.height} . {profile.caste}
+                                        <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
                                     </p>
                                     <p className="text-[#1E1E1E]">
                                         {profile.profession} . {profile.salary}
@@ -138,7 +138,7 @@ export default function Accepted() {
                                     <Button
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <img src='/assets/pending.png' alt="" className="text-black group-hover:text-white h-[20px] w-[20px]" />
+                                        <Image src='/assets/pending.png' alt="" width={20} height={20} />
                                     </Button>
                                 </div>
                                 {/* Decline Button */}
