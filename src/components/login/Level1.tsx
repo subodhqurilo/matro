@@ -12,6 +12,7 @@ type Level1FormProps = {
   password: string;
   setPassword: (value: string) => void;
   handleContinueLevel1: () => void;
+  openSignupModal: () => void; // NEW PROP
 };
 
 const Level1Form = ({
@@ -20,22 +21,17 @@ const Level1Form = ({
   password,
   setPassword,
   handleContinueLevel1,
+  openSignupModal,
 }: Level1FormProps) => (
   <>
-    <div className="flex flex-col  items-center justify-center space-x-3 gap-3 mb-6">
-      
-      <h2 className="text-xl  font-Lato text-gray-900">
-        Logo
-      </h2>
-
-      <p className='text-xl  font-Lato text-gray-900'>Welcome back! Please Login</p>
+    <div className="flex flex-col items-center justify-center space-x-3 gap-3 mb-6">
+      <h2 className="text-xl font-Lato text-gray-900">Logo</h2>
+      <p className='text-xl font-Lato text-gray-900'>Welcome back! Please Login</p>
     </div>
 
     <div className="space-y-4 mb-6">
       <div>
-        <Label className="text-sm font-Inter text-gray-700 mb-2 block">
-          Email ID *
-        </Label>
+        <Label className="text-sm font-Inter text-gray-700 mb-2 block">Email ID *</Label>
         <div className="relative">
           <Input
             type="email"
@@ -50,9 +46,7 @@ const Level1Form = ({
       </div>
 
       <div>
-        <Label className="text-sm font-Inter text-gray-700 mb-2 block">
-          Password *
-        </Label>
+        <Label className="text-sm font-Inter text-gray-700 mb-2 block">Password *</Label>
         <div className="relative">
           <Input
             type="password"
@@ -67,10 +61,10 @@ const Level1Form = ({
       </div>
     </div>
 
-<div className='flex items-center justify-between text-sm font-Montserrat text-gray-600 mb-6'>
-  <h2>Login with OTP</h2>
-  <h2>Forget Password?</h2>
-</div>
+    <div className='flex items-center justify-between text-sm font-Montserrat text-gray-600 mb-6'>
+      <h2>Login with OTP</h2>
+      <h2>Forget Password?</h2>
+    </div>
 
     <Button
       onClick={handleContinueLevel1}
@@ -80,7 +74,12 @@ const Level1Form = ({
       Login
     </Button>
 
-    <p className=' items-center justify-center text-sm text-gray-600 mt-6 font-Inter'>Don&apos;t have account ?  Signup here</p>
+    <p className='text-sm text-gray-600 mt-6 font-Inter text-center'>
+      Don't have an account?{' '}
+      <button onClick={openSignupModal} className="text-rose-700 hover:underline">
+        Sign up here
+      </button>
+    </p>
   </>
 );
 
@@ -90,6 +89,7 @@ Level1Form.propTypes = {
   password: PropTypes.string.isRequired,
   setPassword: PropTypes.func.isRequired,
   handleContinueLevel1: PropTypes.func.isRequired,
+  openSignupModal: PropTypes.func.isRequired, // NEW PROP TYPE
 };
 
 export default Level1Form;

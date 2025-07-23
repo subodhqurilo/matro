@@ -1,7 +1,6 @@
 'use client';
 
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   InputOTP,
@@ -10,63 +9,27 @@ import {
   InputOTPSeparator,
 } from '@/components/ui/input-otp';
 import { ArrowLeft } from 'lucide-react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-type Level3FormProps = {
+type Follow2FormProps = {
   otp: string;
   setOtp: (value: string) => void;
   onBack: () => void;
-  handleContinueLevel3: () => void;
-  phoneNumber: string;
+  handleContinueFollow1Form: () => void;
 };
 
-const Level3Form = ({
+const Follow2Form = ({
   otp,
   setOtp,
   onBack,
-  handleContinueLevel3,
-  phoneNumber,
-}: Level3FormProps) => {
-  const [isVerifying, setIsVerifying] = useState(false);
-
-  const handleResendOtp = async () => {
-    try {
-      const response = await fetch('https://qdp1vbhp-3000.inc1.devtunnels.ms/api/v1/auth/sendOtp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mobile: Number(phoneNumber) }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Failed to resend OTP');
-      }
-
-      toast.success('OTP resent successfully');
-    } catch (error: any) {
-      toast.error(error.message || 'Error resending OTP');
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    setIsVerifying(true);
-
-    // Fake verification logic
-    setTimeout(() => {
-      setIsVerifying(false);
-      toast.success('OTP entered: ' + otp);
-      handleContinueLevel3(); // proceed to next step
-    }, 1000);
+  handleContinueFollow1Form,
+}: Follow2FormProps) => {
+  const handleResendOtp = () => {
+    console.log('Resending OTP...');
+    alert('OTP has been resent.');
   };
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} />
-
       <button onClick={onBack}>
         <ArrowLeft className="h-5 w-5 text-gray-500 hover:text-rose-600 transition-colors" />
       </button>
@@ -75,7 +38,7 @@ const Level3Form = ({
         <h2 className="text-xl font-Lato text-gray-900">LOGO</h2>
         <p className="text-xl font-Lato text-gray-900">OTP VERIFICATION</p>
         <p className="text-sm font-Lato text-gray-900">
-          We have sent the OTP to {phoneNumber.replace(/^(\d)(\d{7})(\d)$/, '$1*******$3')}
+          We have sent the OTP to 9********4
         </p>
       </div>
 
@@ -96,7 +59,7 @@ const Level3Form = ({
       </div>
 
       <p className="text-sm text-gray-600 mb-6 font-Montserrat text-center">
-        Didn&apos;t receive OTP?{' '}
+        Didn't receive OTP?{' '}
         <button
           type="button"
           onClick={handleResendOtp}
@@ -107,23 +70,22 @@ const Level3Form = ({
       </p>
 
       <Button
-        onClick={handleVerifyOtp}
-        disabled={otp.length !== 4 || isVerifying}
+        onClick={handleContinueFollow1Form}
+        disabled={otp.length !== 4}
         className="w-full bg-[#7D0A0A] hover:bg-[#9e0e0e]"
         size="lg"
       >
-        {isVerifying ? 'Verifying...' : 'Verify'}
+        Verify
       </Button>
     </>
   );
 };
 
-Level3Form.propTypes = {
+Follow2Form.propTypes = {
   otp: PropTypes.string.isRequired,
   setOtp: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
-  handleContinueLevel3: PropTypes.func.isRequired,
-  phoneNumber: PropTypes.string.isRequired,
+  handleContinueFollow1Form: PropTypes.func.isRequired,
 };
 
-export default Level3Form;
+export default Follow2Form;
