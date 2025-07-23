@@ -32,7 +32,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo }) => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
+    <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Basic Info</h3>
         <Edit3

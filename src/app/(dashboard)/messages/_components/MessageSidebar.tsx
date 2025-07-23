@@ -18,9 +18,12 @@ export default function MessageSidebar({
   onCloseSidebar 
 }: MessageSidebarProps) {
   return (
-    <div className="w-80 bg-white border-r border-gray-200 flex flex-col h-full">
+    <>
+    
+    <div className="w-100 bg-white border-r border-gray-200 flex flex-col h-full px-4 py-4 ">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+<div className='border shadow-2xl rounded-2xl  border-gary-200 '>
+      <div className="p-4 border-b border-gray-200 ">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
           <button 
@@ -43,7 +46,7 @@ export default function MessageSidebar({
       </div>
 
       {/* Conversation List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto ">
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
@@ -85,5 +88,7 @@ export default function MessageSidebar({
         ))}
       </div>
     </div>
+    </div>
+    </>
   );
 }

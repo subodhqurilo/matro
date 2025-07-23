@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PhoneCall, X } from "lucide-react"
+import { PhoneCall, X,ClockFading } from "lucide-react"
 // import { PiPhoneCallThin } from "react-icons/pi";
 import Image from "next/image"
 interface Profile {
@@ -58,8 +58,8 @@ const tabs = [
     { name: "Sent", count: null },
     { name: "Deleted", count: null },
 ];
-export default function Accepted() {
-    const [activeTab, setActiveTab] = useState("Accepted");
+export default function Sent() {
+    const [activeTab, setActiveTab] = useState("Sent");
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Navigation Tabs */}
@@ -129,16 +129,17 @@ export default function Accepted() {
                                         size="icon"
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <PhoneCall className="text-black group-hover:text-white" />
+                                        <PhoneCall className="text-black group-hover:text-white border border-amber-400" />
                                     </Button>
                                 </div>
-                                {/* Chat Button */}
-                                <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
+                                {/* Pending Button */}
+                                <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-5 transition-colors hover:bg-[#8E2E37]">
                                     <span className="text-black group-hover:text-white font-Lato">Pending</span>
                                     <Button
-                                        className="bg-transparent border-none p-0 hover:bg-transparent"
+                                        className="bg-transparent border-none p-0 hover:bg-transparent group-hover:text-white"
                                     >
-                                        <Image src='/assets/pending.png' alt="" width={20} height={20} />
+                                        <ClockFading className="text-black group-hover:text-white "  />
+                                        
                                     </Button>
                                 </div>
                                 {/* Decline Button */}

@@ -101,14 +101,14 @@ export default function MatrimonialApp() {
       {/* Navigation Tabs */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="flex space-x-8 overflow-x-auto">
+          <div className="flex items-center justify-evenly overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
                 className={`py-4 px-2 whitespace-nowrap text-sm font-medium border-b-2 transition-colors font-Lato ${
                   activeTab === tab.name
-                    ? "border-red-500 text-red-600"
+                    ? "border-[#7D0A0A] text-[#7D0A0A]"
                     : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >

@@ -20,8 +20,9 @@ export default function ChatArea({
   onOpenSidebar 
 }: ChatAreaProps) {
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-white px-4 py-4  shadow-2xl">
       {/* Chat Header */}
+      
       <div className="p-4 border-b border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -76,6 +77,7 @@ export default function ChatArea({
 
       {/* Message Input */}
       <MessageInput onSendMessage={onSendMessage} />
+  
     </div>
   );
 }

@@ -28,11 +28,11 @@ const StatsSection: React.FC<StatsSectionProps> = ({ stats }) => (
       }
       return (
         <Link key={index} href={href} className="block">
-          <div className={`bg-white rounded-2xl p-6 shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer`}>
+          <div className={`bg-white rounded-2xl p-6 shadow-xl text-center hover:shadow-md transition-shadow cursor-pointer h-40 w-50`}>
             <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${stat.color} text-2xl font-bold mb-3`}>
               {stat.number}
             </div>
-            <p className="text-sm text-gray-600 font-medium">{stat.label}</p>
+            <p className="text-xl text-[#000000] font-medium font-Lato">{stat.label}</p>
           </div>
         </Link>
       );
