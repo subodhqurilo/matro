@@ -79,14 +79,14 @@ const Follow1Form = ({
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Save token to localStorage (Note: In production, use localStorage.setItem('token', data.token))
-        // For Claude.ai artifacts, we'll just log it since localStorage isn't available
+        // Save token to localStorage
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          console.log('Token saved to localStorage');
+        }
+        
         console.log('Registration successful! Token:', data.token);
         console.log('User ID:', data.userId);
-        
-        // In a real app, you would do:
-        // localStorage.setItem('authToken', data.token);
-        // localStorage.setItem('userId', data.userId);
         
         // Continue to next step
         handleContinueFollow2();

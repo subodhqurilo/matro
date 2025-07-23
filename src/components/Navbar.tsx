@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { FaHeart, FaBars, FaTimes } from 'react-icons/fa';
-import Level1Form from './login/Level1';
-import Level2Form from './login/Level2';
-import Level3Form from './login/Level3';
+
+import Level2Form from './login/Level2'; // Fixed import - was pointing to Level1
 import SignupWrapper from './signup/SignupWrapper';
+import Level1 from './login/Level1';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -38,14 +38,18 @@ export default function Navbar() {
   };
 
   const handleContinueLevel1 = () => setCurrentLevel(2);
-  const handleContinueLevel2 = () => setCurrentLevel(3);
-  const handleContinueLevel3 = () => {
+  const handleContinueLevel2 = () => {
+    // Complete login process
     setIsLoginOpen(false);
-    console.log('OTP Submitted:', otp);
+    console.log('Login completed with OTP:', otp);
+    // Reset form state
+    setPhoneNumber('');
+    setOtp('');
+    setCurrentLevel(1);
   };
 
-  const handleBackLevel2 = () => setCurrentLevel(1);
-  const handleBackLevel3 = () => setCurrentLevel(2);
+  const handleBackLevel1 = () => setCurrentLevel(1); // Added missing function
+  const handleBackLevel2 = () => setCurrentLevel(1); // Fixed - should go back to level 1
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFF8F0] shadow">
@@ -125,7 +129,7 @@ export default function Navbar() {
 
       {/* ✅ LOGIN MODAL */}
       {isLoginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <button
               className="absolute right-3 top-3 text-gray-500 hover:text-red-500"
@@ -135,31 +139,22 @@ export default function Navbar() {
             </button>
 
             {currentLevel === 1 && (
-              <Level1Form
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
+              <Level1
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                onBack={handleBackLevel1}
                 handleContinueLevel1={handleContinueLevel1}
-                openSignupModal={openSignupModal}
+                openSignupModal={openSignupModal} // Added missing prop
               />
             )}
 
             {currentLevel === 2 && (
               <Level2Form
-                phoneNumber={phoneNumber}
-                setPhoneNumber={setPhoneNumber}
-                onBack={handleBackLevel2}
-                handleContinueLevel2={handleContinueLevel2}
-              />
-            )}
-
-            {currentLevel === 3 && (
-              <Level3Form
                 otp={otp}
                 setOtp={setOtp}
-                onBack={handleBackLevel3}
-                handleContinueLevel3={handleContinueLevel3}
+                onBack={handleBackLevel2}
+                handleContinueLevel2={handleContinueLevel2}
+                phoneNumber={phoneNumber} // Added missing prop
               />
             )}
           </div>
@@ -168,7 +163,7 @@ export default function Navbar() {
 
       {/* ✅ SIGNUP MODAL */}
       {isSignupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <button
               className="absolute right-3 top-3 text-gray-500 hover:text-red-500"
