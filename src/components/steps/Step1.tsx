@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-
 import { ArrowLeft } from 'lucide-react';
+import { Input } from '../ui/input';
 
 const profileOptions = [
   { id: 'myself', label: 'Myself' },
@@ -18,16 +18,28 @@ const profileOptions = [
 ];
 
 const Step1Form = ({
-  selectedProfile,
-  setSelectedProfile,
-  selectedGender,
-  setSelectedGender,
+  profileFor,
+  setProfileFor,
+  gender,
+  setGender,
+  maritalStatus,
+  setMaritalStatus,
+  numberOfChildren,
+  setNumberOfChildren,
+  isChildrenLivingWithYou,
+  setIsChildrenLivingWithYou,
   handleContinueStep1,
 }: {
-  selectedProfile: string;
-  setSelectedProfile: (value: string) => void;
-  selectedGender: string;
-  setSelectedGender: (value: string) => void;
+  profileFor: string;
+  setProfileFor: (value: string) => void;
+  gender: string;
+  setGender: (value: string) => void;
+  maritalStatus: string;
+  setMaritalStatus: (value: string) => void;
+  numberOfChildren: number;
+  setNumberOfChildren: (value: number) => void;
+  isChildrenLivingWithYou: boolean;
+  setIsChildrenLivingWithYou: (value: boolean) => void;
   handleContinueStep1: () => void;
 }) => (
   <>
@@ -46,9 +58,9 @@ const Step1Form = ({
         {profileOptions.map((option) => (
           <button
             key={option.id}
-            onClick={() => setSelectedProfile(option.id)}
+            onClick={() => setProfileFor(option.id)}
             className={`px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200 ${
-              selectedProfile === option.id
+              profileFor === option.id
                 ? 'bg-rose-700 text-white border-rose-700 shadow-md'
                 : 'bg-white text-gray-700 border-gray-300 hover:border-rose-300 hover:bg-rose-50'
             }`}
@@ -61,20 +73,78 @@ const Step1Form = ({
 
     <div className="mb-6">
       <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Gender:
+        Gender *
       </Label>
       <RadioGroup 
-        value={selectedGender} 
-        onValueChange={setSelectedGender}
+        value={gender} 
+        onValueChange={setGender}
         className="flex space-x-6"
       >
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="male" id="male" className="text-rose-600" />
+          <RadioGroupItem value="Male" id="male" className="text-rose-600" />
           <Label htmlFor="male" className="font-medium">Male</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="female" id="female" className="text-rose-600" />
+          <RadioGroupItem value="Female" id="female" className="text-rose-600" />
           <Label htmlFor="female" className="font-medium">Female</Label>
+        </div>
+      </RadioGroup>
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Marital Status *
+      </Label>
+      <RadioGroup 
+        value={maritalStatus} 
+        onValueChange={setMaritalStatus}
+        className="flex space-x-6"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="Unmarried" id="unmarried" className="text-rose-600" />
+          <Label htmlFor="unmarried" className="font-medium">Unmarried</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="Divorced" id="divorced" className="text-rose-600" />
+          <Label htmlFor="divorced" className="font-medium">Divorced</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="Widowed" id="widowed" className="text-rose-600" />
+          <Label htmlFor="widowed" className="font-medium">Widowed</Label>
+        </div>
+      </RadioGroup>
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Number of Children
+      </Label>
+      <Input
+        type="number"
+        placeholder="Enter number of children"
+        value={numberOfChildren}
+        onChange={(e) => setNumberOfChildren(Number(e.target.value))}
+        className="w-full bg-white"
+        min="0"
+      />
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Children Living With You
+      </Label>
+      <RadioGroup 
+        value={isChildrenLivingWithYou.toString()} 
+        onValueChange={(value) => setIsChildrenLivingWithYou(value === 'true')}
+        className="flex space-x-6"
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="true" id="children-yes" className="text-rose-600" />
+          <Label htmlFor="children-yes" className="font-medium">Yes</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="false" id="children-no" className="text-rose-600" />
+          <Label htmlFor="children-no" className="font-medium">No</Label>
         </div>
       </RadioGroup>
     </div>
@@ -90,10 +160,16 @@ const Step1Form = ({
 );
 
 Step1Form.propTypes = {
-  selectedProfile: PropTypes.string.isRequired,
-  setSelectedProfile: PropTypes.func.isRequired,
-  selectedGender: PropTypes.string.isRequired,
-  setSelectedGender: PropTypes.func.isRequired,
+  profileFor: PropTypes.string.isRequired,
+  setProfileFor: PropTypes.func.isRequired,
+  gender: PropTypes.string.isRequired,
+  setGender: PropTypes.func.isRequired,
+  maritalStatus: PropTypes.string.isRequired,
+  setMaritalStatus: PropTypes.func.isRequired,
+  numberOfChildren: PropTypes.number.isRequired,
+  setNumberOfChildren: PropTypes.func.isRequired,
+  isChildrenLivingWithYou: PropTypes.bool.isRequired,
+  setIsChildrenLivingWithYou: PropTypes.func.isRequired,
   handleContinueStep1: PropTypes.func.isRequired,
 };
 

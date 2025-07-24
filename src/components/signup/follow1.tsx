@@ -62,11 +62,14 @@ const Follow1Form = ({
       
       const requestBody = {
         firstName,
-        middleName,
-        lastName,
-        phoneNumber: mobileNumber,
-        password: createPassword
+        middleName: middleName || '',
+        lastName: lastName || '',
+        mobile: mobileNumber,
+        password: createPassword,
+        email: email
       };
+      
+      console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/register', {
         method: 'POST',

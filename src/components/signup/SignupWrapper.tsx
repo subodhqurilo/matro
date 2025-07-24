@@ -56,6 +56,7 @@ const SignupWrapper = () => {
       {step === 2 && (
         <Follow2Form
           otp={otp}
+          phoneNumber={mobileNumber}
           setOtp={setOtp}
           onBack={handleBackToFollow1}
           handleContinueFollow1Form={handleOtpVerify}
