@@ -72,86 +72,88 @@ const Hero: React.FC = () => {
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
       }
-
-      const profileData = {
-        // Step 1: Basic Information
-        profileFor,
-        gender,
-        maritalStatus,
-        numberOfChildren,
-        isChildrenLivingWithYou,
-        
-        // Step 2: Personal Details
-        firstName,
-        middleName,
-        lastName,
-        dateOfBirth,
-        height,
-        diet,
-        
-        // Step 3: Religious & Community
-        religion,
-        willingToMarryOtherCaste,
-        caste,
-        community,
-        subCommunity,
-        motherTongue,
-        
-        // Step 4: Contact & Disability
-        email,
-        phoneNumber,
-        anyDisability,
-        
-        // Step 5: Professional & Family
-        familyType,
-        familyStatus,
-        familyIncome,
-        city,
-        state,
-        education,
-        employedIn,
-        occupation,
-        annualIncome,
-        workLocation,
-        
-        // Step 6: Verification
-        profileImage,
-        imageProfileArray,
-        verificationType,
-        verificationValue,
-      };
-
+  
+      // Create a FormData object
+      const formData = new FormData();
+  
+      // Step 1: Basic Information
+      formData.append('profileFor', profileFor);
+      formData.append('gender', gender);
+      formData.append('maritalStatus', maritalStatus);
+      formData.append('numberOfChildren', numberOfChildren.toString());
+      formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
+  
+      // Step 2: Personal Details
+      formData.append('firstName', firstName);
+      formData.append('middleName', middleName);
+      formData.append('lastName', lastName);
+      formData.append('dateOfBirth', dateOfBirth);
+      formData.append('height', height);
+      formData.append('diet', diet);
+  
+      // Step 3: Religious & Community
+      formData.append('religion', religion);
+      formData.append('willingToMarryOtherCaste', willingToMarryOtherCaste.toString());
+      formData.append('caste', caste);
+      formData.append('community', community);
+      formData.append('subCommunity', subCommunity);
+      formData.append('motherTongue', motherTongue);
+  
+      // Step 4: Contact & Disability
+      formData.append('email', email);
+      formData.append('phoneNumber', phoneNumber);
+      formData.append('anyDisability', anyDisability.toString());
+  
+      // Step 5: Professional & Family
+      formData.append('familyType', familyType);
+      formData.append('familyStatus', familyStatus);
+      formData.append('familyIncome', familyIncome);
+      formData.append('city', city);
+      formData.append('state', state);
+      formData.append('education', education);
+      formData.append('employedIn', employedIn);
+      formData.append('occupation', occupation);
+      formData.append('annualIncome', annualIncome);
+      formData.append('workLocation', workLocation);
+  
+      // Step 6: Verification
+      if (profileImage) {
+        formData.append('profileImage', profileImage);
+      }
+      imageProfileArray.forEach((image, index) => {
+        formData.append(`imageProfileArray[${index}]`, image);
+      });
+      formData.append('verificationType', verificationType);
+      formData.append('verificationValue', verificationValue);
+  
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/profile', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(profileData),
+        body: formData,
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to save profile');
       }
-
+  
       const responseData = await response.json();
       console.log('Profile saved successfully:', responseData);
-      
+  
       // Close the modal and reset the form
       setIsModalOpen(false);
       setCurrentStep(1);
-      
+  
       // Optionally show a success message to the user
       alert('Profile saved successfully!');
-      
     } catch (error: unknown) {
       console.error('Error saving profile:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to save profile. Please try again.';
       alert(`Error: ${errorMessage}`);
     }
   };
-
   const handleContinueStep6 = async () => {
     try {
       await handleProfileSubmit();
