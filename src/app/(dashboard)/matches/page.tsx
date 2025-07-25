@@ -1,193 +1,149 @@
 "use client"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Heart, X, Send} from "lucide-react"
-import Image from "next/image"
-interface Profile {
-  id: string
-  name: string
-  profileId: string
-  lastSeen: string
-  age: number
-  height: string
-  caste: string
-  profession: string
-  salary: string
-  education: string
-  location: string
-  languages: string[]
-  image: string
-  isNew?: boolean
-  hasPhoto?: boolean
-  isMutual?: boolean
-  isVerified?: boolean
+import { useState, useEffect } from "react"
+import NavigationTabs from "./_components/NavigationTabs"
+import ProfileCard from "./_components/ProfileCard"
+import { getFilteredProfiles } from "@/utils/profileFilters"
+import { toast } from "sonner"
+import { Profile } from "@/types/Profile"
+
+interface ApiUser {
+  _id: string;
+  name: string;
+  profileId: string;
+  lastSeen: string;
+  age: number;
+  height: string;
+  caste: string;
+  profession: string;
+  salary: string;
+  education: string;
+  location: string;
+  languages: string[];
+  image: string;
+  // Add any additional fields from the API response here
+  [key: string]: any;
 }
-const profiles: Profile[] = [
-  {
-    id: "1",
-    name: "Aaradhya Sharma",
-    profileId: "P9876668",
-    lastSeen: "Last seen an hour ago",
-    age: 28,
-    height: "5'5\"",
-    caste: "Brahmin",
-    profession: "Software Developer",
-    salary: "Earns $5-7 Lakh",
-    education: "B.Tech in computer science",
-    location: "Delhi",
-    languages: ["Hindi", "English"],
-    image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
-    isNew: true,
-    hasPhoto: true,
-    isMutual: true,
-    isVerified: true,
-  },
-  {
-    id: "2",
-    name: "Aaradhya Sharma",
-    profileId: "P9876668",
-    lastSeen: "Last seen an hour ago",
-    age: 28,
-    height: "5'5\"",
-    caste: "Brahmin",
-    profession: "Software Developer",
-    salary: "Earns $5-7 Lakh",
-    education: "B.Tech in computer science",
-    location: "Delhi",
-    languages: ["Hindi", "English"],
-    image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
-    isNew: false,
-    hasPhoto: true,
-    isMutual: false,
-    isVerified: false,
-  },
-]
+
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("All Matches")
+  const [matches, setMatches] = useState<Profile[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  
   const tabs = [
-    { name: "All Matches", count: 32 },
+    { name: "All Matches", count: matches.length },
     { name: "Newly Matches", count: null },
     { name: "Profiles with photo", count: null },
     { name: "Mutual Matches", count: null },
     { name: "Verified", count: null },
   ]
 
-  // Filtering logic based on activeTab
-  const getFilteredProfiles = () => {
-    switch (activeTab) {
-      case "All Matches":
-        return profiles
-      case "Newly Matches":
-        return profiles.filter((p) => p.isNew)
-      case "Profiles with photo":
-        return profiles.filter((p) => p.hasPhoto)
-      case "Mutual Matches":
-        return profiles.filter((p) => p.isMutual)
-      case "Verified":
-        return profiles.filter((p) => p.isVerified)
-      default:
-        return profiles
+  useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        if (!token) {
+          throw new Error('No authentication token found')
+        }
+
+        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          console.error('API Error Response:', errorText)
+          throw new Error(`Error ${response.status}: ${response.statusText}`)
+        }
+
+        const responseData = await response.json()
+        console.log('API Response Data:', responseData) // Debug log
+        
+        // Handle case where response might be an object with a data property
+        const data = Array.isArray(responseData) 
+          ? responseData 
+          : responseData?.data || []
+          
+        if (!Array.isArray(data)) {
+          console.error('Unexpected API response format:', responseData)
+          throw new Error('Invalid response format: expected an array of users')
+        }
+        
+        // Map API response to Profile type
+        const mappedProfiles: Profile[] = data.map(user => {
+          if (!user || typeof user !== 'object') {
+            console.warn('Invalid user data:', user)
+            return null
+          }
+          
+          return {
+            id: user._id || user.id || '',
+            name: user.name || 'Unknown',
+            profileId: user.profileId || '',
+            lastSeen: user.lastSeen || new Date().toISOString(),
+            age: typeof user.age === 'number' ? user.age : 0,
+            height: user.height || '',
+            caste: user.caste || '',
+            profession: user.profession || '',
+            salary: user.salary || '',
+            education: user.education || '',
+            location: user.location || '',
+            languages: Array.isArray(user.languages) ? user.languages : [],
+            image: user.image || '/default-avatar.png',
+            // Set default values for filter properties
+            isNew: true,
+            hasPhoto: !!user.image,
+            isMutual: false,
+            isVerified: false
+          }
+        }).filter((user): user is Profile => user !== null)
+        
+        setMatches(mappedProfiles)
+      } catch (err) {
+        console.error('Failed to fetch matches:', err)
+        setError(err instanceof Error ? err.message : 'Failed to fetch matches')
+        toast.error('Failed to load matches. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
     }
-  }
-  const filteredProfiles = getFilteredProfiles()
+
+    fetchMatches()
+  }, [])
+
+  const filteredProfiles = getFilteredProfiles(matches, activeTab)
+
   return (
-    <>
-    <div className="min-h-screen bg-gray-50  ">
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex space-x-8 overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.name}
-                onClick={() => setActiveTab(tab.name)}
-                className={`py-4 px-2 whitespace-nowrap text-sm font-medium border-b-2 transition-colors font-Lato ${
-                  activeTab === tab.name
-                    ? "border-red-500 text-red-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {tab.name}
-                {tab.count && `(${tab.count})`}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-      {/* Profile Cards */}
+    <div className="min-h-screen bg-gray-50">
+      <NavigationTabs 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        tabs={tabs} 
+      />
+      
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
-        {filteredProfiles.map((profile) => (
-          <Card key={profile.id} className="p-6 bg-white rounded-lg border border-[#7D0A0A]">
-            <div className="flex items-start space-x-6">
-              {/* Profile Image */}
-              <div className="flex-shrink-0">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border border-gray-300">
-                  <Image
-                    src={profile.image || "/placeholder.svg"}
-                    alt={profile.name}
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              {/* Profile Details */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between">
-                  <div className="border-b border-[#757575] w-full font-Lato">
-                    <h3 className="text-lg font-semibold font-Lato text-[#1E1E1E] mb-1">{profile.name}</h3>
-                    <p className="text-sm text-[#7A7A7A] mb-3">
-                      {profile.profileId} | {profile.lastSeen}
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-1 text-sm mt-2 text-regular">
-                  <p className="text-[#1E1E1E]">
-                    <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
-                  </p>
-                  <p className="text-[#1E1E1E]">
-                    {profile.profession} . {profile.salary}
-                  </p>
-                  <p className="text-[#1E1E1E]">{profile.education}</p>
-                  <p className="text-[#1E1E1E]">{profile.location}</p>
-                  <p className="text-[#1E1E1E]">{profile.languages.join(",")}</p>
-                </div>
-              </div>
-              {/* Action Buttons */}
-              <div className="flex flex-col space-y-3 items-end border-l border-[#757575] w-[268px] px-8">
-              <div className="flex gap-6  ">
-                <div className="text-regular text-gray-600 mb-2 font-Lato mt-2">Send Connection</div>
-                <Button className="bg-linear-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0" size="sm">
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="flex gap-6 items-center">
-              <div className="text-regular text-gray-600 mb-2 font-Lato">Shortlist</div>
-                <Button
-                  variant="outline"
-                  className="border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent"
-                  size="sm"
-                >
-                  <Heart className="w-4 h-4 text-[#8E2E37] " />
-                </Button>
-                </div>
-                <div className="flex gap-6 items-center">
-                 <div className="text-regular text-gray-600 font-Lato">Not Now</div>
-                <Button
-                  variant="outline"
-                  className="bg-[#ADADAD] hover:bg-gray-50 rounded-full w-12 h-12 p-0 "
-                  size="sm"
-                >
-                  <X className="w-4 h-4 text-gray-600" />
-                </Button>
-               </div>
-              </div>
-            </div>
-          </Card>
-        ))}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-8 text-red-600">
+            {error}
+          </div>
+        ) : filteredProfiles.length > 0 ? (
+          filteredProfiles.map((profile) => (
+            <ProfileCard key={profile.id} profile={profile} />
+          ))
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            No matches found
+          </div>
+        )}
       </div>
     </div>
-    </>
   )
 }

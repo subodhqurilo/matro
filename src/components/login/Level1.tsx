@@ -8,6 +8,11 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Phone } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 
 type Level1FormProps = {
   phoneNumber: string;
@@ -26,10 +31,13 @@ const Level1Form = ({
 }: Level1FormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [otp, setOtp] = useState('');
+  const [showOtpField, setShowOtpField] = useState(false);
 
   const validatePhoneNumber = (phone: string): boolean => {
-    const phoneRegex = /^\d{10}$/;
-    return phoneRegex.test(phone);
+    // Remove all non-digit characters and check length
+    const cleaned = phone.replace(/\D/g, '');
+    return cleaned.length === 10;
   };
 
   const handleSendOtp = async () => {
@@ -39,23 +47,46 @@ const Level1Form = ({
       return;
     }
 
+    // If OTP is already shown, this is a verification attempt
+    if (showOtpField) {
+      if (otp.length !== 4) {
+        toast.error('Please enter a valid 4-digit OTP');
+        return;
+      }
+      // Here you would typically verify the OTP
+      // For now, we'll just proceed to the next level
+      handleContinueLevel1();
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
+      // Clean and validate phone number
+      const cleanedPhone = phoneNumber.trim().replace(/\D/g, ''); // Remove all non-digit characters
+      console.log('Sending OTP request with phoneNumber:', cleanedPhone);
+      
+      if (!cleanedPhone) {
+        throw new Error('Phone number is required');
+      }
+      
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ phoneNumber }),
-
-
-
-        
+        body: JSON.stringify({ 
+          phoneNumber: cleanedPhone 
+        }),
       });
 
       const data = await response.json();
+      console.log('OTP Response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data
+      });
 
       if (!response.ok) {
         if (data.message === 'Your account is pending admin approval. Please wait for verification.') {
@@ -74,7 +105,7 @@ const Level1Form = ({
       }
 
       toast.success(data.message || 'OTP sent successfully');
-      handleContinueLevel1(); // Proceed to OTP verification step
+      setShowOtpField(true); // Show OTP input field after successful OTP request
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
       toast.error(err.message || 'Something went wrong');
@@ -120,13 +151,40 @@ const Level1Form = ({
         <h2>Forget Password?</h2>
       </div>
 
+      {showOtpField && (
+        <div className="space-y-4">
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={4}
+              value={otp}
+              onChange={(value) => setOtp(value)}
+              className="justify-center"
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="h-12 w-12 text-lg" />
+                <InputOTPSlot index={1} className="h-12 w-12 text-lg" />
+                <InputOTPSlot index={2} className="h-12 w-12 text-lg" />
+                <InputOTPSlot index={3} className="h-12 w-12 text-lg" />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+          <p className="text-center text-sm text-gray-600">
+            Enter the 4-digit OTP sent to {phoneNumber}
+          </p>
+        </div>
+      )}
+
       <Button
+        type="button"
+        className={`w-full ${showOtpField ? 'bg-green-600 hover:bg-green-700' : 'bg-rose-600 hover:bg-rose-700'} text-white font-Inter py-2 px-4 rounded-md transition-colors`}
         onClick={handleSendOtp}
-        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-Inter text-base shadow-lg hover:shadow-xl transition-all duration-200"
-        size="lg"
         disabled={isLoading}
       >
-        {isLoading ? 'Sending OTP...' : 'Login'}
+        {isLoading 
+          ? 'Processing...' 
+          : showOtpField 
+            ? 'Verify OTP' 
+            : 'Send OTP'}
       </Button>
 
       <p className='text-sm text-gray-600 mt-6 font-Inter text-center'>

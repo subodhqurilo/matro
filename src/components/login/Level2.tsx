@@ -32,6 +32,7 @@ const Level2Form = ({
 
   const handleResendOtp = async () => {
     try {
+      console.log('Resending OTP to:', phoneNumber);
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/login', {
         method: 'POST',
         headers: {
@@ -69,32 +70,72 @@ const Level2Form = ({
     setIsVerifying(true);
 
     try {
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/otp', {
+      const requestBody = {
+        phoneNumber: phoneNumber.trim(),
+        otp: otp.trim()
+      };
+      
+      console.log('Sending OTP verification request with:', JSON.stringify(requestBody, null, 2));
+      
+      // First verify OTP
+      const otpResponse = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          phoneNumber,
-          otp
-        }),
+        body: JSON.stringify(requestBody),
       });
 
-      const data = await response.json();
+      const otpData = await otpResponse.json();
+      console.log('OTP Verification Response:', {
+        status: otpResponse.status,
+        statusText: otpResponse.statusText,
+        data: otpData
+      });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'OTP verification failed');
+      if (!otpResponse.ok) {
+        throw new Error(otpData.message || 'OTP verification failed');
       }
 
-      if (!data.success) {
-        if (data.message) {
-          toast.error(data.message);
+      if (!otpData.success) {
+        if (otpData.message) {
+          toast.error(otpData.message);
           return;
         }
         throw new Error('OTP verification failed');
       }
 
-      toast.success(data.message || 'OTP verified successfully');
+      // If OTP verification is successful, proceed with login
+      const loginResponse = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mobile: phoneNumber,
+          otp: otp
+        }),
+      });
+
+      const loginData = await loginResponse.json();
+
+      if (!loginResponse.ok) {
+        throw new Error(loginData.message || 'Login failed');
+      }
+
+      if (!loginData.success) {
+        if (loginData.message) {
+          toast.error(loginData.message);
+          return;
+        }
+        throw new Error('Login failed');
+      }
+
+      // Store the token and userId (you might want to use context or state management)
+      localStorage.setItem('token', loginData.token);
+      localStorage.setItem('userId', loginData.userId);
+
+      toast.success(loginData.message || 'Login successful');
       handleContinueLevel2(); // Proceed to next step
     } catch (error: any) {
       toast.error(error.message || 'Error verifying OTP');

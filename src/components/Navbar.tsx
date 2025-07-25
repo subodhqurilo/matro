@@ -77,6 +77,7 @@ export default function Navbar() {
       const data = await response.json();
       
       if (data.success) {
+        console.log('Auth Token:', data.token); // Log the auth token
         handleLoginSuccess(data.token);
         // Reset form state
         setPhoneNumber('');
