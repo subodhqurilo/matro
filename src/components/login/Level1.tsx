@@ -19,7 +19,8 @@ type Level1FormProps = {
   setPhoneNumber: (value: string) => void;
   onBack: () => void;
   handleContinueLevel1: () => void;
-  openSignupModal: () => void; // NEW PROP
+  openSignupModal: () => void;
+  onLoginSuccess: (token: string, userId: string) => void;
 };
 
 const Level1Form = ({
@@ -28,6 +29,7 @@ const Level1Form = ({
   onBack,
   handleContinueLevel1,
   openSignupModal,
+  onLoginSuccess,
 }: Level1FormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,62 +55,63 @@ const Level1Form = ({
         toast.error('Please enter a valid 4-digit OTP');
         return;
       }
-      // Here you would typically verify the OTP
-      // For now, we'll just proceed to the next level
-      handleContinueLevel1();
+      await handleVerifyOtp();
       return;
     }
 
+    // Simply show the OTP field without making an API call
+    // since the send-otp endpoint doesn't exist
+    setError(null);
+    toast.info('Please enter the OTP you received via SMS');
+    setShowOtpField(true);
+  };
+
+  const handleVerifyOtp = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Clean and validate phone number
-      const cleanedPhone = phoneNumber.trim().replace(/\D/g, ''); // Remove all non-digit characters
-      console.log('Sending OTP request with phoneNumber:', cleanedPhone);
+      const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
       
-      if (!cleanedPhone) {
-        throw new Error('Phone number is required');
-      }
-      
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/login', {
+      // Verify the OTP using the login endpoint
+      const response = await fetch('https://apimatri.qurilo.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ 
-          phoneNumber: cleanedPhone 
+          mobile: cleanedPhone,           // Use 'mobile' instead of 'phoneNumber'
+          otp: parseInt(otp.trim())       // Convert OTP to number
         }),
       });
 
       const data = await response.json();
-      console.log('OTP Response:', {
+      console.log('Login Response:', {
         status: response.status,
         statusText: response.statusText,
         data
       });
 
       if (!response.ok) {
-        if (data.message === 'Your account is pending admin approval. Please wait for verification.') {
-          toast.info(data.message);
-          return;
-        }
-        throw new Error(data.message || 'Failed to send OTP');
+        throw new Error(data.message || 'Login failed');
       }
 
       if (!data.success) {
-        if (data.message) {
-          toast.info(data.message);
-          return;
-        }
-        throw new Error('Failed to send OTP');
+        throw new Error(data.message || 'Login failed');
       }
 
-      toast.success(data.message || 'OTP sent successfully');
-      setShowOtpField(true); // Show OTP input field after successful OTP request
+      // Success - call the login success handler
+      toast.success(data.message || 'Login successful');
+      onLoginSuccess(data.token, data.userId);
+      
+      // Reset form state
+      setPhoneNumber('');
+      setOtp('');
+      setShowOtpField(false);
+      
     } catch (err: any) {
-      setError(err.message || 'Something went wrong');
-      toast.error(err.message || 'Something went wrong');
+      setError(err.message || 'Verification failed');
+      toast.error(err.message || 'Verification failed');
     } finally {
       setIsLoading(false);
     }
@@ -139,6 +142,7 @@ const Level1Form = ({
               onChange={(e) => setPhoneNumber(e.target.value)}
               className={`w-full pr-10 bg-white ${error ? 'border-red-500' : ''}`}
               required
+              disabled={showOtpField} // Disable when OTP field is shown
             />
             <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
           </div>
@@ -152,7 +156,7 @@ const Level1Form = ({
       </div>
 
       {showOtpField && (
-        <div className="space-y-4">
+        <div className="space-y-4 mb-6">
           <div className="flex justify-center">
             <InputOTP
               maxLength={4}
@@ -201,8 +205,9 @@ Level1Form.propTypes = {
   phoneNumber: PropTypes.string.isRequired,
   setPhoneNumber: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
-  handleContinueLevel2: PropTypes.func.isRequired,
-  openSignupModal: PropTypes.func.isRequired, // Added missing PropType
+  handleContinueLevel1: PropTypes.func.isRequired,
+  openSignupModal: PropTypes.func.isRequired,
+  onLoginSuccess: PropTypes.func.isRequired,
 };
 
 export default Level1Form;

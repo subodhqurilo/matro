@@ -4,7 +4,11 @@ import { useState } from 'react';
 import Follow1Form from './follow1';
 import Follow2Form from './follow2';
 
-const SignupWrapper = () => {
+interface SignupWrapperProps {
+  onSignupSuccess: (token: string, userData?: any) => void;
+}
+
+const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
   const [step, setStep] = useState(1);
 
   // Step 1 state

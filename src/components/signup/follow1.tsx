@@ -71,7 +71,7 @@ const Follow1Form = ({
       
       console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/register', {
+      const response = await fetch('https://apimatri.qurilo.com/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

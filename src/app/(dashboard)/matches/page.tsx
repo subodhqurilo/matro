@@ -5,38 +5,75 @@ import ProfileCard from "./_components/ProfileCard"
 import { getFilteredProfiles } from "@/utils/profileFilters"
 import { toast } from "sonner"
 import { Profile } from "@/types/Profile"
+import Image from "next/image"
 
-interface ApiUser {
+interface RecommendedProfile {
   _id: string;
   name: string;
-  profileId: string;
-  lastSeen: string;
   age: number;
-  height: string;
-  caste: string;
-  profession: string;
-  salary: string;
-  education: string;
   location: string;
-  languages: string[];
-  image: string;
-  // Add any additional fields from the API response here
-  [key: string]: any;
+  profileImage: string;
+  profileImages: string[];
+  lastSeen: string;
+  height?: string;
+  religion?: string;
+  profession?: string;
+  salary?: string;
+  education?: string;
+  languages?: string[];
+  gender?: string;
 }
 
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("All Matches")
   const [matches, setMatches] = useState<Profile[]>([])
+  const [recommendedProfiles, setRecommendedProfiles] = useState<RecommendedProfile[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
   const tabs = [
     { name: "All Matches", count: matches.length },
-    { name: "Newly Matches", count: null },
+    { name: "Recommendation", count: null },
     { name: "Profiles with photo", count: null },
     { name: "Mutual Matches", count: null },
     { name: "Verified", count: null },
   ]
+
+  const fetchRecommendedProfiles = async () => {
+    try {
+      setIsLoadingRecommendations(true)
+      const token = localStorage.getItem('token')
+      if (!token) {
+        throw new Error('No authentication token found')
+      }
+
+      const response = await fetch('https://apimatri.qurilo.com/api/recommendation/daily', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommended profiles')
+      }
+
+      const data = await response.json()
+      if (data.success && Array.isArray(data.recommendedProfiles)) {
+        setRecommendedProfiles(data.recommendedProfiles.map((profile: any) => ({
+          ...profile,
+          lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Recently'
+        })))
+      }
+    } catch (error) {
+      console.error('Error fetching recommended profiles:', error)
+      toast.error('Failed to load recommended profiles')
+    } finally {
+      setIsLoadingRecommendations(false)
+    }
+  }
 
   useEffect(() => {
     const fetchMatches = async () => {
@@ -46,7 +83,7 @@ export default function MatrimonialApp() {
           throw new Error('No authentication token found')
         }
 
-        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
+        const response = await fetch('https://apimatri.qurilo.com/api/message/allUserGet', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -74,33 +111,26 @@ export default function MatrimonialApp() {
         }
         
         // Map API response to Profile type
-        const mappedProfiles: Profile[] = data.map(user => {
-          if (!user || typeof user !== 'object') {
-            console.warn('Invalid user data:', user)
-            return null
-          }
-          
-          return {
-            id: user._id || user.id || '',
-            name: user.name || 'Unknown',
-            profileId: user.profileId || '',
-            lastSeen: user.lastSeen || new Date().toISOString(),
-            age: typeof user.age === 'number' ? user.age : 0,
-            height: user.height || '',
-            caste: user.caste || '',
-            profession: user.profession || '',
-            salary: user.salary || '',
-            education: user.education || '',
-            location: user.location || '',
-            languages: Array.isArray(user.languages) ? user.languages : [],
-            image: user.image || '/default-avatar.png',
-            // Set default values for filter properties
-            isNew: true,
-            hasPhoto: !!user.image,
-            isMutual: false,
-            isVerified: false
-          }
-        }).filter((user): user is Profile => user !== null)
+        const mappedProfiles = responseData.map((user: any) => ({
+          id: user._id || '',
+          name: user.name || 'Unknown',
+          profileId: user.profileId || '',
+          lastSeen: user.lastSeen || 'recently',
+          age: user.age || 0,
+          height: user.height || '',
+          caste: user.caste || '',
+          profession: user.profession || '',
+          salary: user.salary || '',
+          education: user.education || '',
+          location: user.location || '',
+          languages: user.languages || [],
+          image: user.image || '/default-avatar.png',
+          // Explicitly type the object to match Profile interface
+          isNew: true as boolean,
+          hasPhoto: !!user.image,
+          isMutual: false,
+          isVerified: false
+        } as Profile)).filter((user: Profile | null): user is Profile => user !== null)
         
         setMatches(mappedProfiles)
       } catch (err) {
@@ -113,6 +143,7 @@ export default function MatrimonialApp() {
     }
 
     fetchMatches()
+    fetchRecommendedProfiles()
   }, [])
 
   const filteredProfiles = getFilteredProfiles(matches, activeTab)
@@ -134,13 +165,77 @@ export default function MatrimonialApp() {
           <div className="text-center py-8 text-red-600">
             {error}
           </div>
-        ) : filteredProfiles.length > 0 ? (
-          filteredProfiles.map((profile) => (
-            <ProfileCard key={profile.id} profile={profile} />
-          ))
         ) : (
-          <div className="text-center py-8 text-gray-500">
-            No matches found
+          <div>
+            {activeTab === 'Recommendation' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                {isLoadingRecommendations ? (
+                  <div>Loading recommendations...</div>
+                ) : recommendedProfiles.length > 0 ? (
+                  recommendedProfiles.map((profile) => (
+                    <div key={profile._id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                      <div className="relative h-64 w-full">
+                        {profile.profileImage ? (
+                          <Image
+                            src={profile.profileImage}
+                            alt={profile.name}
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-t-lg"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-500">No image</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-lg font-semibold">{profile.name}, {profile.age}</h3>
+                          <span className="text-sm text-gray-500">{profile.lastSeen}</span>
+                        </div>
+                        <p className="text-gray-600">{profile.location}</p>
+                        
+                        <div className="mt-4 space-y-2">
+                          {profile.profession && (
+                            <p className="text-sm"><span className="font-medium">Profession:</span> {profile.profession}</p>
+                          )}
+                          {profile.education && (
+                            <p className="text-sm"><span className="font-medium">Education:</span> {profile.education}</p>
+                          )}
+                          {profile.height && (
+                            <p className="text-sm"><span className="font-medium">Height:</span> {profile.height}</p>
+                          )}
+                          {profile.religion && (
+                            <p className="text-sm"><span className="font-medium">Religion:</span> {profile.religion}</p>
+                          )}
+                          {profile.salary && (
+                            <p className="text-sm"><span className="font-medium">Salary:</span> {profile.salary}</p>
+                          )}
+                          {profile.languages && profile.languages.length > 0 && (
+                            <p className="text-sm"><span className="font-medium">Languages:</span> {profile.languages.join(', ')}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500">No recommended profiles found</div>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                {isLoading ? (
+                  <div>Loading matches...</div>
+                ) : error ? (
+                  <div className="text-red-500">{error}</div>
+                ) : (
+                  filteredProfiles.map((profile) => (
+                    <ProfileCard key={profile.id} profile={profile} />
+                  ))
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

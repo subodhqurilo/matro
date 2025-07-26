@@ -14,7 +14,7 @@ import Step6Form from './steps/Step6';
 const Hero: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [profileFor, setProfileFor] = useState('myself');
+  const [profileFor, setProfileFor] = useState('myself'); 
   const [gender, setGender] = useState('Male');
   const [maritalStatus, setMaritalStatus] = useState('Unmarried');
   const [numberOfChildren, setNumberOfChildren] = useState(0);
@@ -126,7 +126,7 @@ const Hero: React.FC = () => {
       formData.append('verificationType', verificationType);
       formData.append('verificationValue', verificationValue);
   
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/profile', {
+      const response = await fetch('https://apimatri.qurilo.com/auth/profile', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
