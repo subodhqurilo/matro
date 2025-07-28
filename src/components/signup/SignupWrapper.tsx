@@ -34,8 +34,16 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
 
   const handleOtpVerify = () => {
     if (otp.length === 4) {
-      alert('OTP Verified. Signup Complete!');
-      // You can redirect here
+      // Get the token from localStorage
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Call onSignupSuccess with the token to handle redirection
+        onSignupSuccess(token);
+      } else {
+        // Fallback in case token is not found
+        console.error('Authentication token not found');
+        // You might want to redirect to login or show an error
+      }
     } else {
       alert('Please enter a valid OTP.');
     }

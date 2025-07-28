@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+
 
 import SignupWrapper from './signup/SignupWrapper';
 import Level1 from './login/Level1';
@@ -97,18 +97,38 @@ export default function Navbar() {
   }, []);
 
   const handleLoginSuccess = (token: string, userData?: any) => {
+    // Store the token in local storage
     localStorage.setItem('authToken', token);
+    localStorage.setItem('token', token); // Also store in 'token' for backward compatibility
+    
+    // Store user data if provided
     if (userData) {
       localStorage.setItem('userData', JSON.stringify(userData));
       if (userData.firstName) {
         setUserFirstName(userData.firstName);
       }
+      
+      // Check if profile is complete
       if (userData.profileComplete === false) {
+        // Close any open modals
+        setIsLoginOpen(false);
+        setIsSignupOpen(false);
+        // Open profile setup
         setIsProfileSetupOpen(true);
+      } else {
+        // If profile is complete, close all modals
+        setIsLoginOpen(false);
+        setIsSignupOpen(false);
+        // Refresh the page to update the UI based on authentication state
+        window.location.href = '/';
       }
+    } else {
+      // If no user data is provided, just close the modals
+      setIsLoginOpen(false);
+      setIsSignupOpen(false);
     }
+    
     setIsAuthenticated(true);
-    setIsLoginOpen(false);
     setCurrentLevel(1);
   };
 
@@ -145,7 +165,7 @@ export default function Navbar() {
       if (!token) {
         throw new Error('No authentication token found. Please log in again.');
       }
-
+///////////////
       const formData = new FormData();
       formData.append('profileFor', profileFor);
       formData.append('gender', gender);
