@@ -20,10 +20,10 @@ export default function ChatArea({
   onOpenSidebar 
 }: ChatAreaProps) {
   return (
-    <div className="flex flex-col h-full bg-white px-4 py-4  shadow-2xl">
+    
+    <div className="flex flex-col h-full bg-white ">
       {/* Chat Header */}
-      
-      <div className="p-4 border-b border-gray-200 bg-white">
+      <div className="border p-5 border-gray-200 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button 
@@ -50,8 +50,9 @@ export default function ChatArea({
               <h2 className="font-semibold text-gray-900">{conversation?.name || "User"}</h2>
               <p className="text-sm text-gray-500">#CU6798H</p>
             </div>
-          </div>
-          
+        
+         </div>
+        
           <div className="flex items-center space-x-2">
             <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
               <Phone size={20} className="text-gray-600" />
@@ -77,7 +78,6 @@ export default function ChatArea({
 
       {/* Message Input */}
       <MessageInput onSendMessage={onSendMessage} />
-  
     </div>
   );
 }

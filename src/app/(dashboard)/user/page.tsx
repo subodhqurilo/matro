@@ -1,4 +1,4 @@
-"use client" 
+"use client"
 import React from 'react';
 import { Check, Heart, Star, MapPin, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon, X } from 'lucide-react';
 import Image from 'next/image';
@@ -159,7 +159,7 @@ function App() {
   const [astroOpen, setAstroOpen] = React.useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 font-['Inter',system-ui,sans-serif]">
+    <div className="min-h-screen bg-white font-['Inter',system-ui,sans-serif]">
       <Modal open={astroOpen} onClose={() => setAstroOpen(false)}>
         <CompatibilityCard />
       </Modal>
@@ -176,9 +176,9 @@ function App() {
               </p>
             </div>
             <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-purple-200">
-              <Image 
-                src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
-                alt="Profile" 
+              <Image
+                src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop"
+                alt="Profile"
                 width={64}
                 height={64}
                 className="w-full h-full object-cover"
@@ -194,24 +194,23 @@ function App() {
             <div className="hidden lg:block bg-white rounded-2xl shadow-lg p-6">
               <div className="text-center">
                 <div className="relative w-48 h-48 mx-auto mb-4">
-                  <Image 
-                    src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop" 
-                    alt="Profile" 
+                  <Image
+                    src="https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+                    alt="Profile"
                     width={192}
                     height={192}
                     className="w-full h-full object-cover rounded-full border-4 border-purple-200"
                   />
-                  <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-2 rounded-full">
-                    <Check className="w-5 h-5" />
-                  </div>
-                </div>
                 
-                <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 rounded-xl p-4 mb-4">
-                  <div className="flex items-center justify-center gap-2 text-emerald-700">
-                    <Check className="w-5 h-5" />
+                </div>
+
+                <div className="bg-[#FFEDFA] border rounded-xl p-4 mb-4">
+                  <div className="flex items-center justify-center gap-2 text-black">
+
                     <span className="font-semibold">Verified Profile</span>
+                    <img src='/Images/blue tick.png' alt='blue tick' className="w-5 h-5" />
                   </div>
-                  <p className="text-sm text-emerald-600 mt-1">Name verified against Govt ID</p>
+                  <p className="text-sm text-black mt-1">Name verified against Govt ID</p>
                 </div>
               </div>
             </div>
@@ -223,9 +222,9 @@ function App() {
                 {similarProfiles.map((profile) => (
                   <div key={profile.id} className="flex-shrink-0 w-48 bg-gradient-to-b from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
                     <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-3">
-                      <Image 
-                        src={profile.image} 
-                        alt={profile.name} 
+                      <Image
+                        src={profile.image}
+                        alt={profile.name}
                         width={64}
                         height={64}
                         className="w-full h-full object-cover"
@@ -262,9 +261,9 @@ function App() {
                   <div key={index} className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-3 border border-purple-100">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-                        <Image 
-                          src={profile.image} 
-                          alt={profile.name} 
+                        <Image
+                          src={profile.image}
+                          alt={profile.name}
                           width={48}
                           height={48}
                           className="w-full h-full object-cover"
@@ -284,7 +283,7 @@ function App() {
               </div>
             </div>
           </div>
-          
+
 
           {/* Right Column */}
           <div className="lg:w-2/3 space-y-6">
@@ -299,34 +298,61 @@ function App() {
                     Last seen: 2 days ago
                   </p>
                 </div>
-                <div className="flex gap-3">
-                  <button className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                    Your & Him
+                {/* buttons */}
+                <div className="flex gap-4 items-center">
+                 
+                  <button className="flex items-center gap-2 bg-[#7D0A0A] text-white px-4 py-2 rounded-xl hover:bg-[#5c0707] transition-all shadow-md">
+                    <img src="/Images/You&Me.png" alt="You & Him" className="w-5 h-5" />
+                    <span className="text-sm font-medium">You & Him</span>
                   </button>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-colors" onClick={() => setAstroOpen(true)}>
-                    Astro
+
+                
+                  <button
+                    onClick={() => setAstroOpen(true)}
+                    className="flex items-center gap-2 bg-[#7D0A0A] text-white px-4 py-2 rounded-xl hover:bg-[#5c0707] transition-all shadow-md"
+                  >
+                    <img src="/Images/Astro.png" alt="Astro" className="w-5 h-5" />
+                    <span className="text-sm font-medium">Astro</span>
                   </button>
-                  <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
-                    <Check className="w-4 h-4" />
-                    Accept
-                  </button>
+
+                
+                  <div className="flex flex-col items-center">
+                    <button className="flex items-center justify-center bg-gradient-to-br from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 transition-all shadow-lg hover:scale-105">
+                      <Check className="w-6 h-6" />
+                    </button>
+                    <span className="text-sm font-medium mt-1 text-gray-700">Accept</span>
+                  </div>
                 </div>
+
               </div>
             </div>
 
             {/* Action Buttons - Mobile Only */}
-            <div className="lg:hidden flex gap-2 mb-6">
-              <button className="flex-1 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-medium transition-colors">
-                Your & Him
-              </button>
-              <button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors" onClick={() => setAstroOpen(true)}>
-                Astro
-              </button>
-              <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                <Check className="w-4 h-4" />
-                Accept
-              </button>
-            </div>
+         <div className="lg:hidden flex gap-3 mb-6 items-center">
+  {/* You & Him */}
+  <button className="flex-1 flex items-center justify-center gap-2 bg-[#7D0A0A] text-white px-3 py-3 rounded-xl text-sm font-medium shadow-md hover:bg-[#5c0707] transition-all">
+    <img src="/Images/You&Me.png" alt="You & Him" className="w-5 h-5" />
+    You & Him
+  </button>
+
+  {/* Astro */}
+  <button
+    onClick={() => setAstroOpen(true)}
+    className="flex-1 flex items-center justify-center gap-2 bg-[#7D0A0A] text-white px-3 py-3 rounded-xl text-sm font-medium shadow-md hover:bg-[#5c0707] transition-all"
+  >
+    <img src="/Images/Astro.png" alt="Astro" className="w-5 h-5" />
+    Astro
+  </button>
+
+  {/* Accept */}
+  <div className="flex flex-col items-center">
+    <button className="flex items-center justify-center bg-gradient-to-br from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 shadow-lg hover:scale-105 transition-transform">
+      <Check className="w-6 h-6" />
+    </button>
+    <span className="text-xs font-medium mt-1 text-gray-700">Accept</span>
+  </div>
+</div>
+
 
             {/* Personal Details */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -432,9 +458,9 @@ function App() {
             {/* Partner Preferences */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Partner Preference</h2>
-              
+
               <div className="flex flex-col lg:flex-row gap-8">
-               
+
 
                 {/* Right side - Preferences */}
                 <div className="lg:w-2/3">
@@ -451,11 +477,10 @@ function App() {
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-600">you match</span>
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                                  pref.match 
-                                    ? 'bg-emerald-100 text-emerald-600' 
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${pref.match
+                                    ? 'bg-emerald-100 text-emerald-600'
                                     : 'bg-red-100 text-red-600'
-                                }`}>
+                                  }`}>
                                   {pref.match ? (
                                     <Check className="w-4 h-4" />
                                   ) : (

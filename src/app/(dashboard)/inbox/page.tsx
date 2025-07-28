@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Heart, X, Send, PhoneCall, MessageCircleMore } from "lucide-react"
+import { Heart, X, Send, PhoneCall, MessageCircleMore ,ClockFading } from "lucide-react"
 import Image from "next/image"
 
 interface Profile {
@@ -237,7 +237,7 @@ export default function MatrimonialApp() {
                 {activeTab === "Received" && (
                   <>
                     <div className="flex gap-6 items-center">
-                      <div className="text-regular text-gray-600 mb-2 font-Lato mt-2">Send Connection</div>
+                      <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">Send Connection</div>
                       <Button
                         className="bg-gradient-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0"
                         size="sm"
@@ -247,18 +247,18 @@ export default function MatrimonialApp() {
                       </Button>
                     </div>
                     <div className="flex gap-6 items-center">
-                      <div className="text-regular text-gray-600 mb-2 font-Lato">Shortlist</div>
+                      <div className="text-regular text-[#000000] mb-2 font-Lato ml-16">Shortlist</div>
                       <Button
                         variant="outline"
-                        className="border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent"
+                        className="border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent "
                         size="sm"
                         onClick={() => handleShortlist(profile.id)}
                       >
-                        <Heart className="w-4 h-4 text-[#8E2E37]" />
+                        <Heart className="w-4 h-4 text-[#8E2E37] " />
                       </Button>
                     </div>
                     <div className="flex gap-6 items-center">
-                      <div className="text-regular text-gray-600 font-Lato">Not Now</div>
+                      <div className="text-regular text-[#000000] font-Lato ml-16">Not Now</div>
                       <Button
                         variant="outline"
                         className="bg-[#ADADAD] hover:bg-gray-50 rounded-full w-12 h-12 p-0"
@@ -270,42 +270,33 @@ export default function MatrimonialApp() {
                     </div>
                   </>
                 )}
-                {(activeTab === "Accepted" || activeTab === "Sent") && (
+                {/* accepted tab  */}
+                {(activeTab === "Accepted" ) && (
                   <>
                     <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
                       <span className="text-black group-hover:text-white font-Lato">Call</span>
                       <Button
-                        size="icon"
+                        size="sm"
                         className="bg-transparent border-none p-0 hover:bg-transparent"
                       >
-                        <PhoneCall className="w-4 h-4 text-black group-hover:text-white" />
+                        <PhoneCall className="w-4 h-4 text-black group-hover:text-white " />
                       </Button>
                     </div>
-                    <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
-                      <span className="text-black group-hover:text-white font-Lato">
-                        {activeTab === "Sent" ? "Pending" : "Chat"}
-                      </span>
+                    <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-5 transition-colors hover:bg-[#8E2E37]">
+                     <span className="text-black group-hover:text-white font-Lato">Chat</span> 
                       <Button
-                        size="icon"
+                        size="sm"
                         className="bg-transparent border-none p-0 hover:bg-transparent"
                       >
-                        {activeTab === "Sent" ? (
-                          <Image
-                            src="/assets/pending.png"
-                            alt="Pending"
-                            width={20}
-                            height={20}
-                            className="h-[20px] w-[20px] text-black group-hover:text-white"
-                          />
-                        ) : (
-                          <MessageCircleMore className="w-4 h-4 text-black group-hover:text-white" />
-                        )}
+                      
+                          <MessageCircleMore className="w-4 h-4 text-black group-hover:text-white  " />
+                      
                       </Button>
                     </div>
-                    <div className="group flex items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
+                    <div className="group flex items-center border-2 border-[#8E2E37] rounded-full px-4 transition-colors hover:bg-[#8E2E37]">
                       <span className="text-black group-hover:text-white font-Lato">Decline</span>
                       <Button
-                        size="default"
+                        size="sm"
                         className="bg-transparent border-none p-0 hover:bg-transparent"
                         onClick={() => handleDecline(profile.id)}
                       >
@@ -314,6 +305,42 @@ export default function MatrimonialApp() {
                     </div>
                   </>
                 )}
+                {/* Sent tab */}
+                {(activeTab === "Sent" ) && (
+                  <>
+                    <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
+                      <span className="text-black group-hover:text-white font-Lato">Call</span>
+                      <Button
+                        size="sm"
+                        className="bg-transparent border-none p-0 hover:bg-transparent"
+                      >
+                        <PhoneCall className="w-4 h-4 text-black group-hover:text-white " />
+                      </Button>
+                    </div>
+                    <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-2 transition-colors hover:bg-[#8E2E37]">
+                      <span className="text-black group-hover:text-white font-Lato">Pending</span>
+                      <Button
+                        size="sm"
+                        className="bg-transparent border-none p-0 hover:bg-transparent"
+                      >
+                      
+                          <ClockFading className="w-4 h-4 text-black group-hover:text-white  " />
+                      
+                      </Button>
+                    </div>
+                    <div className="group flex items-center border-2 border-[#8E2E37] rounded-full px-4 transition-colors hover:bg-[#8E2E37]">
+                      <span className="text-black group-hover:text-white font-Lato">Decline</span>
+                      <Button
+                        size="sm"
+                        className="bg-transparent border-none p-0 hover:bg-transparent"
+                        onClick={() => handleDecline(profile.id)}
+                      >
+                        <X className="w-4 h-4 text-black group-hover:text-white" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {/* Deleted tab */}
                 {activeTab === "Deleted" && (
                   <div className="text-gray-600 font-Lato">Profile Deleted</div>
                 )}

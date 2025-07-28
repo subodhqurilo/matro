@@ -24,7 +24,7 @@ const AboutMeSection: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
+    <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">About me</h3>
         <Edit3

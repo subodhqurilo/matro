@@ -14,7 +14,7 @@ const ProfilePhotoSection: React.FC = () => (
           className="w-full h-full object-cover"
         />
       </div>
-      <button className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-2">
+      <button className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-2 bg-[#7D0A0A] text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-red-700 transition-colors flex items-center gap-2">
         <Camera className="w-4 h-4" />
         Add photos
       </button>
@@ -32,7 +32,7 @@ const ProfilePhotoSection: React.FC = () => (
         <span className="text-sm text-gray-500">5%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2">
-        <div className="bg-red-600 h-2 rounded-full" style={{ width: '5%' }}></div>
+        <div className="bg-[#7D0A0A] h-2 rounded-full" style={{ width: '5%' }}></div>
       </div>
     </div>
   </div>

@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PhoneCall, X,ClockFading } from "lucide-react"
+import { PhoneCall, X, MessageCircleMore } from "lucide-react"
 // import { PiPhoneCallThin } from "react-icons/pi";
 import Image from "next/image"
 interface Profile {
@@ -20,7 +20,8 @@ interface Profile {
     languages: string[]
     image: string
 }
-export const profiles: Profile[] = [
+
+const profiles: Profile[] = [
     {
         id: "1",
         name: "Aaradhya Sharma",
@@ -35,6 +36,7 @@ export const profiles: Profile[] = [
         location: "Delhi",
         languages: ["Hindi", "English"],
         image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
+
     },
     {
         id: "2",
@@ -52,14 +54,17 @@ export const profiles: Profile[] = [
         image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
     },
 ];
+
 const tabs = [
     { name: "Received", count: 32 },
     { name: "Accepted", count: null },
     { name: "Sent", count: null },
     { name: "Deleted", count: null },
 ];
-export default function Sent() {
-    const [activeTab, setActiveTab] = useState("Sent");
+
+export default function Accepted() {
+    const [activeTab, setActiveTab] = useState("Accepted");
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Navigation Tabs */}
@@ -81,6 +86,11 @@ export default function Sent() {
                         ))}
                     </div>
                 </div>
+            </div>
+
+            <div className="flex  gap-3 items-center justify-center mt-8">
+                <Button className=" items-center border-2 border-[#8E2E37] rounded-full text-black hover:text-white bg-white transition-colors hover:bg-[#8E2E37] px-8 py-4">Accepted by her</Button>
+                <Button className="items-center border-2 border-[#8E2E37] rounded-full text-black hover:text-white bg-white transition-colors hover:bg-[#8E2E37] px-8 py-4">Accepted by Me</Button>
             </div>
             {/* Profile Cards */}
             <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
@@ -111,7 +121,7 @@ export default function Sent() {
                                 </div>
                                 <div className="space-y-1 text-sm mt-2 text-regular">
                                     <p className="text-[#1E1E1E]">
-                                        <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
+                                        <span className="font-Lato">{profile.age} Yrs</span> . {profile.height} . {profile.caste}
                                     </p>
                                     <p className="text-[#1E1E1E]">
                                         {profile.profession} . {profile.salary}
@@ -123,25 +133,28 @@ export default function Sent() {
                             </div>
                             {/* Action Buttons */}
                             <div className="flex flex-col space-y-3 items-center  border-l border-[#757575] w-[268px]  ">
+
                                 <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6  transition-colors hover:bg-[#8E2E37]">
                                     <span className="text-black group-hover:text-white font-Lato">Call</span>
                                     <Button
                                         size="icon"
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <PhoneCall className="text-black group-hover:text-white border border-amber-400" />
+                                        <PhoneCall className="text-black group-hover:text-white" />
                                     </Button>
                                 </div>
-                                {/* Pending Button */}
-                                <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-5 transition-colors hover:bg-[#8E2E37]">
-                                    <span className="text-black group-hover:text-white font-Lato">Pending</span>
+
+                                {/* Chat Button */}
+                                <div className="group flex gap-3 items-center border-2 border-[#8E2E37] rounded-full px-6 transition-colors hover:bg-[#8E2E37]">
+                                    <span className="text-black group-hover:text-white font-Lato">Chat</span>
                                     <Button
-                                        className="bg-transparent border-none p-0 hover:bg-transparent group-hover:text-white"
+                                        size="icon"
+                                        className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <ClockFading className="text-black group-hover:text-white "  />
-                                        
+                                        <MessageCircleMore className="text-black group-hover:text-white" />
                                     </Button>
                                 </div>
+
                                 {/* Decline Button */}
                                 <div className="group flex items-center border-2 border-[#8E2E37] rounded-full px-6  transition-colors hover:bg-[#8E2E37]">
                                     <span className="text-black group-hover:text-white font-Lato">Decline</span>
@@ -150,8 +163,9 @@ export default function Sent() {
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
                                         <X className="text-black group-hover:text-white " />
-                                    </Button>
+                                    </Button> 
                                 </div>
+
                             </div>
                         </div>
                     </Card>

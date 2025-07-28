@@ -1,9 +1,178 @@
 'use client';
 
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Step1Form from './steps/Step1';
+import Step2Form from './steps/Step2';
+import Step3Form from './steps/Step3';
+import Step4Form from './steps/Step4';
+import Step5Form from './steps/Step5';
+import Step6Form from './steps/Step6';
+
 
 const Hero: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [profileFor, setProfileFor] = useState('myself'); 
+  const [gender, setGender] = useState('Male');
+  const [maritalStatus, setMaritalStatus] = useState('Unmarried');
+  const [numberOfChildren, setNumberOfChildren] = useState(0);
+  const [isChildrenLivingWithYou, setIsChildrenLivingWithYou] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [height, setHeight] = useState('');
+  const [diet, setDiet] = useState('');
+  const [religion, setReligion] = useState('');
+  const [willingToMarryOtherCaste, setWillingToMarryOtherCaste] = useState(false);
+  const [caste, setCaste] = useState('');
+  const [community, setCommunity] = useState('');
+  const [subCommunity, setSubCommunity] = useState('');
+  const [motherTongue, setMotherTongue] = useState('');
+  const [anyDisability, setAnyDisability] = useState(false);
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [familyType, setFamilyType] = useState('');
+  const [familyStatus, setFamilyStatus] = useState('');
+  const [familyIncome, setFamilyIncome] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [education, setEducation] = useState('');
+  const [employedIn, setEmployedIn] = useState('');
+  const [occupation, setOccupation] = useState('');
+  const [annualIncome, setAnnualIncome] = useState('');
+  const [workLocation, setWorkLocation] = useState('');
+  const [profileImage, setProfileImage] = useState('');
+  const [imageProfileArray, setImageProfileArray] = useState<string[]>([]);
+  const [verificationType, setVerificationType] = useState('');
+  const [verificationValue, setVerificationValue] = useState('');
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (searchParams.get('startModal') === 'true') {
+      setIsModalOpen(true);
+      setCurrentStep(1);
+      router.replace('/', { scroll: false }); // clean up URL
+    }
+  }, [searchParams, router]);
+
+  const handleContinueStep1 = () => setCurrentStep(2);
+  const handleContinueStep2 = () => setCurrentStep(3);
+  const handleContinueStep3 = () => setCurrentStep(4);
+  const handleContinueStep4 = () => setCurrentStep(5);
+  const handleContinueStep5 = () => setCurrentStep(6);
+  const handleProfileSubmit = async () => {
+    try {
+      // Get the authentication token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
+      }
+  
+      // Create a FormData object
+      const formData = new FormData();
+  
+      // Step 1: Basic Information
+      formData.append('profileFor', profileFor);
+      formData.append('gender', gender);
+      formData.append('maritalStatus', maritalStatus);
+      formData.append('numberOfChildren', numberOfChildren.toString());
+      formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
+  
+      // Step 2: Personal Details
+      formData.append('firstName', firstName);
+      formData.append('middleName', middleName);
+      formData.append('lastName', lastName);
+      formData.append('dateOfBirth', dateOfBirth);
+      formData.append('height', height);
+      formData.append('diet', diet);
+  
+      // Step 3: Religious & Community
+      formData.append('religion', religion);
+      formData.append('willingToMarryOtherCaste', willingToMarryOtherCaste.toString());
+      formData.append('caste', caste);
+      formData.append('community', community);
+      formData.append('subCommunity', subCommunity);
+      formData.append('motherTongue', motherTongue);
+  
+      // Step 4: Contact & Disability
+      formData.append('email', email);
+      formData.append('phoneNumber', phoneNumber);
+      formData.append('anyDisability', anyDisability.toString());
+  
+      // Step 5: Professional & Family
+      formData.append('familyType', familyType);
+      formData.append('familyStatus', familyStatus);
+      formData.append('familyIncome', familyIncome);
+      formData.append('city', city);
+      formData.append('state', state);
+      formData.append('education', education);
+      formData.append('employedIn', employedIn);
+      formData.append('occupation', occupation);
+      formData.append('annualIncome', annualIncome);
+      formData.append('workLocation', workLocation);
+  
+      // Step 6: Verification
+      if (profileImage) {
+        formData.append('profileImage', profileImage);
+      }
+      imageProfileArray.forEach((image, index) => {
+        formData.append(`imageProfileArray[${index}]`, image);
+      });
+      formData.append('verificationType', verificationType);
+      formData.append('verificationValue', verificationValue);
+  
+      const response = await fetch('https://apimatri.qurilo.com/auth/profile', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save profile');
+      }
+  
+      const responseData = await response.json();
+      console.log('Profile saved successfully:', responseData);
+  
+      // Close the modal and reset the form
+      setIsModalOpen(false);
+      setCurrentStep(1);
+  
+      // Optionally show a success message to the user
+      alert('Profile saved successfully!');
+    } catch (error: unknown) {
+      console.error('Error saving profile:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save profile. Please try again.';
+      alert(`Error: ${errorMessage}`);
+    }
+  };
+  const handleContinueStep6 = async () => {
+    try {
+      await handleProfileSubmit();
+    } catch (error: unknown) {
+      console.error('Error in handleContinueStep6:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      alert(`Error: ${errorMessage}`);
+    }
+  };
+  const handleBackStep2 = () => setCurrentStep(1);
+  const handleBackStep3 = () => setCurrentStep(2);
+  const handleBackStep4 = () => setCurrentStep(3);
+  const handleBackStep5 = () => setCurrentStep(4);
+  const handleBackStep6 = () => setCurrentStep(5);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    setCurrentStep(1);
+  };
 
   return (
     <div className="relative min-h-screen grid grid-cols-1 lg:grid-cols-2">
@@ -67,7 +236,7 @@ const Hero: React.FC = () => {
           <button
             type="button"
             className="bg-[#7D0A0A] text-white w-full py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#5A0707] transition-colors duration-200"
-            
+            onClick={handleOpenModal}
           >
             Let's Begin
           </button>
@@ -112,12 +281,128 @@ const Hero: React.FC = () => {
           <button
             type="button"
             className="bg-[#7D0A0A] text-white px-7 py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#5A0707] transition-colors duration-200"
-          
+            onClick={handleOpenModal}
           >
             Let's Begin
           </button>
         </div>
       </div>
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 backdrop-blur">
+          <div className="relative bg-[#FFFFF1] rounded-lg shadow-xl w-full max-w-md mx-auto p-6 animate-fade-in">
+            <button
+              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+              onClick={() => setIsModalOpen(false)}
+            >
+              ✕
+            </button>
+            {currentStep === 1 && (
+              <Step1Form
+                profileFor={profileFor}
+                setProfileFor={setProfileFor}
+                gender={gender}
+                setGender={setGender}
+                maritalStatus={maritalStatus}
+                setMaritalStatus={setMaritalStatus}
+                numberOfChildren={numberOfChildren}
+                setNumberOfChildren={setNumberOfChildren}
+                isChildrenLivingWithYou={isChildrenLivingWithYou}
+                setIsChildrenLivingWithYou={setIsChildrenLivingWithYou}
+                handleContinueStep1={handleContinueStep1}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step2Form
+                firstName={firstName}
+                setFirstName={setFirstName}
+                middleName={middleName}
+                setMiddleName={setMiddleName}
+                lastName={lastName}
+                setLastName={setLastName}
+                dateOfBirth={dateOfBirth}
+                setDateOfBirth={setDateOfBirth}
+                height={height}
+                setHeight={setHeight}
+                diet={diet}
+                setDiet={setDiet}
+                onBack={handleBackStep2}
+                handleContinueStep2={handleContinueStep2}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step3Form
+                religion={religion}
+                setReligion={setReligion}
+                willingToMarryOtherCaste={willingToMarryOtherCaste}
+                setWillingToMarryOtherCaste={setWillingToMarryOtherCaste}
+                caste={caste}
+                setCaste={setCaste}
+                community={community}
+                setCommunity={setCommunity}
+                subCommunity={subCommunity}
+                setSubCommunity={setSubCommunity}
+                motherTongue={motherTongue}
+                setMotherTongue={setMotherTongue}
+                onBack={handleBackStep3}
+                handleContinueStep3={handleContinueStep3}
+              />
+            )}
+            {currentStep === 4 && (
+              <Step4Form
+                email={email}
+                setEmail={setEmail}
+                phoneNumber={phoneNumber}
+                setPhoneNumber={setPhoneNumber}
+                anyDisability={anyDisability}
+                setAnyDisability={setAnyDisability}
+                onBack={handleBackStep4}
+                handleContinueStep4={handleContinueStep4}
+              />
+            )}
+            {currentStep === 5 && (
+              <Step5Form
+                familyType={familyType}
+                setFamilyType={setFamilyType}
+                familyStatus={familyStatus}
+                setFamilyStatus={setFamilyStatus}
+                familyIncome={familyIncome}
+                setFamilyIncome={setFamilyIncome}
+                city={city}
+                setCity={setCity}
+                state={state}
+                setState={setState}
+                education={education}
+                setEducation={setEducation}
+                employedIn={employedIn}
+                setEmployedIn={setEmployedIn}
+                occupation={occupation}
+                setOccupation={setOccupation}
+                annualIncome={annualIncome}
+                setAnnualIncome={setAnnualIncome}
+                workLocation={workLocation}
+                setWorkLocation={setWorkLocation}
+                onBack={handleBackStep5}
+                handleContinueStep5={handleContinueStep5}
+              />
+            )}
+            {currentStep === 6 && (
+              <Step6Form
+                profileImage={profileImage}
+                setProfileImage={setProfileImage}
+                imageProfileArray={imageProfileArray}
+                setImageProfileArray={setImageProfileArray}
+                verificationType={verificationType}
+                setVerificationType={setVerificationType}
+                verificationValue={verificationValue}
+                setVerificationValue={setVerificationValue}
+                onBack={handleBackStep6}
+                handleContinueStep6={handleContinueStep6}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
