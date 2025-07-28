@@ -15,13 +15,13 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [createPassword, setCreatePassword] = useState('');
+
 
   // Step 2 state
   const [otp, setOtp] = useState('');
 
   const handleContinueFollow2 = () => {
-    if (!fullName || !mobileNumber || !createPassword) {
+    if (!fullName || !mobileNumber) {
       alert('Please fill all required fields');
       return;
     }
@@ -51,8 +51,6 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
           setEmail={setEmail}
           mobileNumber={mobileNumber}
           setMobileNumber={setMobileNumber}
-          createPassword={createPassword}
-          setCreatePassword={setCreatePassword}
           onBack={() => window.history.back()}
           handleContinueFollow2={handleContinueFollow2}
         />

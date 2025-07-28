@@ -14,8 +14,6 @@ type Follow1FormProps = {
   setEmail: (value: string) => void;
   mobileNumber: string;
   setMobileNumber: (value: string) => void;
-  createPassword: string;
-  setCreatePassword: (value: string) => void;
   onBack: () => void;
   handleContinueFollow2: () => void;
 };
@@ -27,12 +25,9 @@ const Follow1Form = ({
   setEmail,
   mobileNumber,
   setMobileNumber,
-  createPassword,
-  setCreatePassword,
   onBack,
   handleContinueFollow2,
 }: Follow1FormProps) => {
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -49,7 +44,7 @@ const Follow1Form = ({
   // Function to handle registration API call
   const handleRegister = async () => {
     // Validate required fields
-    if (!fullName.trim() || !mobileNumber.trim() || !createPassword.trim()) {
+    if (!fullName.trim() || !mobileNumber.trim()) {
       setError('Please fill in all required fields');
       return;
     }
@@ -65,13 +60,12 @@ const Follow1Form = ({
         middleName: middleName || '',
         lastName: lastName || '',
         mobile: mobileNumber,
-        password: createPassword,
         email: email
       };
       
       console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
 
-      const response = await fetch('https://apimatri.qurilo.com/auth/register', {
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -162,31 +156,6 @@ const Follow1Form = ({
           />
         </div>
 
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            Create Password *
-          </Label>
-          <div className="relative">
-            <Input
-              type={showPassword ? "text" : "password"}
-              placeholder="Create a secure password"
-              value={createPassword}
-              onChange={(e) => setCreatePassword(e.target.value)}
-              className="w-full bg-white pr-10"
-              required
-              disabled={isLoading}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              disabled={isLoading}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </div>
-        </div>
-
         <Button
           onClick={handleRegister}
           className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -207,8 +176,6 @@ Follow1Form.propTypes = {
   setEmail: PropTypes.func.isRequired,
   mobileNumber: PropTypes.string.isRequired,
   setMobileNumber: PropTypes.func.isRequired,
-  createPassword: PropTypes.string.isRequired,
-  setCreatePassword: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   handleContinueFollow2: PropTypes.func.isRequired,
 };

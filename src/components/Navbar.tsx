@@ -35,7 +35,6 @@ export default function Navbar() {
 
   // Login state
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
 
