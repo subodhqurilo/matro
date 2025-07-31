@@ -6,6 +6,7 @@ import { getFilteredProfiles } from "@/utils/profileFilters"
 import { toast } from "sonner"
 import { Profile } from "@/types/Profile"
 import Image from "next/image"
+import RecommendationCard from "./_components/RecommendedProfile"
 
 interface RecommendedProfile {
   _id: string;
@@ -34,21 +35,18 @@ export default function MatrimonialApp() {
   
   const tabs = [
     { name: "All Matches", count: matches.length },
-    { name: "Recommendation", count: null },
-    { name: "Profiles with photo", count: null },
-    { name: "Mutual Matches", count: null },
-    { name: "Verified", count: null },
+    { name: "Recommendation", count: recommendedProfiles.length },
+    { name: "Profiles with photo", count: matches.filter(p => p.hasPhoto).length },
+    { name: "Mutual Matches", count: matches.filter(p => p.isMutual).length },
+    { name: "Verified", count: matches.filter(p => p.isVerified).length },
   ]
 
   const fetchRecommendedProfiles = async () => {
     try {
       setIsLoadingRecommendations(true)
-      // No authentication required for daily recommendations
-
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/recommendation/daily', {
         method: 'GET',
         headers: {
-         
           'Content-Type': 'application/json',
         },
       })
@@ -97,9 +95,7 @@ export default function MatrimonialApp() {
         }
 
         const responseData = await response.json()
-        console.log('API Response Data:', responseData) // Debug log
         
-        // Handle case where response might be an object with a data property
         const data = Array.isArray(responseData) 
           ? responseData 
           : (responseData?.data || [])
@@ -109,7 +105,6 @@ export default function MatrimonialApp() {
           throw new Error('Invalid response format: expected an array of users')
         }
         
-        // Map API response to Profile type
         const mappedProfiles = data.map((user: any) => ({
           id: user._id || '',
           name: user.name || 'Unknown',
@@ -124,11 +119,10 @@ export default function MatrimonialApp() {
           location: user.location || '',
           languages: user.languages || [],
           image: user.image || '/default-avatar.png',
-          // Explicitly type the object to match Profile interface
-          isNew: true as boolean,
+          isNew: true,
           hasPhoto: !!user.image,
-          isMutual: false,
-          isVerified: false
+          isMutual: user.isMutual || false,
+          isVerified: user.isVerified || false
         } as Profile)).filter((user: Profile | null): user is Profile => user !== null)
         
         setMatches(mappedProfiles)
@@ -147,98 +141,97 @@ export default function MatrimonialApp() {
 
   const filteredProfiles = getFilteredProfiles(matches, activeTab)
 
+  function handleSendConnection(id: string): void {
+    toast.success('Connection request sent!')
+  }
+
+  function handleShortlist(id: string): void {
+    toast.success('Profile added to shortlist!')
+  }
+
+  function handleNotNow(id: string): void {
+    toast.info('Profile hidden for now')
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <NavigationTabs 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        tabs={tabs} 
-      />
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <NavigationTabs 
+            activeTab={activeTab} 
+            setActiveTab={setActiveTab} 
+            tabs={tabs} 
+          />
+        </div>
+      </div>
       
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-8 text-red-600">
+          <div className="text-center py-8 bg-white rounded-lg shadow p-6 text-red-600">
             {error}
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              Retry
+            </button>
           </div>
         ) : (
-          <div>
+          <div className="space-y-6">
             {activeTab === 'Recommendation' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-800">Your Daily Recommendations</h2>
                 {isLoadingRecommendations ? (
-                  <div>Loading recommendations...</div>
-                ) : recommendedProfiles.length > 0 ? (
-                  recommendedProfiles.map((profile) => (
-                    <div key={profile._id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                      <div className="relative h-64 w-full">
-                        {profile.profileImage ? (
-                          <Image
-                            src={profile.profileImage}
-                            alt={profile.name}
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-t-lg"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-500">No image</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <div className="flex justify-between items-start">
-                          <h3 className="text-lg font-semibold">{profile.name}, {profile.age}</h3>
-                          <span className="text-sm text-gray-500">{profile.lastSeen}</span>
-                        </div>
-                        <p className="text-gray-600">{profile.location}</p>
-                        
-                        <div className="mt-4 space-y-2">
-                          {profile.profession && (
-                            <p className="text-sm"><span className="font-medium">Profession:</span> {profile.profession}</p>
-                          )}
-                          {profile.education && (
-                            <p className="text-sm"><span className="font-medium">Education:</span> {profile.education}</p>
-                          )}
-                          {profile.height && (
-                            <p className="text-sm"><span className="font-medium">Height:</span> {profile.height}</p>
-                          )}
-                          {profile.religion && (
-                            <p className="text-sm"><span className="font-medium">Religion:</span> {profile.religion}</p>
-                          )}
-                          {profile.salary && (
-                            <p className="text-sm"><span className="font-medium">Salary:</span> {profile.salary}</p>
-                          )}
-                          {profile.languages && (
-                            <p className="text-sm">
-                              <span className="font-medium">Languages:</span> {
-                                Array.isArray(profile.languages) 
-                                  ? profile.languages.join(', ')
-                                  : String(profile.languages || '')
-                              }
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))
+                  <div className="grid grid-cols-1 gap-6">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="bg-white rounded-xl shadow-md h-96 animate-pulse"></div>
+                    ))}
+                  </div>
                 ) : (
-                  <div className="text-gray-500">No recommended profiles found</div>
+                  <div className="grid grid-cols-1 gap-6">
+                    {recommendedProfiles.map((profile) => (
+                      <RecommendationCard 
+                        key={profile._id} 
+                        profile={profile}
+                        activeTab={activeTab}
+                        handleSendConnection={handleSendConnection}
+                        handleShortlist={handleShortlist}
+                        handleNotNow={handleNotNow}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                {isLoading ? (
-                  <div>Loading matches...</div>
-                ) : error ? (
-                  <div className="text-red-500">{error}</div>
-                ) : (
-                  filteredProfiles.map((profile) => (
-                    <ProfileCard key={profile.id} profile={profile} />
-                  ))
-                )}
+              <div>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {activeTab} ({filteredProfiles.length})
+                  </h2>
+                  <div className="flex space-x-2">
+                    <button className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                      Filter
+                    </button>
+                    <button className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                      Sort
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProfiles.length > 0 ? (
+                    filteredProfiles.map((profile) => (
+                      <ProfileCard key={profile.id} profile={profile} />
+                    ))
+                  ) : (
+                    <div className="col-span-3 py-12 text-center bg-white rounded-xl shadow-sm">
+                      <p className="text-gray-500">No profiles found matching your criteria</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
