@@ -5,30 +5,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Upload } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-const Step6Form = ({
-  profileImage,
-  setProfileImage,
-  imageProfileArray,
-  setImageProfileArray,
-  verificationType,
-  setVerificationType,
-  verificationValue,
-  setVerificationValue,
-  onBack,
-  handleContinueStep6,
-}: {
-  profileImage: string;
-  setProfileImage: (value: string) => void;
-  imageProfileArray: string[];
-  setImageProfileArray: (value: string[]) => void;
-  verificationType: string;
-  setVerificationType: (value: string) => void;
-  verificationValue: string;
-  setVerificationValue: (value: string) => void;
+interface Step6Props {
+  employedIn: string;
+  setEmployedIn: (value: string) => void;
+  annualIncome: string;
+  setAnnualIncome: (value: string) => void;
+  workLocation: string;
+  setWorkLocation: (value: string) => void;
+  designation: string;
+  setDesignation: (value: string) => void;
   onBack: () => void;
   handleContinueStep6: () => void;
+}
+const Step6Form: React.FC<Step6Props> = ({
+  employedIn,
+  setEmployedIn,
+  annualIncome,
+  setAnnualIncome,
+  workLocation,
+  setWorkLocation,
+  designation,
+  setDesignation,
+  onBack,
+  handleContinueStep6,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -36,106 +37,95 @@ const Step6Form = ({
         <ArrowLeft className="h-5 w-5 text-gray-500 hover:text-rose-600 transition-colors" />
       </button>
       <h2 className="text-xl font-semibold text-gray-900">
-        Profile Images and Verification
+        Professional Details
       </h2>
     </div>
 
     <div className="space-y-4 mb-6">
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Profile Image *
+          Employed In *
         </Label>
-        <div className="relative">
-          <Input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setProfileImage(file.name);
-            }}
-            className="w-full bg-white"
-            required
-          />
-          <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        </div>
-        {profileImage && <p className="text-sm text-gray-600 mt-1">Selected: {profileImage}</p>}
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Additional Profile Images
-        </Label>
-        <div className="relative">
-          <Input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={(e) => {
-              const files = e.target.files;
-              if (files) {
-                const fileNames = Array.from(files).map((file) => file.name);
-                setImageProfileArray(fileNames);
-              }
-            }}
-            className="w-full bg-white"
-          />
-          <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        </div>
-        {imageProfileArray.length > 0 && (
-          <p className="text-sm text-gray-600 mt-1">Selected: {imageProfileArray.join(', ')}</p>
-        )}
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Verification Type *
-        </Label>
-        <Select value={verificationType} onValueChange={setVerificationType}>
+        <Select value={employedIn} onValueChange={setEmployedIn}>
           <SelectTrigger>
-            <SelectValue placeholder="Select verification type" />
+            <SelectValue placeholder="Select employment type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Pan Card">Pan Card</SelectItem>
-            <SelectItem value="Aadhar Card">Aadhar Card</SelectItem>
-            <SelectItem value="Passport">Passport</SelectItem>
-            <SelectItem value="Driving License">Driving License</SelectItem>
+            <SelectItem value="Private">Private</SelectItem>
+            <SelectItem value="Government">Government</SelectItem>
+            <SelectItem value="Self-Employed">Self-Employed</SelectItem>
+            <SelectItem value="Not Employed">Not Employed</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Verification Value *
+          Annual Income *
+        </Label>
+        <Select value={annualIncome} onValueChange={setAnnualIncome}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select annual income" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0-5 LPA">0-5 LPA</SelectItem>
+            <SelectItem value="5-10 LPA">5-10 LPA</SelectItem>
+            <SelectItem value="10-20 LPA">10-20 LPA</SelectItem>
+            <SelectItem value="20+ LPA">20+ LPA</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Work Location *
         </Label>
         <Input
-          placeholder="Enter verification value"
-          value={verificationValue}
-          onChange={(e) => setVerificationValue(e.target.value)}
+          placeholder="Enter your work location"
+          value={workLocation}
+          onChange={(e) => setWorkLocation(e.target.value)}
+          className="w-full bg-white"
+          required
+        />
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Designation *
+        </Label>
+        <Input
+          placeholder="Enter your designation"
+          value={designation}
+          onChange={(e) => setDesignation(e.target.value)}
           className="w-full bg-white"
           required
         />
       </div>
     </div>
 
+    <p className="text-sm text-gray-600 mb-6">
+      Provide your professional details to help us find better matches.
+    </p>
+
     <Button
       onClick={handleContinueStep6}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
       size="lg"
     >
-      Submit
+      Continue
     </Button>
   </>
 );
 
 Step6Form.propTypes = {
-  profileImage: PropTypes.string.isRequired,
-  setProfileImage: PropTypes.func.isRequired,
-  imageProfileArray: PropTypes.arrayOf(PropTypes.string).isRequired,
-  setImageProfileArray: PropTypes.func.isRequired,
-  verificationType: PropTypes.string.isRequired,
-  setVerificationType: PropTypes.func.isRequired,
-  verificationValue: PropTypes.string.isRequired,
-  setVerificationValue: PropTypes.func.isRequired,
+  employedIn: PropTypes.string.isRequired,
+  setEmployedIn: PropTypes.func.isRequired,
+  annualIncome: PropTypes.string.isRequired,
+  setAnnualIncome: PropTypes.func.isRequired,
+  workLocation: PropTypes.string.isRequired,
+  setWorkLocation: PropTypes.func.isRequired,
+  designation: PropTypes.string.isRequired,
+  setDesignation: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   handleContinueStep6: PropTypes.func.isRequired,
 };

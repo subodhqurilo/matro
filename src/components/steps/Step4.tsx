@@ -2,29 +2,26 @@
 
 import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ArrowLeft, Mail, Phone } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft } from 'lucide-react';
 
-const Step4Form = ({
-  email,
-  setEmail,
-  phoneNumber,
-  setPhoneNumber,
-  anyDisability,
-  setAnyDisability,
-  onBack,
-  handleContinueStep4,
-}: {
-  email: string;
-  setEmail: (value: string) => void;
-  phoneNumber: string;
-  setPhoneNumber: (value: string) => void;
-  anyDisability: boolean;
-  setAnyDisability: (value: boolean) => void;
+interface Step4FormProps {
+  familyType: string;
+  setFamilyType: (value: string) => void;
+  familyStatus: string;
+  setFamilyStatus: (value: string) => void;
   onBack: () => void;
   handleContinueStep4: () => void;
+}
+
+const Step4Form: React.FC<Step4FormProps> = ({
+  familyType,
+  setFamilyType,
+  familyStatus,
+  setFamilyStatus,
+  onBack,
+  handleContinueStep4,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -32,68 +29,47 @@ const Step4Form = ({
         <ArrowLeft className="h-5 w-5 text-gray-500 hover:text-rose-600 transition-colors" />
       </button>
       <h2 className="text-xl font-semibold text-gray-900">
-        Contact Information
+        Family Background
       </h2>
     </div>
 
     <div className="space-y-4 mb-6">
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Email ID *
+          Family Type *
         </Label>
-        <div className="relative">
-          <Input
-            type="email"
-            placeholder="Enter your email address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pr-10 bg-white"
-            required
-          />
-          <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        </div>
+        <Select value={familyType} onValueChange={setFamilyType}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select family type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Nuclear">Nuclear</SelectItem>
+            <SelectItem value="Joint">Joint</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Phone Number *
+          Family Status *
         </Label>
-        <div className="relative">
-          <Input
-            type="tel"
-            placeholder="Enter your phone number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full pr-10 bg-white"
-            required
-          />
-          <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        </div>
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Any Disability
-        </Label>
-        <RadioGroup 
-          value={anyDisability.toString()} 
-          onValueChange={(value) => setAnyDisability(value === 'true')}
-          className="flex space-x-6"
-        >
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="true" id="disability-yes" className="text-rose-600" />
-            <Label htmlFor="disability-yes" className="font-medium">Yes</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="false" id="disability-no" className="text-rose-600" />
-            <Label htmlFor="disability-no" className="font-medium">No</Label>
-          </div>
-        </RadioGroup>
+        <Select value={familyStatus} onValueChange={setFamilyStatus}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select family status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Middle Class">Middle Class</SelectItem>
+            <SelectItem value="Upper Middle Class">Upper Middle Class</SelectItem>
+            <SelectItem value="High Class">High Class</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
 
     <p className="text-sm text-gray-600 mb-6">
-      An active email ID and phone number are required to secure your profile.
+      Please provide details about your family background to help us find better matches.
     </p>
 
     <Button
@@ -107,12 +83,10 @@ const Step4Form = ({
 );
 
 Step4Form.propTypes = {
-  email: PropTypes.string.isRequired,
-  setEmail: PropTypes.func.isRequired,
-  phoneNumber: PropTypes.string.isRequired,
-  setPhoneNumber: PropTypes.func.isRequired,
-  anyDisability: PropTypes.bool.isRequired,
-  setAnyDisability: PropTypes.func.isRequired,
+  familyType: PropTypes.string.isRequired,
+  setFamilyType: PropTypes.func.isRequired,
+  familyStatus: PropTypes.string.isRequired,
+  setFamilyStatus: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   handleContinueStep4: PropTypes.func.isRequired,
 };

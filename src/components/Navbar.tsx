@@ -3,17 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-
 import SignupWrapper from './signup/SignupWrapper';
 import Level1 from './login/Level1';
-
 import Step1Form from './steps/Step1';
 import Step2Form from './steps/Step2';
 import Step3Form from './steps/Step3';
 import Step4Form from './steps/Step4';
 import Step5Form from './steps/Step5';
 import Step6Form from './steps/Step6';
+import Step7Form from './steps/Step7';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -29,49 +27,51 @@ export default function Navbar() {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isProfileSetupOpen, setIsProfileSetupOpen] = useState(false);
+  const [profileStep, setProfileStep] = useState(1);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
   // Login state
-  const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
 
-  // Profile setup state
-  const [currentStep, setCurrentStep] = useState(1);
-  const [profileFor, setProfileFor] = useState('myself'); 
-  const [gender, setGender] = useState('Male');
-  const [maritalStatus, setMaritalStatus] = useState('Unmarried');
+  // Profile setup states
+  const [profileFor, setProfileFor] = useState('');
+  const [personalFirstName, setPersonalFirstName] = useState('');
+  const [personalMiddleName, setPersonalMiddleName] = useState('');
+  const [personalLastName, setPersonalLastName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [gender, setGender] = useState('');
+  const [maritalStatus, setMaritalStatus] = useState('');
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [isChildrenLivingWithYou, setIsChildrenLivingWithYou] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [middleName, setMiddleName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [height, setHeight] = useState('');
-  const [diet, setDiet] = useState('');
   const [religion, setReligion] = useState('');
-  const [willingToMarryOtherCaste, setWillingToMarryOtherCaste] = useState(false);
+  const [willingToMarryOtherCaste, setWillingToMarryOtherCaste] = useState('');
   const [caste, setCaste] = useState('');
   const [community, setCommunity] = useState('');
-  const [subCommunity, setSubCommunity] = useState('');
+  const [gotra, setGotra] = useState('');
   const [motherTongue, setMotherTongue] = useState('');
-  const [anyDisability, setAnyDisability] = useState(false);
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [complexion, setComplexion] = useState('');
+  const [anyDisability, setAnyDisability] = useState('');
+  const [diet, setDiet] = useState('');
   const [familyType, setFamilyType] = useState('');
   const [familyStatus, setFamilyStatus] = useState('');
-  const [familyIncome, setFamilyIncome] = useState('');
-  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
   const [state, setState] = useState('');
-  const [education, setEducation] = useState('');
+  const [city, setCity] = useState('');
+  const [highestEducation, setHighestEducation] = useState('');
   const [employedIn, setEmployedIn] = useState('');
-  const [occupation, setOccupation] = useState('');
   const [annualIncome, setAnnualIncome] = useState('');
   const [workLocation, setWorkLocation] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [imageProfileArray, setImageProfileArray] = useState<string[]>([]);
-  const [verificationType, setVerificationType] = useState('');
-  const [verificationValue, setVerificationValue] = useState('');
+  const [designation, setDesignation] = useState('');
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [adhaarCardFrontImage, setAdhaarCardFrontImage] = useState<File | null>(null);
+  const [adhaarCardBackImage, setAdhaarCardBackImage] = useState<File | null>(null);
 
   // Check auth status on component mount
   useEffect(() => {
@@ -95,16 +95,30 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLoginSuccess = (token: string, userData?: any) => {
+  const handleLoginSuccess = async (token: string, userId: string) => {
     localStorage.setItem('authToken', token);
-    if (userData) {
-      localStorage.setItem('userData', JSON.stringify(userData));
-      if (userData.firstName) {
-        setUserFirstName(userData.firstName);
+    try {
+      const response = await fetch(`https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        localStorage.setItem('userData', JSON.stringify(userData));
+        if (userData.firstName) {
+          setUserFirstName(userData.firstName);
+        }
+        if (userData.profileComplete === false) {
+          setIsProfileSetupOpen(true);
+        }
+      } else {
+        console.error('Failed to fetch user data:', await response.text());
       }
-      if (userData.profileComplete === false) {
-        setIsProfileSetupOpen(true);
-      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
     setIsAuthenticated(true);
     setIsLoginOpen(false);
@@ -117,6 +131,8 @@ export default function Navbar() {
     setIsAuthenticated(false);
     setIsProfileOpen(false);
     setUserFirstName('');
+    setIsProfileSetupOpen(false);
+    setProfileStep(1);
     router.push('/');
   };
 
@@ -131,107 +147,6 @@ export default function Navbar() {
     setIsLoginOpen(false);
   };
 
-  // Profile setup handlers
-  const handleContinueStep1 = () => setCurrentStep(2);
-  const handleContinueStep2 = () => setCurrentStep(3);
-  const handleContinueStep3 = () => setCurrentStep(4);
-  const handleContinueStep4 = () => setCurrentStep(5);
-  const handleContinueStep5 = () => setCurrentStep(6);
-  
-  const handleProfileSubmit = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found. Please log in again.');
-      }
-
-      const formData = new FormData();
-      formData.append('profileFor', profileFor);
-      formData.append('gender', gender);
-      formData.append('maritalStatus', maritalStatus);
-      formData.append('numberOfChildren', numberOfChildren.toString());
-      formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
-      formData.append('firstName', firstName);
-      formData.append('middleName', middleName);
-      formData.append('lastName', lastName);
-      formData.append('dateOfBirth', dateOfBirth);
-      formData.append('height', height);
-      formData.append('diet', diet);
-      formData.append('religion', religion);
-      formData.append('willingToMarryOtherCaste', willingToMarryOtherCaste.toString());
-      formData.append('caste', caste);
-      formData.append('community', community);
-      formData.append('subCommunity', subCommunity);
-      formData.append('motherTongue', motherTongue);
-      formData.append('email', email);
-      formData.append('phoneNumber', phoneNumber);
-      formData.append('anyDisability', anyDisability.toString());
-      formData.append('familyType', familyType);
-      formData.append('familyStatus', familyStatus);
-      formData.append('familyIncome', familyIncome);
-      formData.append('city', city);
-      formData.append('state', state);
-      formData.append('education', education);
-      formData.append('employedIn', employedIn);
-      formData.append('occupation', occupation);
-      formData.append('annualIncome', annualIncome);
-      formData.append('workLocation', workLocation);
-      if (profileImage) {
-        formData.append('profileImage', profileImage);
-      }
-      imageProfileArray.forEach((image, index) => {
-        formData.append(`imageProfileArray[${index}]`, image);
-      });
-      formData.append('verificationType', verificationType);
-      formData.append('verificationValue', verificationValue);
-
-      const response = await fetch('https://apimatri.qurilo.com/auth/profile', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save profile');
-      }
-
-      const responseData = await response.json();
-      console.log('Profile saved successfully:', responseData);
-
-      // Update user data
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      userData.profileComplete = true;
-      localStorage.setItem('userData', JSON.stringify(userData));
-
-      setIsProfileSetupOpen(false);
-      setCurrentStep(1);
-      alert('Profile saved successfully!');
-    } catch (error: unknown) {
-      console.error('Error saving profile:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save profile. Please try again.';
-      alert(`Error: ${errorMessage}`);
-    }
-  };
-
-  const handleContinueStep6 = async () => {
-    try {
-      await handleProfileSubmit();
-    } catch (error: unknown) {
-      console.error('Error in handleContinueStep6:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-      alert(`Error: ${errorMessage}`);
-    }
-  };
-
-  const handleBackStep2 = () => setCurrentStep(1);
-  const handleBackStep3 = () => setCurrentStep(2);
-  const handleBackStep4 = () => setCurrentStep(3);
-  const handleBackStep5 = () => setCurrentStep(4);
-  const handleBackStep6 = () => setCurrentStep(5);
-
   // Login handlers
   const handleContinueLevel1 = () => setCurrentLevel(2);
   const handleContinueLevel2 = async () => {
@@ -245,22 +160,207 @@ export default function Navbar() {
       });
 
       const data = await response.json();
-      
       if (data.success) {
-        console.log('Auth Token:', data.token);
-        handleLoginSuccess(data.token);
+        handleLoginSuccess(data.token, data.userData);
         setPhoneNumber('');
         setOtp('');
       } else {
         console.error('OTP verification failed:', data.message);
+        setErrorMessage('OTP verification failed. Please try again.');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
+      setErrorMessage('Error verifying OTP. Please try again.');
     }
   };
 
   const handleBackLevel1 = () => setCurrentLevel(1);
   const handleBackLevel2 = () => setCurrentLevel(1);
+
+  // Profile setup validation
+  const validateStep = (step: number): boolean => {
+    switch (step) {
+      case 1:
+        if (!profileFor || !personalFirstName || !personalLastName || !dateOfBirth || !gender || !maritalStatus) {
+          setErrorMessage('Please fill all required fields in Basic Details.');
+          return false;
+        }
+        break;
+      case 2:
+        if (!religion || !willingToMarryOtherCaste || !motherTongue) {
+          setErrorMessage('Please fill all required fields in Religion & Community.');
+          return false;
+        }
+        break;
+      case 3:
+        if (!height || !weight || !complexion || !anyDisability || !diet) {
+          setErrorMessage('Please fill all required fields in Physical Attributes.');
+          return false;
+        }
+        break;
+      case 4:
+        if (!familyType || !familyStatus) {
+          setErrorMessage('Please fill all required fields in Family Background.');
+          return false;
+        }
+        break;
+      case 5:
+        if (!country || !state || !city || !highestEducation) {
+          setErrorMessage('Please fill all required fields in Location & Education.');
+          return false;
+        }
+        break;
+      case 6:
+        if (!employedIn || !annualIncome || !workLocation || !designation) {
+          setErrorMessage('Please fill all required fields in Professional Details.');
+          return false;
+        }
+        break;
+      case 7:
+        if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
+          setErrorMessage('Please upload all required images in Aadhaar & Photo Verification.');
+          return false;
+        }
+        break;
+      default:
+        return true;
+    }
+    setErrorMessage('');
+    return true;
+  };
+
+  // Profile setup handlers
+  const handleContinueStep1 = () => {
+    if (validateStep(1)) setProfileStep(2);
+  };
+  const handleContinueStep2 = () => {
+    if (validateStep(2)) setProfileStep(3);
+  };
+  const handleContinueStep3 = () => {
+    if (validateStep(3)) setProfileStep(4);
+  };
+  const handleContinueStep4 = () => {
+    if (validateStep(4)) setProfileStep(5);
+  };
+  const handleContinueStep5 = () => {
+    if (validateStep(5)) setProfileStep(6);
+  };
+  const handleContinueStep6 = () => {
+    if (validateStep(6)) setProfileStep(7);
+  };
+  const handleContinueStep7 = async () => {
+    if (!validateStep(7)) return;
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setErrorMessage('Authentication token not found. Please log in again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const formData = new FormData();
+      // Step 1
+      formData.append('profileFor', profileFor);
+      formData.append('personalFirstName', personalFirstName);
+      formData.append('personalMiddleName', personalMiddleName || '');
+      formData.append('personalLastName', personalLastName);
+      formData.append('dateOfBirth', dateOfBirth);
+      formData.append('gender', gender);
+      formData.append('maritalStatus', maritalStatus);
+      formData.append('numberOfChildren', numberOfChildren.toString());
+      formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
+      // Step 2
+      formData.append('religion', religion);
+      formData.append('willingToMarryOtherCaste', willingToMarryOtherCaste);
+      formData.append('caste', caste || '');
+      formData.append('community', community || '');
+      formData.append('gotra', gotra || '');
+      formData.append('motherTongue', motherTongue);
+      // Step 3
+      formData.append('height', height);
+      formData.append('weight', weight);
+      formData.append('complexion', complexion);
+      formData.append('anyDisability', anyDisability);
+      formData.append('diet', diet);
+      // Step 4
+      formData.append('familyType', familyType);
+      formData.append('familyStatus', familyStatus);
+      // Step 5
+      formData.append('country', country);
+      formData.append('state', state);
+      formData.append('city', city);
+      formData.append('highestEducation', highestEducation);
+      // Step 6
+      formData.append('employedIn', employedIn);
+      formData.append('annualIncome', annualIncome);
+      formData.append('workLocation', workLocation);
+      formData.append('designation', designation);
+      // Step 7
+      if (profileImage) formData.append('profileImage', profileImage, profileImage.name);
+      if (adhaarCardFrontImage) formData.append('adhaarCardFrontImage', adhaarCardFrontImage, adhaarCardFrontImage.name);
+      if (adhaarCardBackImage) formData.append('adhaarCardBackImage', adhaarCardBackImage, adhaarCardBackImage.name);
+
+      // Log FormData contents for debugging
+      const formDataEntries: any[] = [];
+      formData.forEach((value, key) => {
+        formDataEntries.push({ key, value: value instanceof File ? value.name : value });
+      });
+      console.log('FormData contents:', formDataEntries);
+
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/profile', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const responseText = await response.text();
+      console.log('API Response:', responseText);
+
+      if (response.ok) {
+        try {
+          const userData = JSON.parse(responseText);
+          localStorage.setItem('userData', JSON.stringify({
+            ...JSON.parse(localStorage.getItem('userData') || '{}'),
+            profileComplete: true,
+          }));
+          setIsProfileSetupOpen(false);
+          setProfileStep(1);
+          alert('Profile submitted successfully!');
+        } catch (error) {
+          setErrorMessage('Failed to parse server response. Please try again.');
+          console.error('Error parsing response:', error, 'Response text:', responseText);
+        }
+      } else {
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch {
+          errorData = { message: responseText || 'Unknown server error' };
+        }
+        setErrorMessage(`Profile submission failed: ${errorData.message || 'Unknown error'}`);
+        console.error('Profile submission failed:', errorData);
+      }
+    } catch (error) {
+      setErrorMessage('Error submitting profile. Please check your network and try again.');
+      console.error('Error submitting profile:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (profileStep > 1) {
+      setProfileStep(profileStep - 1);
+      setErrorMessage('');
+    } else {
+      setIsProfileSetupOpen(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFF8F0] shadow">
@@ -311,10 +411,12 @@ export default function Navbar() {
                   <span className="font-medium text-gray-800">
                     {userFirstName || 'Profile'}
                   </span>
-                  <FaChevronDown className={`text-gray-600 transition-transform ${isProfileOpen ? 'transform rotate-180' : ''}`} />
+                  <FaChevronDown
+                    className={`text-gray-600 transition-transform ${isProfileOpen ? 'transform rotate-180' : ''}`}
+                  />
                 </div>
               </button>
-              
+
               {/* Profile Dropdown */}
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
@@ -420,7 +522,11 @@ export default function Navbar() {
             >
               ✕
             </button>
-
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                {errorMessage}
+              </div>
+            )}
             {currentLevel === 1 && (
               <Level1
                 phoneNumber={phoneNumber}
@@ -431,8 +537,6 @@ export default function Navbar() {
                 onLoginSuccess={handleLoginSuccess}
               />
             )}
-
-           
           </div>
         </div>
       )}
@@ -462,10 +566,23 @@ export default function Navbar() {
             >
               ✕
             </button>
-            {currentStep === 1 && (
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                {errorMessage}
+              </div>
+            )}
+            {profileStep === 1 && (
               <Step1Form
                 profileFor={profileFor}
                 setProfileFor={setProfileFor}
+                personalFirstName={personalFirstName}
+                setPersonalFirstName={setPersonalFirstName}
+                personalMiddleName={personalMiddleName}
+                setPersonalMiddleName={setPersonalMiddleName}
+                personalLastName={personalLastName}
+                setPersonalLastName={setPersonalLastName}
+                dateOfBirth={dateOfBirth}
+                setDateOfBirth={setDateOfBirth}
                 gender={gender}
                 setGender={setGender}
                 maritalStatus={maritalStatus}
@@ -477,26 +594,8 @@ export default function Navbar() {
                 handleContinueStep1={handleContinueStep1}
               />
             )}
-            {currentStep === 2 && (
+            {profileStep === 2 && (
               <Step2Form
-                firstName={firstName}
-                setFirstName={setFirstName}
-                middleName={middleName}
-                setMiddleName={setMiddleName}
-                lastName={lastName}
-                setLastName={setLastName}
-                dateOfBirth={dateOfBirth}
-                setDateOfBirth={setDateOfBirth}
-                height={height}
-                setHeight={setHeight}
-                diet={diet}
-                setDiet={setDiet}
-                onBack={handleBackStep2}
-                handleContinueStep2={handleContinueStep2}
-              />
-            )}
-            {currentStep === 3 && (
-              <Step3Form
                 religion={religion}
                 setReligion={setReligion}
                 willingToMarryOtherCaste={willingToMarryOtherCaste}
@@ -505,65 +604,84 @@ export default function Navbar() {
                 setCaste={setCaste}
                 community={community}
                 setCommunity={setCommunity}
-                subCommunity={subCommunity}
-                setSubCommunity={setSubCommunity}
+                gotra={gotra}
+                setGotra={setGotra}
                 motherTongue={motherTongue}
                 setMotherTongue={setMotherTongue}
-                onBack={handleBackStep3}
+                onBack={handleBack}
+                handleContinueStep2={handleContinueStep2}
+              />
+            )}
+            {profileStep === 3 && (
+              <Step3Form
+                height={height}
+                setHeight={setHeight}
+                weight={weight}
+                setWeight={setWeight}
+                complexion={complexion}
+                setComplexion={setComplexion}
+                anyDisability={anyDisability}
+                setAnyDisability={setAnyDisability}
+                diet={diet}
+                setDiet={setDiet}
+                onBack={handleBack}
                 handleContinueStep3={handleContinueStep3}
               />
             )}
-            {currentStep === 4 && (
+            {profileStep === 4 && (
               <Step4Form
-                email={email}
-                setEmail={setEmail}
-                phoneNumber={phoneNumber}
-                setPhoneNumber={setPhoneNumber}
-                anyDisability={anyDisability}
-                setAnyDisability={setAnyDisability}
-                onBack={handleBackStep4}
-                handleContinueStep4={handleContinueStep4}
-              />
-            )}
-            {currentStep === 5 && (
-              <Step5Form
                 familyType={familyType}
                 setFamilyType={setFamilyType}
                 familyStatus={familyStatus}
                 setFamilyStatus={setFamilyStatus}
-                familyIncome={familyIncome}
-                setFamilyIncome={setFamilyIncome}
-                city={city}
-                setCity={setCity}
+                onBack={handleBack}
+                handleContinueStep4={handleContinueStep4}
+              />
+            )}
+            {profileStep === 5 && (
+              <Step5Form
+                country={country}
+                setCountry={setCountry}
                 state={state}
                 setState={setState}
-                education={education}
-                setEducation={setEducation}
+                city={city}
+                setCity={setCity}
+                highestEducation={highestEducation}
+                setHighestEducation={setHighestEducation}
+                onBack={handleBack}
+                handleContinueStep5={handleContinueStep5}
+              />
+            )}
+            {profileStep === 6 && (
+              <Step6Form
                 employedIn={employedIn}
                 setEmployedIn={setEmployedIn}
-                occupation={occupation}
-                setOccupation={setOccupation}
                 annualIncome={annualIncome}
                 setAnnualIncome={setAnnualIncome}
                 workLocation={workLocation}
                 setWorkLocation={setWorkLocation}
-                onBack={handleBackStep5}
-                handleContinueStep5={handleContinueStep5}
-              />
-            )}
-            {currentStep === 6 && (
-              <Step6Form
-                profileImage={profileImage}
-                setProfileImage={setProfileImage}
-                imageProfileArray={imageProfileArray}
-                setImageProfileArray={setImageProfileArray}
-                verificationType={verificationType}
-                setVerificationType={setVerificationType}
-                verificationValue={verificationValue}
-                setVerificationValue={setVerificationValue}
-                onBack={handleBackStep6}
+                designation={designation}
+                setDesignation={setDesignation}
+                onBack={handleBack}
                 handleContinueStep6={handleContinueStep6}
               />
+            )}
+            {profileStep === 7 && (
+              <Step7Form
+                profileImage={profileImage}
+                setProfileImage={setProfileImage}
+                adhaarCardFrontImage={adhaarCardFrontImage}
+                setAdhaarCardFrontImage={setAdhaarCardFrontImage}
+                adhaarCardBackImage={adhaarCardBackImage}
+                setAdhaarCardBackImage={setAdhaarCardBackImage}
+                onBack={handleBack}
+                handleContinueStep7={handleContinueStep7}
+              />
+            )}
+            {isSubmitting && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="text-white">Submitting...</div>
+              </div>
             )}
           </div>
         </div>

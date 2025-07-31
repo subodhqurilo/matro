@@ -1,6 +1,6 @@
 'use client';
 
-import PropTypes from 'prop-types';
+import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -17,21 +17,17 @@ const profileOptions = [
   { id: 'relative', label: 'Relative' },
 ];
 
-const Step1Form = ({
-  profileFor,
-  setProfileFor,
-  gender,
-  setGender,
-  maritalStatus,
-  setMaritalStatus,
-  numberOfChildren,
-  setNumberOfChildren,
-  isChildrenLivingWithYou,
-  setIsChildrenLivingWithYou,
-  handleContinueStep1,
-}: {
+interface Step1FormProps {
   profileFor: string;
   setProfileFor: (value: string) => void;
+  personalFirstName: string;
+  setPersonalFirstName: (value: string) => void;
+  personalMiddleName: string;
+  setPersonalMiddleName: (value: string) => void;
+  personalLastName: string;
+  setPersonalLastName: (value: string) => void;
+  dateOfBirth: string;
+  setDateOfBirth: (value: string) => void;
   gender: string;
   setGender: (value: string) => void;
   maritalStatus: string;
@@ -41,6 +37,29 @@ const Step1Form = ({
   isChildrenLivingWithYou: boolean;
   setIsChildrenLivingWithYou: (value: boolean) => void;
   handleContinueStep1: () => void;
+  children?: ReactNode;
+}
+
+const Step1Form: React.FC<Step1FormProps> = ({
+  profileFor,
+  setProfileFor,
+  personalFirstName,
+  setPersonalFirstName,
+  personalMiddleName,
+  setPersonalMiddleName,
+  personalLastName,
+  setPersonalLastName,
+  dateOfBirth,
+  setDateOfBirth,
+  gender,
+  setGender,
+  maritalStatus,
+  setMaritalStatus,
+  numberOfChildren,
+  setNumberOfChildren,
+  isChildrenLivingWithYou,
+  setIsChildrenLivingWithYou,
+  handleContinueStep1,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -69,6 +88,57 @@ const Step1Form = ({
           </button>
         ))}
       </div>
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        First Name *
+      </Label>
+      <Input
+        type="text"
+        placeholder="Enter first name"
+        value={personalFirstName}
+        onChange={(e) => setPersonalFirstName(e.target.value)}
+        className="w-full bg-white"
+      />
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Middle Name
+      </Label>
+      <Input
+        type="text"
+        placeholder="Enter middle name"
+        value={personalMiddleName}
+        onChange={(e) => setPersonalMiddleName(e.target.value)}
+        className="w-full bg-white"
+      />
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Last Name *
+      </Label>
+      <Input
+        type="text"
+        placeholder="Enter last name"
+        value={personalLastName}
+        onChange={(e) => setPersonalLastName(e.target.value)}
+        className="w-full bg-white"
+      />
+    </div>
+
+    <div className="mb-6">
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        Date of Birth *
+      </Label>
+      <Input
+        type="date"
+        value={dateOfBirth}
+        onChange={(e) => setDateOfBirth(e.target.value)}
+        className="w-full bg-white"
+      />
     </div>
 
     <div className="mb-6">
@@ -158,19 +228,5 @@ const Step1Form = ({
     </Button>
   </>
 );
-
-Step1Form.propTypes = {
-  profileFor: PropTypes.string.isRequired,
-  setProfileFor: PropTypes.func.isRequired,
-  gender: PropTypes.string.isRequired,
-  setGender: PropTypes.func.isRequired,
-  maritalStatus: PropTypes.string.isRequired,
-  setMaritalStatus: PropTypes.func.isRequired,
-  numberOfChildren: PropTypes.number.isRequired,
-  setNumberOfChildren: PropTypes.func.isRequired,
-  isChildrenLivingWithYou: PropTypes.bool.isRequired,
-  setIsChildrenLivingWithYou: PropTypes.func.isRequired,
-  handleContinueStep1: PropTypes.func.isRequired,
-};
 
 export default Step1Form;

@@ -6,15 +6,19 @@ import ProfilePreferenceForm from './Preference';
 
 interface PreferenceData {
   gender: string;
-  ageFrom: number;
-  ageTo: number;
+  minAge: number;
+  maxAge: number;
+  minHeight: number;
+  maxHeight: number;
+  minWeight: number;
+  maxWeight: number;
   religion: string;
-  motherTongue: string;
   caste: string;
   community: string;
-  subCommunity: string;
   maritalStatus: string;
-  occupation: string;
+  designation: string;
+  gotra: string;
+  highestEducation: string;
   income: string;
   state: string;
   city: string;
@@ -274,10 +278,22 @@ const Hero: React.FC = () => {
           onCancel={handlePreferenceCancel}
           initialData={{
             gender: lookingFor === 'Women' ? 'Female' : 'Male',
-            ageFrom,
-            ageTo,
+            minAge: ageFrom,
+            maxAge: ageTo,
+            minHeight: 150,
+            maxHeight: 200,
+            minWeight: 40,
+            maxWeight: 100,
             religion,
-            motherTongue,
+            caste: '',
+            community: motherTongue,
+            maritalStatus: 'Never Married',
+            designation: '',
+            gotra: '',
+            highestEducation: '',
+            income: '',
+            state: '',
+            city: ''
           }}
         />
       )}

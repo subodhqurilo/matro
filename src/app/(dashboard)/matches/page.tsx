@@ -43,15 +43,12 @@ export default function MatrimonialApp() {
   const fetchRecommendedProfiles = async () => {
     try {
       setIsLoadingRecommendations(true)
-      const token = localStorage.getItem('token')
-      if (!token) {
-        throw new Error('No authentication token found')
-      }
+      // No authentication required for daily recommendations
 
-      const response = await fetch('https://apimatri.qurilo.com/api/recommendation/daily', {
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/recommendation/daily', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+         
           'Content-Type': 'application/json',
         },
       })
@@ -61,10 +58,12 @@ export default function MatrimonialApp() {
       }
 
       const data = await response.json()
-      if (data.success && Array.isArray(data.recommendedProfiles)) {
-        setRecommendedProfiles(data.recommendedProfiles.map((profile: any) => ({
+      if (data.success && Array.isArray(data.profiles)) {
+        setRecommendedProfiles(data.profiles.map((profile: any) => ({
           ...profile,
-          lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Recently'
+          lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Recently',
+          profileImages: profile.profileImage ? [profile.profileImage] : [],
+          profession: profile.designation || profile.profession || ''
         })))
       }
     } catch (error) {
@@ -83,7 +82,7 @@ export default function MatrimonialApp() {
           throw new Error('No authentication token found')
         }
 
-        const response = await fetch('https://apimatri.qurilo.com/api/message/allUserGet', {
+        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -103,15 +102,15 @@ export default function MatrimonialApp() {
         // Handle case where response might be an object with a data property
         const data = Array.isArray(responseData) 
           ? responseData 
-          : responseData?.data || []
-          
+          : (responseData?.data || [])
+        
         if (!Array.isArray(data)) {
           console.error('Unexpected API response format:', responseData)
           throw new Error('Invalid response format: expected an array of users')
         }
         
         // Map API response to Profile type
-        const mappedProfiles = responseData.map((user: any) => ({
+        const mappedProfiles = data.map((user: any) => ({
           id: user._id || '',
           name: user.name || 'Unknown',
           profileId: user.profileId || '',
@@ -212,8 +211,14 @@ export default function MatrimonialApp() {
                           {profile.salary && (
                             <p className="text-sm"><span className="font-medium">Salary:</span> {profile.salary}</p>
                           )}
-                          {profile.languages && profile.languages.length > 0 && (
-                            <p className="text-sm"><span className="font-medium">Languages:</span> {profile.languages.join(', ')}</p>
+                          {profile.languages && (
+                            <p className="text-sm">
+                              <span className="font-medium">Languages:</span> {
+                                Array.isArray(profile.languages) 
+                                  ? profile.languages.join(', ')
+                                  : String(profile.languages || '')
+                              }
+                            </p>
                           )}
                         </div>
                       </div>

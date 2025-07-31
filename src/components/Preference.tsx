@@ -5,22 +5,26 @@ import { ChevronLeft, ChevronRight, User, MapPin, Heart, Briefcase } from 'lucid
 
 interface PreferenceData {
   gender: string;
-  ageFrom: number;
-  ageTo: number;
+  minAge: number;
+  maxAge: number;
+  minHeight: number;
+  maxHeight: number;
+  minWeight: number;
+  maxWeight: number;
   religion: string;
-  motherTongue: string;
   caste: string;
   community: string;
-  subCommunity: string;
   maritalStatus: string;
-  occupation: string;
+  designation: string;
+  gotra: string;
+  highestEducation: string;
   income: string;
   state: string;
   city: string;
 }
 
 interface PreferenceFormProps {
-  onSubmit?: (data: PreferenceData) => void;
+  onSubmit?: (data: PreferenceData) => void | Promise<void>;
   onCancel?: () => void;
   initialData?: Partial<PreferenceData>;
 }
@@ -29,19 +33,23 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
   onSubmit, 
   onCancel,
   initialData = {}
-}) => {
+}): React.JSX.Element => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<PreferenceData>({
     gender: initialData.gender || 'Female',
-    ageFrom: initialData.ageFrom || 22,
-    ageTo: initialData.ageTo || 27,
+    minAge: initialData.minAge || 22,
+    maxAge: initialData.maxAge || 35,
+    minHeight: initialData.minHeight || 150,
+    maxHeight: initialData.maxHeight || 200,
+    minWeight: initialData.minWeight || 40,
+    maxWeight: initialData.maxWeight || 100,
     religion: initialData.religion || 'Hindu',
-    motherTongue: initialData.motherTongue || 'English',
     caste: initialData.caste || '',
     community: initialData.community || '',
-    subCommunity: initialData.subCommunity || '',
     maritalStatus: initialData.maritalStatus || 'Never Married',
-    occupation: initialData.occupation || '',
+    designation: initialData.designation || '',
+    gotra: initialData.gotra || '',
+    highestEducation: initialData.highestEducation || '',
     income: initialData.income || '',
     state: initialData.state || '',
     city: initialData.city || '',
@@ -77,11 +85,21 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
   const isStepValid = (step: number): boolean => {
     switch (step) {
       case 1:
-        return Boolean(formData.gender) && Boolean(formData.ageFrom) && Boolean(formData.ageTo) && Boolean(formData.ageFrom <= formData.ageTo);
+        return Boolean(formData.gender) && 
+               Boolean(formData.minAge) && 
+               Boolean(formData.maxAge) && 
+               formData.minAge <= formData.maxAge &&
+               formData.minHeight <= formData.maxHeight &&
+               formData.minWeight <= formData.maxWeight;
       case 2:
-        return Boolean(formData.religion) && Boolean(formData.motherTongue) && Boolean(formData.caste);
+        return Boolean(formData.religion) && 
+               Boolean(formData.caste) && 
+               Boolean(formData.community) &&
+               Boolean(formData.gotra);
       case 3:
-        return Boolean(formData.maritalStatus) && Boolean(formData.occupation) && Boolean(formData.income);
+        return Boolean(formData.maritalStatus) && 
+               Boolean(formData.designation) && 
+               Boolean(formData.highestEducation);
       case 4:
         return Boolean(formData.state) && Boolean(formData.city);
       default:
@@ -119,8 +137,8 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
                     type="number" 
                     min="18" 
                     max="99" 
-                    value={formData.ageFrom}
-                    onChange={(e) => updateFormData('ageFrom', Number(e.target.value))}
+                    value={formData.minAge}
+                    onChange={(e) => updateFormData('minAge', Number(e.target.value))}
                     className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
                     placeholder="22"
                   />
@@ -129,10 +147,60 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
                     type="number" 
                     min="18" 
                     max="99" 
-                    value={formData.ageTo}
-                    onChange={(e) => updateFormData('ageTo', Number(e.target.value))}
+                    value={formData.maxAge}
+                    onChange={(e) => updateFormData('maxAge', Number(e.target.value))}
                     className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
-                    placeholder="27"
+                    placeholder="35"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Height Range (cm)</label>
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="number" 
+                    min="100" 
+                    max="250" 
+                    value={formData.minHeight}
+                    onChange={(e) => updateFormData('minHeight', Number(e.target.value))}
+                    className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
+                    placeholder="150"
+                  />
+                  <span className="text-md font-medium font-Mulish text-[#757575]">to</span>
+                  <input 
+                    type="number" 
+                    min="100" 
+                    max="250" 
+                    value={formData.maxHeight}
+                    onChange={(e) => updateFormData('maxHeight', Number(e.target.value))}
+                    className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
+                    placeholder="200"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col">
+                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Weight Range (kg)</label>
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="number" 
+                    min="30" 
+                    max="200" 
+                    value={formData.minWeight}
+                    onChange={(e) => updateFormData('minWeight', Number(e.target.value))}
+                    className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
+                    placeholder="40"
+                  />
+                  <span className="text-md font-medium font-Mulish text-[#757575]">to</span>
+                  <input 
+                    type="number" 
+                    min="30" 
+                    max="200" 
+                    value={formData.maxWeight}
+                    onChange={(e) => updateFormData('maxWeight', Number(e.target.value))}
+                    className="border border-[#6F0000] p-3 text-md font-medium rounded-md w-20 focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
+                    placeholder="100"
                   />
                 </div>
               </div>
@@ -168,24 +236,14 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
               </div>
 
               <div className="flex flex-col">
-                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Mother Tongue</label>
-                <select 
-                  value={formData.motherTongue}
-                  onChange={(e) => updateFormData('motherTongue', e.target.value)}
-                  className="border-[#6F0000] border p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish"
-                >
-                  <option value="">Select Language</option>
-                  <option value="English">English</option>
-                  <option value="Hindi">Hindi</option>
-                  <option value="Marathi">Marathi</option>
-                  <option value="Tamil">Tamil</option>
-                  <option value="Telugu">Telugu</option>
-                  <option value="Bengali">Bengali</option>
-                  <option value="Gujarati">Gujarati</option>
-                  <option value="Kannada">Kannada</option>
-                  <option value="Malayalam">Malayalam</option>
-                  <option value="Punjabi">Punjabi</option>
-                </select>
+                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Gotra</label>
+                <input 
+                  type="text"
+                  value={formData.gotra}
+                  onChange={(e) => updateFormData('gotra', e.target.value)}
+                  className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish"
+                  placeholder="Enter Gotra"
+                />
               </div>
 
               <div className="flex flex-col">
@@ -209,17 +267,6 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
                   placeholder="e.g., Deshastha, Agarwal"
                 />
               </div>
-
-              <div className="flex flex-col md:col-span-2">
-                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Sub Community (Optional)</label>
-                <input 
-                  type="text"
-                  value={formData.subCommunity}
-                  onChange={(e) => updateFormData('subCommunity', e.target.value)}
-                  className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
-                  placeholder="e.g., Rigvedi, Yajurvedi"
-                />
-              </div>
             </div>
           </div>
         );
@@ -229,7 +276,7 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
           <div className="space-y-6">
             <div className="flex items-center gap-3 mb-6">
               <Briefcase className="text-[#7D0A0A]" size={24} />
-              <h3 className="text-xl font-semibold text-[#343434] font-Lato">Professional Preferences</h3>
+              <h3 className="text-xl font-semibold text-[#343434] font-Lato">Professional & Educational Preferences</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -249,17 +296,28 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
               </div>
 
               <div className="flex flex-col">
-                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Occupation</label>
+                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Designation</label>
                 <input 
                   type="text"
-                  value={formData.occupation}
-                  onChange={(e) => updateFormData('occupation', e.target.value)}
+                  value={formData.designation}
+                  onChange={(e) => updateFormData('designation', e.target.value)}
                   className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
                   placeholder="e.g., Software Engineer, Doctor"
                 />
               </div>
+              
+              <div className="flex flex-col">
+                <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Highest Education</label>
+                <input 
+                  type="text"
+                  value={formData.highestEducation}
+                  onChange={(e) => updateFormData('highestEducation', e.target.value)}
+                  className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
+                  placeholder="e.g., B.Tech, MBBS, MBA"
+                />
+              </div>
 
-              <div className="flex flex-col md:col-span-2">
+              <div className="flex flex-col">
                 <label className="text-sm mb-2 font-medium text-[#757575] font-sans">Annual Income</label>
                 <select 
                   value={formData.income}
@@ -296,7 +354,7 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
                   value={formData.state}
                   onChange={(e) => updateFormData('state', e.target.value)}
                   className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
-                  placeholder="e.g., Maharashtra, Delhi"
+                  placeholder="Enter State"
                 />
               </div>
 
@@ -307,7 +365,7 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
                   value={formData.city}
                   onChange={(e) => updateFormData('city', e.target.value)}
                   className="border border-[#6F0000] p-3 text-md font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-[#7D0A0A] focus:border-transparent font-Mulish" 
-                  placeholder="e.g., Mumbai, Pune"
+                  placeholder="Enter City"
                 />
               </div>
             </div>
@@ -317,13 +375,16 @@ const ProfilePreferenceForm: React.FC<PreferenceFormProps> = ({
               <h4 className="text-lg font-semibold text-[#343434] mb-3 font-Lato">Preference Summary</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div><span className="font-medium">Looking for:</span> {formData.gender}</div>
-                <div><span className="font-medium">Age:</span> {formData.ageFrom}-{formData.ageTo}</div>
+                <div><span className="font-medium">Age Range:</span> {formData.minAge}-{formData.maxAge} years</div>
+                <div><span className="font-medium">Height Range:</span> {formData.minHeight}-{formData.maxHeight} cm</div>
+                <div><span className="font-medium">Weight Range:</span> {formData.minWeight}-{formData.maxWeight} kg</div>
                 <div><span className="font-medium">Religion:</span> {formData.religion}</div>
-                <div><span className="font-medium">Mother Tongue:</span> {formData.motherTongue}</div>
                 <div><span className="font-medium">Caste:</span> {formData.caste}</div>
                 <div><span className="font-medium">Community:</span> {formData.community}</div>
+                <div><span className="font-medium">Gotra:</span> {formData.gotra}</div>
                 <div><span className="font-medium">Marital Status:</span> {formData.maritalStatus}</div>
-                <div><span className="font-medium">Occupation:</span> {formData.occupation}</div>
+                <div><span className="font-medium">Designation:</span> {formData.designation}</div>
+                <div><span className="font-medium">Highest Education:</span> {formData.highestEducation}</div>
                 <div><span className="font-medium">Income:</span> {formData.income}</div>
                 <div><span className="font-medium">Location:</span> {formData.city}, {formData.state}</div>
               </div>

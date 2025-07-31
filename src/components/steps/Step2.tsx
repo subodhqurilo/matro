@@ -5,38 +5,40 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Calendar } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
-const Step2Form = ({
-  firstName,
-  setFirstName,
-  middleName,
-  setMiddleName,
-  lastName,
-  setLastName,
-  dateOfBirth,
-  setDateOfBirth,
-  height,
-  setHeight,
-  diet,
-  setDiet,
-  onBack,
-  handleContinueStep2,
-}: {
-  firstName: string;
-  setFirstName: (value: string) => void;
-  middleName: string;
-  setMiddleName: (value: string) => void;
-  lastName: string;
-  setLastName: (value: string) => void;
-  dateOfBirth: string;
-  setDateOfBirth: (value: string) => void;
-  height: string;
-  setHeight: (value: string) => void;
-  diet: string;
-  setDiet: (value: string) => void;
+interface Step2FormProps {
+  religion: string;
+  setReligion: (value: string) => void;
+  willingToMarryOtherCaste: string;
+  setWillingToMarryOtherCaste: (value: string) => void;
+  caste: string;
+  setCaste: (value: string) => void;
+  community: string;
+  setCommunity: (value: string) => void;
+  gotra: string;
+  setGotra: (value: string) => void;
+  motherTongue: string;
+  setMotherTongue: (value: string) => void;
   onBack: () => void;
   handleContinueStep2: () => void;
+}
+
+const Step2Form: React.FC<Step2FormProps> = ({
+  religion,
+  setReligion,
+  willingToMarryOtherCaste,
+  setWillingToMarryOtherCaste,
+  caste,
+  setCaste,
+  community,
+  setCommunity,
+  gotra,
+  setGotra,
+  motherTongue,
+  setMotherTongue,
+  onBack,
+  handleContinueStep2,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -44,93 +46,100 @@ const Step2Form = ({
         <ArrowLeft className="h-5 w-5 text-gray-500 hover:text-rose-600 transition-colors" />
       </button>
       <h2 className="text-xl font-semibold text-gray-900">
-        Personal Information
+        Religion & Community
       </h2>
     </div>
 
     <div className="space-y-4 mb-6">
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          First Name *
+          Religion *
         </Label>
-        <Input
-          placeholder="Enter your first name"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          className="w-full bg-white"
-          required
-        />
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Middle Name
-        </Label>
-        <Input
-          placeholder="Enter your middle name (optional)"
-          value={middleName}
-          onChange={(e) => setMiddleName(e.target.value)}
-          className="w-full bg-white"
-        />
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Last Name *
-        </Label>
-        <Input
-          placeholder="Enter your last name"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          className="w-full bg-white"
-          required
-        />
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Date of Birth *
-        </Label>
-        <div className="relative">
-          <Input
-            type="date"
-            value={dateOfBirth}
-            onChange={(e) => setDateOfBirth(e.target.value)}
-            className="w-full pr-10 bg-white"
-            required
-          />
-          <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-        </div>
-      </div>
-
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Height *
-        </Label>
-        <Select value={height} onValueChange={setHeight}>
+        <Select value={religion} onValueChange={setReligion}>
           <SelectTrigger>
-            <SelectValue placeholder="Select your height" />
+            <SelectValue placeholder="Select your religion" />
           </SelectTrigger>
           <SelectContent>
-            {['4ft 8in', '4ft 9in', '4ft 10in', '4ft 11in', '5ft', '5ft 1in', '5ft 2in', '5ft 3in', '5ft 4in', '5ft 5in', '5ft 6in', '5ft 7in', '5ft 8in', '5ft 9in', '5ft 10in', '5ft 11in', '6ft', '6ft 1in', '6ft 2in', '6ft 3in'].map((h) => (
-              <SelectItem key={h} value={h}>{h}</SelectItem>
-            ))}
+            <SelectItem value="Hindu">Hindu</SelectItem>
+            <SelectItem value="Muslim">Muslim</SelectItem>
+            <SelectItem value="Christian">Christian</SelectItem>
+            <SelectItem value="Sikh">Sikh</SelectItem>
+            <SelectItem value="Jain">Jain</SelectItem>
+            <SelectItem value="Buddhist">Buddhist</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div>
         <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Diet *
+          Willing to Marry Other Caste *
         </Label>
-        <Select value={diet} onValueChange={setDiet}>
+        <Select value={willingToMarryOtherCaste} onValueChange={setWillingToMarryOtherCaste}>
           <SelectTrigger>
-            <SelectValue placeholder="Select your diet" />
+            <SelectValue placeholder="Select preference" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Vegetarian">Vegetarian</SelectItem>
-            <SelectItem value="Non-Vegetarian">Non-Vegetarian</SelectItem>
-            <SelectItem value="Vegan">Vegan</SelectItem>
+            <SelectItem value="Yes">Yes</SelectItem>
+            <SelectItem value="No">No</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Caste
+        </Label>
+        <Input
+          placeholder="Enter your caste (optional)"
+          value={caste}
+          onChange={(e) => setCaste(e.target.value)}
+          className="w-full bg-white"
+        />
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Community
+        </Label>
+        <Input
+          placeholder="Enter your community (optional)"
+          value={community}
+          onChange={(e) => setCommunity(e.target.value)}
+          className="w-full bg-white"
+        />
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Gotra
+        </Label>
+        <Input
+          placeholder="Enter your gotra (optional)"
+          value={gotra}
+          onChange={(e) => setGotra(e.target.value)}
+          className="w-full bg-white"
+        />
+      </div>
+
+      <div>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Mother Tongue *
+        </Label>
+        <Select value={motherTongue} onValueChange={setMotherTongue}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select your mother tongue" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Hindi">Hindi</SelectItem>
+            <SelectItem value="Bengali">Bengali</SelectItem>
+            <SelectItem value="Telugu">Telugu</SelectItem>
+            <SelectItem value="Marathi">Marathi</SelectItem>
+            <SelectItem value="Tamil">Tamil</SelectItem>
+            <SelectItem value="Urdu">Urdu</SelectItem>
+            <SelectItem value="Gujarati">Gujarati</SelectItem>
+            <SelectItem value="Malayalam">Malayalam</SelectItem>
+            <SelectItem value="Kannada">Kannada</SelectItem>
             <SelectItem value="Other">Other</SelectItem>
           </SelectContent>
         </Select>
@@ -148,18 +157,18 @@ const Step2Form = ({
 );
 
 Step2Form.propTypes = {
-  firstName: PropTypes.string.isRequired,
-  setFirstName: PropTypes.func.isRequired,
-  middleName: PropTypes.string.isRequired,
-  setMiddleName: PropTypes.func.isRequired,
-  lastName: PropTypes.string.isRequired,
-  setLastName: PropTypes.func.isRequired,
-  dateOfBirth: PropTypes.string.isRequired,
-  setDateOfBirth: PropTypes.func.isRequired,
-  height: PropTypes.string.isRequired,
-  setHeight: PropTypes.func.isRequired,
-  diet: PropTypes.string.isRequired,
-  setDiet: PropTypes.func.isRequired,
+  religion: PropTypes.string.isRequired,
+  setReligion: PropTypes.func.isRequired,
+  willingToMarryOtherCaste: PropTypes.string.isRequired,
+  setWillingToMarryOtherCaste: PropTypes.func.isRequired,
+  caste: PropTypes.string,
+  setCaste: PropTypes.func.isRequired,
+  community: PropTypes.string,
+  setCommunity: PropTypes.func.isRequired,
+  gotra: PropTypes.string,
+  setGotra: PropTypes.func.isRequired,
+  motherTongue: PropTypes.string.isRequired,
+  setMotherTongue: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   handleContinueStep2: PropTypes.func.isRequired,
 };
