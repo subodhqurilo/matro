@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import NavigationTabs from "./_components/NavigationTabs";
-import ProfileCard from "./_components/ProfileCard";
+
 import { getFilteredProfiles } from "@/utils/profileFilters";
 import { toast } from "sonner";
 import { Profile } from "@/types/Profile";
@@ -88,13 +88,7 @@ export default function MatrimonialApp() {
         ) : (
           <>
             <Recommendation activeTab={activeTab} />
-            {activeTab !== "Recommendation" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-                {filteredProfiles.map((profile) => (
-                  <ProfileCard key={profile.id} profile={profile} />
-                ))}
-              </div>
-            )}
+           
           </>
         )}
       </div>
