@@ -4,6 +4,13 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Send, Heart, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface RecommendedProfile {
   _id: string;
@@ -20,6 +27,7 @@ interface RecommendedProfile {
   education?: string;
   languages?: string[];
   gender?: string;
+  requestSent?: boolean;
 }
 
 interface RecommendationProps {
@@ -30,6 +38,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
   const [recommendedProfiles, setRecommendedProfiles] = useState<RecommendedProfile[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [isSendingConnection, setIsSendingConnection] = useState<{ [key: string]: boolean }>({});
+  const [isSendingLike, setIsSendingLike] = useState<{ [key: string]: boolean }>({});
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState("");
 
   const fetchRecommendedProfiles = async () => {
     try {
@@ -58,6 +69,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
             profileImages: profile.profileImage ? [profile.profileImage] : [],
             profession: profile.designation || profile.profession || '',
             languages,
+            requestSent: false,
           };
         });
         setRecommendedProfiles(cleanedProfiles);
@@ -93,21 +105,32 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         },
         body: JSON.stringify({
           receiverId: id,
-          // Add any additional required fields here
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to send connection request: ${errorText}`);
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.message === "Request already exists") {
+            console.log(`Connection request already sent for profile ${id}`);
+            return; // Exit without showing toast or updating state
+          }
+          throw new Error(`Failed to send connection request: ${errorText}`);
+        } catch (parseError) {
+          throw new Error(`Failed to send connection request: ${errorText}`);
+        }
       }
 
       const data = await response.json();
 
       if (data.success) {
         toast.success('Connection request sent successfully');
-        // Optionally remove the profile from the list
-        setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+        setRecommendedProfiles((prev) =>
+          prev.map((profile) =>
+            profile._id === id ? { ...profile, requestSent: true } : profile
+          )
+        );
       } else {
         throw new Error(data.message || 'Failed to send connection request');
       }
@@ -119,10 +142,58 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
     }
   };
 
-  const handleShortlist = (id: string) => toast.success(`Shortlisted ${id}`);
+  const handleShortlist = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      setIsSendingLike((prev) => ({ ...prev, [id]: true }));
+
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/like/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          receiverId: id,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.message === "Already liked") {
+            console.log(`Profile ${id} already liked`);
+            return; // Exit without showing dialog or toast
+          }
+          throw new Error(`Failed to send like: ${errorText}`);
+        } catch (parseError) {
+          throw new Error(`Failed to send like: ${errorText}`);
+        }
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setDialogMessage(data.message || 'Like Sent');
+        setDialogOpen(true);
+      } else {
+        throw new Error(data.message || 'Failed to send like');
+      }
+    } catch (error) {
+      console.error('Error sending like:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to send like');
+    } finally {
+      setIsSendingLike((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   const handleNotNow = (id: string) => {
     toast.success(`Skipped ${id}`);
-    // Optionally remove the profile from the list
     setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
   };
 
@@ -132,6 +203,15 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   return (
     <div className="space-y-6 mt-6">
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Success</DialogTitle>
+            <DialogDescription>{dialogMessage}</DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {isLoadingRecommendations ? (
         <div className="text-center text-gray-500">Loading recommendations...</div>
       ) : recommendedProfiles.length > 0 ? (
@@ -179,14 +259,16 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
             {/* Right: Actions */}
             <div className="flex flex-col items-center gap-5 min-w-[300px] border-l border-[#757575]">
               <div className="flex gap-6 items-center">
-                <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">Send Connection</div>
+                <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">
+                  {profile.requestSent ? 'Sent' : 'Send Connection'}
+                </div>
                 <Button
                   className={`bg-gradient-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0 ${
-                    isSendingConnection[profile._id] ? 'opacity-50 cursor-not-allowed' : ''
+                    isSendingConnection[profile._id] || profile.requestSent ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                   size="sm"
-                  onClick={() => !isSendingConnection[profile._id] && handleSendConnection(profile._id)}
-                  disabled={isSendingConnection[profile._id]}
+                  onClick={() => !isSendingConnection[profile._id] && !profile.requestSent && handleSendConnection(profile._id)}
+                  disabled={isSendingConnection[profile._id] || profile.requestSent}
                 >
                   {isSendingConnection[profile._id] ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -199,11 +281,18 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                 <div className="text-regular text-[#000000] mb-2 font-Lato ml-16">Shortlist</div>
                 <Button
                   variant="outline"
-                  className="border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent"
+                  className={`border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent ${
+                    isSendingLike[profile._id] ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                   size="sm"
-                  onClick={() => handleShortlist(profile._id)}
+                  onClick={() => !isSendingLike[profile._id] && handleShortlist(profile._id)}
+                  disabled={isSendingLike[profile._id]}
                 >
-                  <Heart className="w-4 h-4 text-[#8E2E37]" />
+                  {isSendingLike[profile._id] ? (
+                    <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Heart className="w-4 h-4 text-[#8E2E37]" />
+                  )}
                 </Button>
               </div>
               <div className="flex gap-6 items-center">
