@@ -6,6 +6,8 @@ import { getFilteredProfiles } from "@/utils/profileFilters";
 import { toast } from "sonner";
 import { Profile } from "@/types/Profile";
 import Recommendation from "./_components/Recommended";
+import AllMatches from "./_components/allMatches";
+import MutualMatch from "./_components/MutualMatch";
 
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("All Matches");
@@ -88,7 +90,8 @@ export default function MatrimonialApp() {
         ) : (
           <>
             <Recommendation activeTab={activeTab} />
-           
+           <AllMatches activeTab={activeTab} />
+           <MutualMatch activeTab={activeTab} />
           </>
         )}
       </div>

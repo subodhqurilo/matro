@@ -23,15 +23,15 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
   const [dialogMessage, setDialogMessage] = useState("");
   const [dialogTitle, setDialogTitle] = useState("Success");
 
-  // Assume token is available (e.g., from context, localStorage, or props)
-  const token = "your-auth-token-here"; // Replace with actual token retrieval logic
-
   const fetchAllMatches = async () => {
     try {
-
-              const token = localStorage.getItem('authToken');
-              if (!token) throw new Error('No authentication token found');
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+      
       setIsLoadingMatches(true);
+      
       const response = await fetch(
         "https://bxcfrrl4-3000.inc1.devtunnels.ms/api/like/allMatches",
         {
@@ -42,60 +42,78 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
           },
         }
       );
+      
       if (!response.ok) {
-        throw new Error("Failed to fetch matches");
+        throw new Error(`Failed to fetch matches: ${response.status} ${response.statusText}`);
       }
+      
       const responseData = await response.json();
-      if (responseData.success && Array.isArray(responseData.profiles)) {
-        const cleanedProfiles: Profile[] = responseData.profiles.map(
-          (profile: {
-            _id: string;
-            name: string;
-            profileId: string;
-            lastSeen: string | number | Date;
-            age: number;
-            height: string;
-            caste: string;
-            designation: string;
-            profession: string;
-            salary: string;
-            education: string;
-            location: string;
-            languages: string | string[];
-            profileImage: string;
-            image: string;
-          }) => ({
-            id: profile._id || "",
-            name: profile.name || "Unknown",
-            profileId: profile.profileId || "",
-            lastSeen: profile.lastSeen
-              ? new Date(profile.lastSeen).toLocaleString()
-              : "Recently",
-            age: profile.age || 0,
-            height: profile.height || "",
-            caste: profile.caste || "",
-            profession: profile.designation || profile.profession || "",
-            salary: profile.salary || "",
-            education: profile.education || "",
-            location: profile.location || "",
-            languages: Array.isArray(profile.languages)
-              ? profile.languages
-              : typeof profile.languages === "string"
-              ? profile.languages.split(",").map((lang) => lang.trim())
-              : [],
-            image: profile.profileImage || profile.image || "/default-avatar.png",
-            profileImages: profile.profileImage ? [profile.profileImage] : [],
-            isNew: true,
-            hasPhoto: !!(profile.image || profile.profileImage),
-            isMutual: false,
-            isVerified: false,
-            requestSent: false,
-          })
-        );
-        setMatches(cleanedProfiles);
+      
+      // Log the actual response to debug
+      console.log('API Response:', responseData);
+      
+      // Handle different possible response structures
+      let profilesArray = [];
+      
+      if (responseData.success && responseData.allMatches) {
+        profilesArray = responseData.allMatches;
+      } else if (responseData.success && responseData.profiles) {
+        profilesArray = responseData.profiles;
+      } else if (responseData.data && responseData.data.profiles) {
+        profilesArray = responseData.data.profiles;
+      } else if (responseData.matches) {
+        profilesArray = responseData.matches;
+      } else if (Array.isArray(responseData)) {
+        profilesArray = responseData;
+      } else if (responseData.profiles) {
+        profilesArray = responseData.profiles;
       } else {
-        throw new Error("Invalid response format");
+        // If none of the expected structures match, throw an error with details
+        console.error('Unexpected response structure:', responseData);
+        throw new Error(`Unexpected response format. Expected profiles array but got: ${JSON.stringify(responseData)}`);
       }
+      
+      if (!Array.isArray(profilesArray)) {
+        throw new Error(`Expected profiles to be an array, but got: ${typeof profilesArray}`);
+      }
+      
+      const cleanedProfiles: Profile[] = profilesArray.map((profile: any) => {
+        // Handle different possible field names and structures
+        let languages: string[] = [];
+        if (Array.isArray(profile.languages)) {
+          languages = profile.languages;
+        } else if (typeof profile.languages === "string") {
+          languages = profile.languages.split(",").map((lang: string) => lang.trim());
+        }
+
+        return {
+          id: profile._id || profile.id || "",
+          name: profile.name || "Unknown",
+          profileId: profile.profileId || profile.profile_id || "",
+          lastSeen: profile.lastSeen
+            ? new Date(profile.lastSeen).toLocaleString()
+            : "Recently",
+          age: profile.age || 0,
+          height: profile.height || "",
+          caste: profile.caste || profile.religion || "",
+          profession: profile.designation || profile.profession || "",
+          salary: profile.salary || "",
+          education: profile.education || "",
+          location: profile.location || "",
+          languages: languages,
+          image: profile.profileImage || profile.image || "/default-avatar.png",
+          profileImages: profile.profileImage ? [profile.profileImage] : [],
+          isNew: true,
+          hasPhoto: !!(profile.image || profile.profileImage),
+          isMutual: false,
+          isVerified: false,
+          requestSent: false,
+        };
+      });
+      
+      setMatches(cleanedProfiles);
+      console.log('Processed matches:', cleanedProfiles);
+      
     } catch (error) {
       console.error("Error fetching all matches:", error);
       toast.error("Failed to load matches");
@@ -175,7 +193,9 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
                   </p>
                 </div>
                 <div className="flex flex-col items-center gap-5 min-w-[300px] border-l border-[#757575]">
-                  {/* Add content for action buttons or other elements here */}
+                  <div className="text-sm text-gray-600 text-center">
+                    Matched Profile
+                  </div>
                 </div>
               </div>
             ))
