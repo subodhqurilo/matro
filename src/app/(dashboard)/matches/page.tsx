@@ -8,6 +8,8 @@ import { Profile } from "@/types/Profile";
 import Recommendation from "./_components/Recommended";
 import AllMatches from "./_components/allMatches";
 import MutualMatch from "./_components/MutualMatch";
+import NewlyMatched from "./_components/NewlyMatch";
+import ProfilePhoto from "./_components/ProfilePhoto";
 
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("All Matches");
@@ -19,8 +21,9 @@ export default function MatrimonialApp() {
     { name: "All Matches", count: matches.length },
     { name: "Recommendation", count: null }, // Count can be updated if needed
     { name: "Profiles with photo", count: null },
+    { name: "Newly Matched", count: null }, // Add this line
     { name: "Mutual Matches", count: null },
-    { name: "Verified", count: null },
+ 
   ];
 
   useEffect(() => {
@@ -92,6 +95,8 @@ export default function MatrimonialApp() {
             <Recommendation activeTab={activeTab} />
            <AllMatches activeTab={activeTab} />
            <MutualMatch activeTab={activeTab} />
+           <NewlyMatched activeTab={activeTab} />
+           <ProfilePhoto activeTab={activeTab} />
           </>
         )}
       </div>
