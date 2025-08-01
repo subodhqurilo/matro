@@ -41,6 +41,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
   const [isSendingLike, setIsSendingLike] = useState<{ [key: string]: boolean }>({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
+  const [dialogTitle, setDialogTitle] = useState("Success");
 
   const fetchRecommendedProfiles = async () => {
     try {
@@ -113,7 +114,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         try {
           const errorJson = JSON.parse(errorText);
           if (errorJson.message === "Request already exists") {
-            console.log(`Connection request already sent for profile ${id}`);
+            setDialogTitle("Info");
+            setDialogMessage("Connection request already sent.");
+            setDialogOpen(true);
             return; // Exit without showing toast or updating state
           }
           throw new Error(`Failed to send connection request: ${errorText}`);
@@ -125,7 +128,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       const data = await response.json();
 
       if (data.success) {
-        toast.success('Connection request sent successfully');
+        setDialogTitle("Success");
+        setDialogMessage('Connection request sent successfully');
+        setDialogOpen(true);
         setRecommendedProfiles((prev) =>
           prev.map((profile) =>
             profile._id === id ? { ...profile, requestSent: true } : profile
@@ -136,7 +141,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       }
     } catch (error) {
       console.error('Error sending connection request:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to send connection request');
+      setDialogTitle("Error");
+      setDialogMessage(error instanceof Error ? error.message : 'Failed to send connection request');
+      setDialogOpen(true);
     } finally {
       setIsSendingConnection((prev) => ({ ...prev, [id]: false }));
     }
@@ -167,7 +174,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         try {
           const errorJson = JSON.parse(errorText);
           if (errorJson.message === "Already liked") {
-            console.log(`Profile ${id} already liked`);
+            setDialogTitle("Info");
+            setDialogMessage("You have already liked this profile.");
+            setDialogOpen(true);
             return; // Exit without showing dialog or toast
           }
           throw new Error(`Failed to send like: ${errorText}`);
@@ -179,6 +188,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       const data = await response.json();
 
       if (data.success) {
+        setDialogTitle("Success");
         setDialogMessage(data.message || 'Like Sent');
         setDialogOpen(true);
       } else {
@@ -186,7 +196,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       }
     } catch (error) {
       console.error('Error sending like:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to send like');
+      setDialogTitle("Error");
+      setDialogMessage(error instanceof Error ? error.message : 'Failed to send like');
+      setDialogOpen(true);
     } finally {
       setIsSendingLike((prev) => ({ ...prev, [id]: false }));
     }
@@ -206,7 +218,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Success</DialogTitle>
+            <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogDescription>{dialogMessage}</DialogDescription>
           </DialogHeader>
         </DialogContent>
