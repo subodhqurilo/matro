@@ -29,6 +29,7 @@ interface RecommendationProps {
 export default function Recommendation({ activeTab }: RecommendationProps) {
   const [recommendedProfiles, setRecommendedProfiles] = useState<RecommendedProfile[]>([]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
+  const [isSendingConnection, setIsSendingConnection] = useState<{ [key: string]: boolean }>({});
 
   const fetchRecommendedProfiles = async () => {
     try {
@@ -75,9 +76,55 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
     }
   }, [activeTab]);
 
-  const handleSendConnection = (id: string) => toast.success(`Connection sent to ${id}`);
+  const handleSendConnection = async (id: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
+
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/request/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          receiverId: id,
+          // Add any additional required fields here
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to send connection request: ${errorText}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success('Connection request sent successfully');
+        // Optionally remove the profile from the list
+        setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+      } else {
+        throw new Error(data.message || 'Failed to send connection request');
+      }
+    } catch (error) {
+      console.error('Error sending connection request:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to send connection request');
+    } finally {
+      setIsSendingConnection((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   const handleShortlist = (id: string) => toast.success(`Shortlisted ${id}`);
-  const handleNotNow = (id: string) => toast.success(`Skipped ${id}`);
+  const handleNotNow = (id: string) => {
+    toast.success(`Skipped ${id}`);
+    // Optionally remove the profile from the list
+    setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+  };
 
   if (activeTab !== "Recommendation") {
     return null;
@@ -134,11 +181,18 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
               <div className="flex gap-6 items-center">
                 <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">Send Connection</div>
                 <Button
-                  className="bg-gradient-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0"
+                  className={`bg-gradient-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0 ${
+                    isSendingConnection[profile._id] ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
                   size="sm"
-                  onClick={() => handleSendConnection(profile._id)}
+                  onClick={() => !isSendingConnection[profile._id] && handleSendConnection(profile._id)}
+                  disabled={isSendingConnection[profile._id]}
                 >
-                  <Send className="w-4 h-4" />
+                  {isSendingConnection[profile._id] ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <div className="flex gap-6 items-center">
