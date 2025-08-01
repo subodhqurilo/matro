@@ -45,11 +45,16 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const fetchRecommendedProfiles = async () => {
     try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
       setIsLoadingRecommendations(true);
       const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/recommendation/daily', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
       });
       if (!response.ok) {
@@ -91,7 +96,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const handleSendConnection = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         throw new Error('No authentication token found. Please log in.');
       }
@@ -117,7 +122,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
             setDialogTitle("Info");
             setDialogMessage("Connection request already sent.");
             setDialogOpen(true);
-            return; // Exit without showing toast or updating state
+            return;
           }
           throw new Error(`Failed to send connection request: ${errorText}`);
         } catch (parseError) {
@@ -151,7 +156,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const handleShortlist = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         throw new Error('No authentication token found. Please log in.');
       }
@@ -177,7 +182,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
             setDialogTitle("Info");
             setDialogMessage("You have already liked this profile.");
             setDialogOpen(true);
-            return; // Exit without showing dialog or toast
+            return;
           }
           throw new Error(`Failed to send like: ${errorText}`);
         } catch (parseError) {
@@ -204,9 +209,42 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
     }
   };
 
-  const handleNotNow = (id: string) => {
-    toast.success(`Skipped ${id}`);
-    setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+  const handleNotNow = async (id: string) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/cross/user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          userIdToBlock: id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process not now action');
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success(`Skipped profile ${id}`);
+        setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+      } else {
+        throw new Error(data.message || 'Failed to process not now action');
+      }
+    } catch (error) {
+      console.error('Error processing not now action:', error);
+      setDialogTitle("Error");
+      setDialogMessage(error instanceof Error ? error.message : 'Failed to process not now action');
+      setDialogOpen(true);
+    }
   };
 
   if (activeTab !== "Recommendation") {
@@ -232,7 +270,6 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
             key={profile._id}
             className="flex items-center justify-between p-6 bg-white rounded-lg border border-[#7D0A0A] shadow-sm"
           >
-            {/* Left: Profile Image */}
             <div className="flex-shrink-0">
               <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border border-gray-300">
                 {profile.profileImage ? (
@@ -250,7 +287,6 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                 )}
               </div>
             </div>
-            {/* Middle: Info */}
             <div className="flex-1 px-6 mb-4">
               <h3 className="text-lg font-semibold text-gray-800">{profile.name}</h3>
               <p className="text-sm text-gray-500 mb-1 border-b border-[#757575] mt-2">
@@ -268,7 +304,6 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                 {Array.isArray(profile.languages) ? profile.languages.join(", ") : ""}
               </p>
             </div>
-            {/* Right: Actions */}
             <div className="flex flex-col items-center gap-5 min-w-[300px] border-l border-[#757575]">
               <div className="flex gap-6 items-center">
                 <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">

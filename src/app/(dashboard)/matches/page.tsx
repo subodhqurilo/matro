@@ -24,7 +24,7 @@ export default function MatrimonialApp() {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         if (!token) throw new Error('No authentication token found');
         const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
           method: 'GET',

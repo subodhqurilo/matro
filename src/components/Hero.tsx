@@ -44,7 +44,7 @@ const Hero: React.FC = () => {
 
   const handlePreferenceSubmit = async (preferenceData: PreferenceData) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (!token) {
         throw new Error('Authentication token not found. Please log in again.');
       }

@@ -78,7 +78,7 @@ const Follow1Form = ({
       if (response.ok && data.success) {
         // Save token to localStorage
         if (data.token) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('authToken', data.token);
           console.log('Token saved to localStorage');
         }
         
