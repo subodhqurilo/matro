@@ -1,70 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-
+import { useState, useEffect } from 'react';
 import { Conversation, Message } from '@/types/chat';
 import MessageSidebar from '@/app/(dashboard)/messages/_components/MessageSidebar';
 import ChatArea from '@/app/(dashboard)/messages/_components/ChatArea';
-
-const conversations: Conversation[] = [
-  {
-
-    id: 1,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: true,
-    unreadCount: 0
-  },
-  {
-    id: 2,
-    name: "Ananya Sharma", 
-    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: false,
-    unreadCount: 0
-  },
-  {
-    id: 3,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile", 
-    isOnline: true,
-    unreadCount: 0
-  },
-  {
-    id: 4,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: false,
-    unreadCount: 0
-  },
-  {
-    id: 5,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: true,
-    unreadCount: 0
-  },
-  {
-    id: 6,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: false,
-    unreadCount: 0
-  },
-  {
-    id: 7,
-    name: "Ananya Sharma",
-    avatar: "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    lastMessage: "Hey! like your profile",
-    isOnline: true,
-    unreadCount: 0
-  }
-];
 
 const initialMessages: Message[] = [
   {
@@ -72,35 +11,85 @@ const initialMessages: Message[] = [
     text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
     sender: "other",
     timestamp: "8:00 PM",
-    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1"
+    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 2,
     text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
     sender: "me",
     timestamp: "8:00 PM",
-    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1"
+    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 3,
     text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
     sender: "other",
     timestamp: "8:00 PM",
-    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1"
+    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 4,
     text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
     sender: "me",
     timestamp: "8:00 PM",
-    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1"
-  }
+    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
+  },
 ];
 
 export default function Home() {
-  const [selectedConversation, setSelectedConversation] = useState<Conversation>(conversations[0]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Assume the current user's ID (this should come from auth context or similar)
+  const currentUserId = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjNWVmYTRlYzBjMGFiNmZjZWZkYmIiLCJpYXQiOjE3NTQwNTQ2MzksImV4cCI6MTc1NDY1OTQzOX0.drAfMlhy2OKcPEW5KsylvD8dmr19Xc2FHeP-Mk-aoFQ"; // Replace with actual user ID from auth
+
+  useEffect(() => {
+    async function fetchConversations() {
+      try {
+        setIsLoading(true);
+        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet');
+        if (!response.ok) {
+          throw new Error('Failed to fetch conversations');
+        }
+        const { success, data } = await response.json();
+        if (!success) {
+          throw new Error('API returned unsuccessful response');
+        }
+
+        // Map API data to Conversation type
+        const mappedConversations: Conversation[] = data.map((item: any) => {
+          // Determine the other user (not the current user)
+          const isCurrentUserRequester = item.requesterId._id === currentUserId;
+          const otherUser = isCurrentUserRequester ? item.receiverId : item.requesterId;
+
+          return {
+            id: item._id,
+            name: `${otherUser.firstName} ${otherUser.lastName}`,
+            avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1", // Default avatar
+            lastMessage: "No messages yet", // Default, replace with actual last message if available
+            isOnline: false, // Default, replace with actual status if available
+            unreadCount: 0, // Default, replace with actual count if available
+          };
+        });
+
+        setConversations(mappedConversations);
+        if (mappedConversations.length > 0) {
+          setSelectedConversation(mappedConversations[0]);
+        }
+      } catch (err) {
+        setError('Failed to load conversations. Please try again later.');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchConversations();
+  }, []);
 
   const handleSendMessage = (text: string) => {
     const newMessage: Message = {
@@ -110,7 +99,7 @@ export default function Home() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
     };
-    setMessages([...messages, newMessage]); // Ensure array is maintained
+    setMessages([...messages, newMessage]);
   };
 
   return (
@@ -125,22 +114,34 @@ export default function Home() {
       
       {/* Sidebar */}
       <div className={`${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 fixed md:static inset-y-0 left-0 z-50 md:z-0 transition-transform duration-200 ease-in-out`}>
-        <MessageSidebar 
-          conversations={conversations}
-          selectedConversation={selectedConversation}
-          onSelectConversation={setSelectedConversation}
-          onCloseSidebar={() => setIsSidebarOpen(false)}
-        />
+        {isLoading ? (
+          <div className="p-4">Loading conversations...</div>
+        ) : error ? (
+          <div className="p-4 text-red-500">{error}</div>
+        ) : (
+          <MessageSidebar 
+            conversations={conversations}
+            selectedConversation={selectedConversation || conversations[0]}
+            onSelectConversation={setSelectedConversation}
+            onCloseSidebar={() => setIsSidebarOpen(false)}
+          />
+        )}
       </div>
 
       {/* Main chat area */}
       <div className="flex-1 flex flex-col">
-        <ChatArea 
-          conversation={selectedConversation}
-          messages={messages}
-          onSendMessage={handleSendMessage}
-          onOpenSidebar={() => setIsSidebarOpen(true)}
-        />
+        {selectedConversation ? (
+          <ChatArea 
+            conversation={selectedConversation}
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            onOpenSidebar={() => setIsSidebarOpen(true)}
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <p>Select a conversation to start chatting</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import Step4Form from './steps/Step4';
 import Step5Form from './steps/Step5';
 import Step6Form from './steps/Step6';
 import Step7Form from './steps/Step7';
+import { PROFILE } from '@/utils/Api';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -86,7 +87,12 @@ export default function Navbar() {
             setUserFirstName(parsedData.firstName);
           }
           if (parsedData.profileComplete === false) {
-            setIsProfileSetupOpen(true);
+            // Add 5-second delay before opening profile setup
+            const timer = setTimeout(() => {
+              setIsProfileSetupOpen(true);
+            }, 5000);
+            
+            return () => clearTimeout(timer);
           }
         } catch (error) {
           console.error('Error parsing user data:', error);
@@ -98,7 +104,7 @@ export default function Navbar() {
   const handleLoginSuccess = async (token: string, userId: string) => {
     localStorage.setItem('authToken', token);
     try {
-      const response = await fetch(`https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/user/${userId}`, {
+      const response = await fetch(`${PROFILE.GET_USER_DATA}/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -112,7 +118,10 @@ export default function Navbar() {
           setUserFirstName(userData.firstName);
         }
         if (userData.profileComplete === false) {
-          setIsProfileSetupOpen(true);
+          // Add 5-second delay before opening profile setup
+          setTimeout(() => {
+            setIsProfileSetupOpen(true);
+          }, 5000);
         }
       } else {
         console.error('Failed to fetch user data:', await response.text());
@@ -134,6 +143,30 @@ export default function Navbar() {
     setIsProfileSetupOpen(false);
     setProfileStep(1);
     router.push('/');
+  };
+
+  const convertStringToBoolean = (value: string): boolean => {
+    return value === 'Yes' || value === 'true';
+  };
+
+  const handleProfileUpdateSuccess = (profileData: any) => {
+    const updatedUserData = {
+      ...JSON.parse(localStorage.getItem('userData') || '{}'),
+      ...profileData,
+      profileComplete: true,
+    };
+    
+    localStorage.setItem('userData', JSON.stringify(updatedUserData));
+    
+    if (profileData.firstName) {
+      setUserFirstName(profileData.firstName);
+    }
+    
+    setIsProfileSetupOpen(false);
+    setProfileStep(1);
+    setErrorMessage('');
+    
+    console.log('Profile updated successfully:', updatedUserData);
   };
 
   const openLoginModal = () => {
@@ -261,9 +294,46 @@ export default function Navbar() {
         return;
       }
 
+      const requiredFields = {
+        profileFor,
+        personalFirstName,
+        personalLastName,
+        dateOfBirth,
+        gender,
+        maritalStatus,
+        religion,
+        willingToMarryOtherCaste,
+        motherTongue,
+        height,
+        weight,
+        complexion,
+        anyDisability,
+        diet,
+        familyType,
+        familyStatus,
+        country,
+        state,
+        city,
+        highestEducation,
+        employedIn,
+        annualIncome,
+        workLocation,
+        designation
+      };
+
+      const missingFields = Object.entries(requiredFields)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+
+      if (missingFields.length > 0) {
+        setErrorMessage(`Missing required fields: ${missingFields.join(', ')}`);
+        setIsSubmitting(false);
+        return;
+      }
+
       const formData = new FormData();
       // Step 1
-      formData.append('profileFor', profileFor);
+      formData.append('profileFor', profileFor === 'myself' ? 'Self' : profileFor);
       formData.append('personalFirstName', personalFirstName);
       formData.append('personalMiddleName', personalMiddleName || '');
       formData.append('personalLastName', personalLastName);
@@ -274,7 +344,8 @@ export default function Navbar() {
       formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
       // Step 2
       formData.append('religion', religion);
-      formData.append('willingToMarryOtherCaste', willingToMarryOtherCaste);
+      const willingToMarryOtherCasteBool = convertStringToBoolean(willingToMarryOtherCaste);
+      formData.append('willingToMarryOtherCaste', willingToMarryOtherCasteBool.toString());
       formData.append('caste', caste || '');
       formData.append('community', community || '');
       formData.append('gotra', gotra || '');
@@ -283,7 +354,8 @@ export default function Navbar() {
       formData.append('height', height);
       formData.append('weight', weight);
       formData.append('complexion', complexion);
-      formData.append('anyDisability', anyDisability);
+      const anyDisabilityBool = convertStringToBoolean(anyDisability);
+      formData.append('anyDisability', anyDisabilityBool.toString());
       formData.append('diet', diet);
       // Step 4
       formData.append('familyType', familyType);
@@ -303,34 +375,74 @@ export default function Navbar() {
       if (adhaarCardFrontImage) formData.append('adhaarCardFrontImage', adhaarCardFrontImage, adhaarCardFrontImage.name);
       if (adhaarCardBackImage) formData.append('adhaarCardBackImage', adhaarCardBackImage, adhaarCardBackImage.name);
 
+      // Add additional fields that might be required by the API
+      formData.append('casteNoBar', 'true');
+      formData.append('openToPets', 'true');
+      formData.append('ownCar', 'false');
+      formData.append('ownHouse', 'false');
+      formData.append('manglik', 'false');
+      formData.append('smoking', 'false');
+      formData.append('drinking', 'false');
+
       // Log FormData contents for debugging
       const formDataEntries: any[] = [];
       formData.forEach((value, key) => {
         formDataEntries.push({ key, value: value instanceof File ? value.name : value });
       });
       console.log('FormData contents:', formDataEntries);
+      console.log('Token being used:', token ? 'Token present' : 'No token');
+      console.log('API URL:', PROFILE.UPDATE_PROFILE);
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/profile', {
+      // Log request details
+      console.log('Request method: POST');
+      console.log('Request headers:', {
+        Authorization: `Bearer ${token.substring(0, 20)}...`,
+        'Content-Type': 'multipart/form-data (auto-generated)'
+      });
+
+      // Test if the API endpoint is accessible
+      try {
+        const testResponse = await fetch(PROFILE.UPDATE_PROFILE, {
+          method: 'OPTIONS',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log('API endpoint test response:', testResponse.status);
+      } catch (testError) {
+        console.warn('API endpoint test failed:', testError);
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      const response = await fetch(PROFILE.UPDATE_PROFILE, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
       const responseText = await response.text();
-      console.log('API Response:', responseText);
+      console.log('API Response Status:', response.status);
+      console.log('API Response Headers:', response.headers);
+      console.log('API Response Text:', responseText);
 
       if (response.ok) {
         try {
-          const userData = JSON.parse(responseText);
-          localStorage.setItem('userData', JSON.stringify({
-            ...JSON.parse(localStorage.getItem('userData') || '{}'),
-            profileComplete: true,
-          }));
-          setIsProfileSetupOpen(false);
-          setProfileStep(1);
-          alert('Profile submitted successfully!');
+          const responseData = JSON.parse(responseText);
+          
+          if (responseData.success && responseData.data) {
+            handleProfileUpdateSuccess(responseData.data);
+            alert('Profile submitted successfully!');
+          } else {
+            setErrorMessage('Invalid response format from server. Please try again.');
+            console.error('Invalid response format:', responseData);
+          }
         } catch (error) {
           setErrorMessage('Failed to parse server response. Please try again.');
           console.error('Error parsing response:', error, 'Response text:', responseText);
@@ -342,11 +454,28 @@ export default function Navbar() {
         } catch {
           errorData = { message: responseText || 'Unknown server error' };
         }
-        setErrorMessage(`Profile submission failed: ${errorData.message || 'Unknown error'}`);
-        console.error('Profile submission failed:', errorData);
+        
+        const errorMessage = errorData.message || errorData.error || 'Unknown server error';
+        setErrorMessage(`Profile submission failed: ${errorMessage} (Status: ${response.status})`);
+        console.error('Profile submission failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          responseText
+        });
       }
     } catch (error) {
-      setErrorMessage('Error submitting profile. Please check your network and try again.');
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setErrorMessage('Request timed out. Please try again.');
+        } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          setErrorMessage('Network error. Please check your internet connection and try again.');
+        } else {
+          setErrorMessage(`Error submitting profile: ${error.message}`);
+        }
+      } else {
+        setErrorMessage('Error submitting profile. Please check your network and try again.');
+      }
       console.error('Error submitting profile:', error);
     } finally {
       setIsSubmitting(false);
@@ -483,7 +612,7 @@ export default function Navbar() {
                     openLoginModal();
                   }}
                 >
-                  Login
+                  Loginнивер
                 </button>
               ) : (
                 <>
