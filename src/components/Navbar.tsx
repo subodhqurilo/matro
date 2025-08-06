@@ -13,6 +13,7 @@ import Step5Form from './steps/Step5';
 import Step6Form from './steps/Step6';
 import Step7Form from './steps/Step7';
 import { PROFILE } from '@/utils/Api';
+import Link from 'next/link';
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -551,7 +552,9 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                   <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                     <p className="font-medium">{userFirstName || 'User'}</p>
+                    <Link href="/profiles">
                     <p className="text-xs text-gray-500">View Profile</p>
+                    </Link>
                   </div>
                   <button
                     onClick={() => {

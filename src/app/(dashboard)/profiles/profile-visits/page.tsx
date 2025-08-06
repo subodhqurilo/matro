@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Heart, X, Send } from "lucide-react"
@@ -19,55 +19,106 @@ interface Profile {
   location: string
   languages: string[]
   image: string
-  visitorType: "visitor" | "visited" // Profiles that visited user or profiles user visited
+  visitorType: "visitor" | "visited"
   status: "active" | "shortlisted" | "sent" | "notNow"
 }
 
-const initialProfiles: Profile[] = [
-  {
-    id: "1",
-    name: "Aaradhya Sharma",
-    profileId: "P9876668",
-    lastSeen: "Last seen an hour ago",
-    age: 28,
-    height: "5'5\"",
-    caste: "Brahmin",
-    profession: "Software Developer",
-    salary: "Earns $5-7 Lakh",
-    education: "B.Tech in computer science",
-    location: "Delhi",
-    languages: ["Hindi", "English"],
-    image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
-    visitorType: "visitor",
-    status: "active"
-  },
-  {
-    id: "2",
-    name: "Priya Verma",
-    profileId: "P9876669",
-    lastSeen: "Last seen 2 hours ago",
-    age: 27,
-    height: "5'3\"",
-    caste: "Kshatriya",
-    profession: "Marketing Manager",
-    salary: "Earns $7-10 Lakh",
-    education: "MBA",
-    location: "Mumbai",
-    languages: ["Hindi", "English", "Marathi"],
-    image: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compressCulprit: &cs=tinysrgb&w=400",
-    visitorType: "visited",
-    status: "active"
-  }
-]
+interface ApiProfile {
+  id: string
+  _id: string
+  name: string
+  age: number
+  height: string
+  caste: string
+  designation: string
+  religion: string
+  salary: string
+  education: string
+  location: string
+  languages: string
+  gender: string
+  profileImage: string
+  lastSeen: string
+}
 
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("Profile Visitors")
-  const [profiles, setProfiles] = useState<Profile[]>(initialProfiles)
+  const [profiles, setProfiles] = useState<Profile[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [token, setToken] = useState<string>("") // Added token state
 
   const tabs = [
     { name: "Profile Visitors", count: profiles.filter(p => p.visitorType === "visitor" && p.status !== "notNow").length },
     { name: "Profile I Visitors", count: profiles.filter(p => p.visitorType === "visited" && p.status !== "notNow").length }
   ]
+
+  const fetchProfiles = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      setLoading(true)
+      setError(null)
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No authentication token found. Please log in.');
+      }
+
+      // Fetch profiles I viewed
+      const viewedResponse = await fetch("https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/view/i-viewed", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      
+      const viewedData = await viewedResponse.json()
+      
+      // Fetch profiles who viewed me
+      const visitorsResponse = await fetch("https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/view/viewed-me", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+      const visitorsData = await visitorsResponse.json()
+
+      // Map API data to Profile interface
+      const mapApiProfile = (apiProfile: ApiProfile, visitorType: "visitor" | "visited"): Profile => ({
+        id: apiProfile._id,
+        name: apiProfile.name,
+        profileId: apiProfile.id,
+        lastSeen: new Date(apiProfile.lastSeen).toLocaleString(),
+        age: apiProfile.age,
+        height: apiProfile.height,
+        caste: apiProfile.caste,
+        profession: apiProfile.designation,
+        salary: apiProfile.salary,
+        education: apiProfile.education,
+        location: apiProfile.location,
+        languages: apiProfile.languages.split(",").map(lang => lang.trim()),
+        image: apiProfile.profileImage,
+        visitorType,
+        status: "active"
+      })
+
+      const viewedProfiles = viewedData.data.map((profile: ApiProfile) => mapApiProfile(profile, "visited"))
+      const visitorProfiles = visitorsData.data.map((profile: ApiProfile) => mapApiProfile(profile, "visitor"))
+
+      setProfiles([...viewedProfiles, ...visitorProfiles])
+    } catch (err) {
+      setError("Failed to fetch profiles. Please try again later.")
+      console.error(err);
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProfiles()
+  }, [])
 
   const handleSendConnection = (profileId: string) => {
     setProfiles(profiles.map(p => 
@@ -96,12 +147,24 @@ export default function MatrimonialApp() {
     return profiles
   }
 
+  if (loading) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading profiles...</div>
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-red-500">{error}</div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation Tabs */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="flex items-center justify-evenly  overflow-x-auto">
+          <div className="flex items-center justify-evenly overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.name}
