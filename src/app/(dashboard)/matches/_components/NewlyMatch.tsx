@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Profile } from "@/types/Profile";
+import { useRouter } from 'next/navigation';
 
 interface NewlyMatchedUser {
   _id: string;
@@ -28,6 +29,7 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
   const [newlyMatched, setNewlyMatched] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (activeTab !== "Newly Matched") return;
@@ -120,7 +122,8 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
               <img
                 src={profile.image}
                 alt={profile.name}
-                className="w-full h-48 object-cover rounded-md mb-4"
+                className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                onClick={() => router.push(`/matches/${profile.id}`)}
               />
               <h3 className="text-lg font-semibold">{profile.name}</h3>
               <p className="text-sm text-gray-600">{profile.age} years, {profile.height}</p>

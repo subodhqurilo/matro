@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { useRouter } from 'next/navigation';
 
 import {
   Dialog,
@@ -22,6 +23,8 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
   const [dialogTitle, setDialogTitle] = useState("Success");
+
+  const router = useRouter();
 
   const fetchAllMatches = async () => {
     try {
@@ -162,7 +165,8 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
                         alt={profile.name}
                         width={96}
                         height={96}
-                        className="object-cover w-full h-full"
+                        className="object-cover w-full h-full cursor-pointer"
+                        onClick={() => router.push(`/matches/${profile.id}`)}
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">

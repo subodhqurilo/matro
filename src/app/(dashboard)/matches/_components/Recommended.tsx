@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useRouter } from 'next/navigation';
 
 interface RecommendedProfile {
   _id: string;
@@ -42,6 +43,8 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
   const [dialogTitle, setDialogTitle] = useState("Success");
+
+  const router = useRouter();
 
   const fetchRecommendedProfiles = async () => {
     try {
@@ -278,7 +281,8 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                     alt={profile.name}
                     width={96}
                     height={96}
-                    className="object-cover w-full h-full"
+                    className="object-cover w-full h-full cursor-pointer"
+                    onClick={() => router.push(`/matches/${profile._id}`)}
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500 text-sm">
