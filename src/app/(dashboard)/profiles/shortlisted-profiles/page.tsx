@@ -7,37 +7,26 @@ import Image from "next/image"
 
 interface ShortlistedProfile {
   _id: string
-  firstName?: string
-  lastName?: string
-  name?: string
   id: string
-  createdAt?: string
-  updatedAt?: string
-  annualIncome?: string
-  caste?: string
-  city?: string
-  dateOfBirth?: string
-  designation?: string
-  gender?: string
-  height?: string
-  highestEducation?: string
-  motherTongue?: string
-  profileImage?: string
-  religion?: string
-  state?: string
-  age?: number
-  education?: string
-  location?: string
-  languages?: string
-  salary?: string
-  lastSeen?: string
-  viewedAt?: string
+  name: string
+  age: number
+  height: string
+  caste: string
+  designation: string
+  religion: string
+  salary: string
+  education: string
+  location: string
+  languages: string
+  gender: string
+  profileImage: string
+  lastSeen: string
+  viewedAt: string
 }
 
 interface ApiResponse {
   success: boolean
-  data?: ShortlistedProfile[]
-  theyShortlist?: (ShortlistedProfile | null)[]
+  data: ShortlistedProfile[]
 }
 
 interface Profile {
@@ -66,33 +55,24 @@ export default function MatrimonialApp() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch shortlisted profiles from API
   const fetchShortlistedProfiles = async () => {
     try {
       setLoading(true)
       setError(null)
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken')
       if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+        throw new Error('No authentication token found. Please log in.')
       }
 
-      // Fetch I Shortlisted profiles
-      const iShortlistResponse = await fetch(`${API_BASE_URL}iShortlist`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        }
-      })
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
 
-      // Fetch They Shortlisted profiles
-      const theyShortlistResponse = await fetch(`${API_BASE_URL}theyShortlist`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        }
-      })
+      const [iShortlistResponse, theyShortlistResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}iShortlist`, { method: 'GET', headers }),
+        fetch(`${API_BASE_URL}theyShortlist`, { method: 'GET', headers })
+      ])
 
       if (!iShortlistResponse.ok || !theyShortlistResponse.ok) {
         throw new Error('Failed to fetch shortlisted profiles')
@@ -101,58 +81,48 @@ export default function MatrimonialApp() {
       const iShortlistData: ApiResponse = await iShortlistResponse.json()
       const theyShortlistData: ApiResponse = await theyShortlistResponse.json()
 
-      // Transform API data to Profile format
       const transformedProfiles: Profile[] = []
 
       // Transform I Shortlisted profiles
       if (iShortlistData.success && iShortlistData.data) {
-        iShortlistData.data.forEach((profile) => {
-          const age = profile.dateOfBirth ? 
-            new Date().getFullYear() - new Date(profile.dateOfBirth).getFullYear() : 0
-
-          transformedProfiles.push({
-            id: profile._id,
-            name: `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || "Not specified",
-            profileId: profile.id,
-            lastSeen: "Recently active",
-            age: age,
-            height: profile.height || "Not specified",
-            caste: profile.caste || "Not specified",
-            profession: profile.designation || "Not specified",
-            salary: profile.annualIncome || "Not specified",
-            education: profile.highestEducation || "Not specified",
-            location: `${profile.city || ""} ${profile.state || ""}`.trim() || "Not specified",
-            languages: profile.motherTongue ? [profile.motherTongue] : ["Not specified"],
-            image: profile.profileImage || "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
-            shortlistType: "iShortlisted",
-            status: "shortlisted"
-          })
-        })
+        transformedProfiles.push(...iShortlistData.data.map(profile => ({
+          id: profile._id,
+          name: profile.name || "Not specified",
+          profileId: profile.id,
+          lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : "Recently active",
+          age: profile.age || 0,
+          height: profile.height || "Not specified",
+          caste: profile.caste || "Not specified",
+          profession: profile.designation || "Not specified",
+          salary: profile.salary || "Not specified",
+          education: profile.education || "Not specified",
+          location: profile.location || "Not specified",
+          languages: profile.languages ? profile.languages.split(",") : ["Not specified"],
+          image: profile.profileImage || "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
+          shortlistType: "iShortlisted" as const,
+          status: "shortlisted" as const
+        })))
       }
 
       // Transform They Shortlisted profiles
-      if (theyShortlistData.success && theyShortlistData.theyShortlist) {
-        theyShortlistData.theyShortlist.forEach((profile) => {
-          if (profile) {
-            transformedProfiles.push({
-              id: profile._id,
-              name: profile.name || `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || "Not specified",
-              profileId: profile.id,
-              lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : "Recently active",
-              age: profile.age || (profile.dateOfBirth ? new Date().getFullYear() - new Date(profile.dateOfBirth).getFullYear() : 0),
-              height: profile.height || "Not specified",
-              caste: profile.caste || "Not specified",
-              profession: profile.designation || "Not specified",
-              salary: profile.salary || profile.annualIncome || "Not specified",
-              education: profile.education || profile.highestEducation || "Not specified",
-              location: profile.location || `${profile.city || ""} ${profile.state || ""}`.trim() || "Not specified",
-              languages: profile.languages ? profile.languages.split(",") : (profile.motherTongue ? [profile.motherTongue] : ["Not specified"]),
-              image: profile.profileImage || "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
-              shortlistType: "theyShortlisted",
-              status: "active"
-            })
-          }
-        })
+      if (theyShortlistData.success && theyShortlistData.data) {
+        transformedProfiles.push(...theyShortlistData.data.map(profile => ({
+          id: profile._id,
+          name: profile.name || "Not specified",
+          profileId: profile.id,
+          lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : "Recently active",
+          age: profile.age || 0,
+          height: profile.height || "Not specified",
+          caste: profile.caste || "Not specified",
+          profession: profile.designation || "Not specified",
+          salary: profile.salary || "Not specified",
+          education: profile.education || "Not specified",
+          location: profile.location || "Not specified",
+          languages: profile.languages ? profile.languages.split(",") : ["Not specified"],
+          image: profile.profileImage || "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
+          shortlistType: "theyShortlisted" as const,
+          status: "active" as const
+        })))
       }
 
       setProfiles(transformedProfiles)
@@ -226,7 +196,6 @@ export default function MatrimonialApp() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Tabs */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex items-center justify-evenly overflow-x-auto">
@@ -246,7 +215,6 @@ export default function MatrimonialApp() {
           </div>
         </div>
       </div>
-      {/* Profile Cards */}
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
         {filteredProfiles().length === 0 ? (
           <div className="text-center py-12">
@@ -256,11 +224,10 @@ export default function MatrimonialApp() {
           filteredProfiles().map((profile) => (
             <Card key={profile.id} className="p-6 bg-white rounded-lg border border-[#7D0A0A]">
               <div className="flex items-start space-x-6">
-                {/* Profile Image */}
                 <div className="flex-shrink-0">
                   <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border border-gray-300">
                     <Image
-                      src={profile.image || "/placeholder.svg"}
+                      src={profile.image}
                       alt={profile.name}
                       width={96}
                       height={96}
@@ -268,7 +235,6 @@ export default function MatrimonialApp() {
                     />
                   </div>
                 </div>
-                {/* Profile Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="border-b border-[#757575] w-full font-Lato">
@@ -280,17 +246,16 @@ export default function MatrimonialApp() {
                   </div>
                   <div className="space-y-1 text-sm mt-2 text-regular">
                     <p className="text-[#1E1E1E]">
-                      <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
+                      <span className="font-Lato">{profile.age} Yrs</span> . {profile.height} . {profile.caste}
                     </p>
                     <p className="text-[#1E1E1E]">
                       {profile.profession} . {profile.salary}
                     </p>
                     <p className="text-[#1E1E1E]">{profile.education}</p>
                     <p className="text-[#1E1E1E]">{profile.location}</p>
-                    <p className="text-[#1E1E1E]">{profile.languages.join(",")}</p>
+                    <p className="text-[#1E1E1E]">{profile.languages.join(", ")}</p>
                   </div>
                 </div>
-                {/* Action Buttons */}
                 <div className="flex flex-col space-y-3 items-end border-l border-[#757575] w-[268px] px-8">
                   <div className="flex gap-6">
                     <div className="text-regular text-gray-600 mb-2 font-Lato mt-2">Send Connection</div>

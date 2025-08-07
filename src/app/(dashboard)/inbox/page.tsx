@@ -7,36 +7,53 @@ import Image from "next/image"
 
 interface ReceivedProfile {
   _id: string
-  firstName: string
-  lastName: string
+  name: string
   id: string
-  createdAt: string
-  updatedAt: string
-  annualIncome: string
-  caste: string
-  city: string
-  dateOfBirth: string
-  designation: string
-  gender: string
+  age: number
   height: string
-  highestEducation: string
-  motherTongue: string
-  profileImage: string
+  caste: string
+  designation: string
   religion: string
-  state: string
+  salary: string
+  education: string
+  location: string
+  languages: string
+  gender: string
+  profileImage: string
+  lastSeen: string
 }
 
 interface Request {
   requestId: string
   status: string
   createdAt: string
-  user: ReceivedProfile
+  user: ReceivedProfile | {
+    _id: string
+    firstName: string
+    lastName: string
+    id: string
+    createdAt: string
+    updatedAt: string
+    annualIncome?: string
+    caste?: string
+    city?: string
+    dateOfBirth?: string
+    designation?: string
+    gender?: string
+    height?: string
+    highestEducation?: string
+    motherTongue?: string
+    profileImage?: string
+    religion?: string
+    state?: string
+  }
   acceptedBy?: string
 }
 
 interface ApiResponse {
   success: boolean
-  requests: Request[]
+  data?: ReceivedProfile[]
+  requests?: Request[]
 }
 
 interface Profile {
@@ -54,7 +71,7 @@ interface Profile {
   languages: string[]
   image: string
   status: "received" | "acceptedByHer" | "acceptedByMe" | "sent" | "deleted"
-  requestId?: string // Added to track requestId for delete operations
+  requestId?: string
 }
 
 export default function MatrimonialApp() {
@@ -64,39 +81,38 @@ export default function MatrimonialApp() {
   const [sentProfiles, setSentProfiles] = useState<Profile[]>([])
   const [acceptedByMeProfiles, setAcceptedByMeProfiles] = useState<Profile[]>([])
   const [acceptedByOthersProfiles, setAcceptedByOthersProfiles] = useState<Profile[]>([])
-  const [deletedProfileIds, setDeletedProfileIds] = useState<string[]>([]) // Track deleted profiles
+  const [deletedProfileIds, setDeletedProfileIds] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
 
   const apiBase = "https://bxcfrrl4-3000.inc1.devtunnels.ms/api/request/"
 
-  // Transform API response to Profile format
-  const transformToProfile = (request: Request): Profile => {
-    const birthDate = new Date(request.user.dateOfBirth)
-    const today = new Date()
-    const age = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
-    const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age
+  const transformToProfile = (item: Request | ReceivedProfile, requestId?: string): Profile => {
+    let profileData: any = 'user' in item ? item.user : item
+    
+    const birthDate = profileData.dateOfBirth ? new Date(profileData.dateOfBirth) : null
+    const age = profileData.age || (birthDate ? Math.floor((new Date().getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000)) : 0)
 
     return {
-      id: request.user._id,
-      name: `${request.user.firstName} ${request.user.lastName}`,
-      profileId: request.user.id,
-      lastSeen: "Last seen recently",
-      age: actualAge,
-      height: request.user.height,
-      caste: request.user.caste,
-      profession: request.user.designation,
-      salary: request.user.annualIncome,
-      education: request.user.highestEducation,
-      location: `${request.user.city}, ${request.user.state}`,
-      languages: [request.user.motherTongue],
-      image: request.user.profileImage,
-             status: (request.acceptedBy === "other" ? "acceptedByHer" : request.status === "accepted" ? "acceptedByMe" : request.status) as "received" | "acceptedByHer" | "acceptedByMe" | "sent" | "deleted",
-      requestId: request.requestId
+      id: profileData._id,
+      name: profileData.name || `${profileData.firstName} ${profileData.lastName}`,
+      profileId: profileData.id,
+      lastSeen: profileData.lastSeen || "Last seen recently",
+      age: age,
+      height: profileData.height || "Not specified",
+      caste: profileData.caste || "Not specified",
+      profession: profileData.designation || "Not specified",
+      salary: profileData.salary || profileData.annualIncome || "Not specified",
+      education: profileData.education || profileData.highestEducation || "Not specified",
+      location: profileData.location || (profileData.city && profileData.state ? `${profileData.city}, ${profileData.state}` : "Not specified"),
+      languages: profileData.languages ? profileData.languages.split(",") : [profileData.motherTongue || "Not specified"],
+      image: profileData.profileImage || "/placeholder.svg",
+      status: ('acceptedBy' in item && item.acceptedBy === "other" ? "acceptedByHer" : 
+               'status' in item && item.status === "accepted" ? "acceptedByMe" : 
+               'status' in item ? item.status : "received") as "received" | "acceptedByHer" | "acceptedByMe" | "sent" | "deleted",
+      requestId: requestId || ('requestId' in item ? item.requestId : undefined)
     }
   }
 
-  // Fetch received requests
   const fetchReceivedRequests = async () => {
     setLoading(true)
     try {
@@ -108,9 +124,9 @@ export default function MatrimonialApp() {
           "Content-Type": "application/json",
         },
       })
-             const data: ApiResponse = await response.json()
-       const validProfiles = data.requests?.map(transformToProfile).filter(p => !deletedProfileIds.includes(p.id)) || []
-       setReceivedProfiles(validProfiles)
+      const data: ApiResponse = await response.json()
+      const validProfiles = data.data?.map(profile => transformToProfile(profile)).filter(p => !deletedProfileIds.includes(p.id)) || []
+      setReceivedProfiles(validProfiles)
     } catch (error) {
       console.error("Error fetching received requests:", error)
     } finally {
@@ -118,7 +134,6 @@ export default function MatrimonialApp() {
     }
   }
 
-  // Fetch sent requests
   const fetchSentRequests = async () => {
     setLoading(true)
     try {
@@ -130,9 +145,9 @@ export default function MatrimonialApp() {
           "Content-Type": "application/json",
         },
       })
-             const data: ApiResponse = await response.json()
-       const validProfiles = data.requests?.map(transformToProfile).filter(p => !deletedProfileIds.includes(p.id)) || []
-       setSentProfiles(validProfiles)
+      const data: ApiResponse = await response.json()
+      const validProfiles = data.requests?.map((item: Request) => transformToProfile(item)).filter(p => !deletedProfileIds.includes(p.id)) || []
+      setSentProfiles(validProfiles)
     } catch (error) {
       console.error("Error fetching sent requests:", error)
     } finally {
@@ -140,7 +155,6 @@ export default function MatrimonialApp() {
     }
   }
 
-  // Fetch accepted by me
   const fetchAcceptedByMe = async () => {
     setLoading(true)
     try {
@@ -152,9 +166,9 @@ export default function MatrimonialApp() {
           "Content-Type": "application/json",
         },
       })
-             const data: ApiResponse = await response.json()
-       const validProfiles = data.requests?.map(transformToProfile).filter(p => !deletedProfileIds.includes(p.id)) || []
-       setAcceptedByMeProfiles(validProfiles)
+      const data: ApiResponse = await response.json()
+      const validProfiles = data.requests?.map((item: Request) => transformToProfile(item)).filter(p => !deletedProfileIds.includes(p.id)) || []
+      setAcceptedByMeProfiles(validProfiles)
     } catch (error) {
       console.error("Error fetching accepted by me:", error)
     } finally {
@@ -162,7 +176,6 @@ export default function MatrimonialApp() {
     }
   }
 
-  // Fetch accepted by others
   const fetchAcceptedByOthers = async () => {
     setLoading(true)
     try {
@@ -174,9 +187,9 @@ export default function MatrimonialApp() {
           "Content-Type": "application/json",
         },
       })
-             const data: ApiResponse = await response.json()
-       const validProfiles = data.requests?.map(transformToProfile).filter(p => !deletedProfileIds.includes(p.id)) || []
-       setAcceptedByOthersProfiles(validProfiles)
+      const data: ApiResponse = await response.json()
+      const validProfiles = data.requests?.map((item: Request) => transformToProfile(item)).filter(p => !deletedProfileIds.includes(p.id)) || []
+      setAcceptedByOthersProfiles(validProfiles)
     } catch (error) {
       console.error("Error fetching accepted by others:", error)
     } finally {
@@ -184,10 +197,9 @@ export default function MatrimonialApp() {
     }
   }
 
-  // Delete request
   const deleteRequest = async (requestId: string, profileId: string) => {
     try {
-      const token = localStorage.getItem("token") || ""
+      const token = localStorage.getItem("authToken") || "" // Changed from "token" to "authToken"
       const response = await fetch(`${apiBase}deleteGet`, {
         method: "DELETE",
         headers: {
@@ -199,7 +211,6 @@ export default function MatrimonialApp() {
       const data = await response.json()
       if (data.success) {
         setDeletedProfileIds(prev => [...prev, profileId])
-        // Update all profile states to filter out the deleted profile
         setReceivedProfiles(prev => prev.filter(p => p.id !== profileId))
         setSentProfiles(prev => prev.filter(p => p.id !== profileId))
         setAcceptedByMeProfiles(prev => prev.filter(p => p.id !== profileId))
@@ -213,7 +224,6 @@ export default function MatrimonialApp() {
     }
   }
 
-  // Fetch all data on mount or when activeTab changes
   useEffect(() => {
     fetchReceivedRequests()
     fetchSentRequests()
@@ -229,25 +239,23 @@ export default function MatrimonialApp() {
   ]
 
   const handleSendConnection = (profileId: string) => {
-    // Note: No API provided for sending connections, so updating state locally
     setReceivedProfiles(prev =>
       prev.map(p => (p.id === profileId ? { ...p, status: "sent" } : p))
     )
-         setSentProfiles(prev => [
-       ...prev,
-       ...receivedProfiles.filter(p => p.id === profileId).map(p => ({ ...p, status: "sent" as const })),
-     ])
+    setSentProfiles(prev => [
+      ...prev,
+      ...receivedProfiles.filter(p => p.id === profileId).map(p => ({ ...p, status: "sent" as const })),
+    ])
   }
 
   const handleShortlist = (profileId: string) => {
-    // Note: No API provided for shortlisting, so updating state locally
     setReceivedProfiles(prev =>
       prev.map(p => (p.id === profileId ? { ...p, status: "acceptedByMe" } : p))
     )
-         setAcceptedByMeProfiles(prev => [
-       ...prev,
-       ...receivedProfiles.filter(p => p.id === profileId).map(p => ({ ...p, status: "acceptedByMe" as const })),
-     ])
+    setAcceptedByMeProfiles(prev => [
+      ...prev,
+      ...receivedProfiles.filter(p => p.id === profileId).map(p => ({ ...p, status: "acceptedByMe" as const })),
+    ])
   }
 
   const handleNotNow = (profileId: string) => {
@@ -289,7 +297,6 @@ export default function MatrimonialApp() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation Tabs */}
       <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex gap-10 overflow-x-auto items-center justify-evenly">
@@ -314,7 +321,6 @@ export default function MatrimonialApp() {
         </div>
       </div>
 
-      {/* Sub-tabs for Accepted */}
       {activeTab === "Accepted" && (
         <div className="flex gap-3 items-center justify-center mt-8">
           <Button
@@ -336,7 +342,6 @@ export default function MatrimonialApp() {
         </div>
       )}
 
-      {/* Profile Cards */}
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
         {loading ? (
           <div className="text-center py-8">
@@ -350,11 +355,10 @@ export default function MatrimonialApp() {
           filteredProfiles().map((profile) => (
             <Card key={profile.id} className="p-6 bg-white rounded-lg border border-[#7D0A0A]">
               <div className="flex items-start space-x-6">
-                {/* Profile Image */}
                 <div className="flex-shrink-0">
                   <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 border border-gray-300">
                     <Image
-                      src={profile.image || "/placeholder.svg"}
+                      src={profile.image}
                       alt={profile.name}
                       width={96}
                       height={96}
@@ -362,7 +366,6 @@ export default function MatrimonialApp() {
                     />
                   </div>
                 </div>
-                {/* Profile Details */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between">
                     <div className="border-b border-[#757575] w-full font-Lato">
@@ -374,17 +377,16 @@ export default function MatrimonialApp() {
                   </div>
                   <div className="space-y-1 text-sm mt-2 text-regular">
                     <p className="text-[#1E1E1E]">
-                      <span className="font-Lato">{profile.age} Yrs</span> . {profile.height.replace(/"/g, '&quot;')} . {profile.caste}
+                      <span className="font-Lato">{profile.age} Yrs</span> . {profile.height} . {profile.caste}
                     </p>
                     <p className="text-[#1E1E1E]">
                       {profile.profession} . {profile.salary}
                     </p>
                     <p className="text-[#1E1E1E]">{profile.education}</p>
                     <p className="text-[#1E1E1E]">{profile.location}</p>
-                    <p className="text-[#1E1E1E]">{profile.languages.join(",")}</p>
+                    <p className="text-[#1E1E1E]">{profile.languages.join(", ")}</p>
                   </div>
                 </div>
-                {/* Action Buttons */}
                 <div className="flex flex-col space-y-3 items-center border-l border-[#757575] w-[268px] px-8">
                   {activeTab === "Received" && (
                     <>

@@ -8,33 +8,35 @@ import ChatArea from '@/app/(dashboard)/messages/_components/ChatArea';
 const initialMessages: Message[] = [
   {
     id: 1,
-    text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "Hey, how's it going?",
     sender: "other",
     timestamp: "8:00 PM",
     avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 2,
-    text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "Pretty good, thanks for asking!",
     sender: "me",
-    timestamp: "8:00 PM",
+    timestamp: "8:02 PM",
     avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 3,
-    text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "Got any plans for the weekend?",
     sender: "other",
-    timestamp: "8:00 PM",
+    timestamp: "8:03 PM",
     avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
   {
     id: 4,
-    text: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,",
+    text: "Thinking about going hiking, you?",
     sender: "me",
-    timestamp: "8:00 PM",
+    timestamp: "8:05 PM",
     avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
   },
 ];
+
+const DEFAULT_AVATAR = "/Images/person.png";
 
 export default function Home() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -44,41 +46,34 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Assume the current user's ID (this should come from auth context or similar)
-  const currentUserId = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODhjNWVmYTRlYzBjMGFiNmZjZWZkYmIiLCJpYXQiOjE3NTQwNTQ2MzksImV4cCI6MTc1NDY1OTQzOX0.drAfMlhy2OKcPEW5KsylvD8dmr19Xc2FHeP-Mk-aoFQ"; // Replace with actual user ID from auth
-
   useEffect(() => {
-    async function fetchConversations() {
+    const fetchConversations = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        setIsLoading(true);
-        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet');
-        if (!response.ok) {
-          throw new Error('Failed to fetch conversations');
-        }
-        const { success, data } = await response.json();
-        if (!success) {
-          throw new Error('API returned unsuccessful response');
-        }
+        const res = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet')
 
-        // Map API data to Conversation type
-        const mappedConversations: Conversation[] = data.map((item: any) => {
-          // Determine the other user (not the current user)
-          const isCurrentUserRequester = item.requesterId._id === currentUserId;
-          const otherUser = isCurrentUserRequester ? item.receiverId : item.requesterId;
-
-          return {
-            id: item._id,
-            name: `${otherUser.firstName} ${otherUser.lastName}`,
-            avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1", // Default avatar
-            lastMessage: "No messages yet", // Default, replace with actual last message if available
-            isOnline: false, // Default, replace with actual status if available
-            unreadCount: 0, // Default, replace with actual count if available
-          };
-        });
-
-        setConversations(mappedConversations);
-        if (mappedConversations.length > 0) {
-          setSelectedConversation(mappedConversations[0]);
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          const mappedConversations: Conversation[] = data.data.map((item: any, idx: number) => {
+            // Determine the other user (not the current user)
+            // For demo, just use receiverId
+            const user = item.receiverId || item.requesterId;
+            return {
+              id: item._id || idx,
+              name: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
+              avatar: user && user.avatar ? user.avatar : DEFAULT_AVATAR,
+              lastMessage: item.status || '',
+              isOnline: false, // API does not provide online status
+              unreadCount: 0, // API does not provide unread count
+            };
+          });
+          setConversations(mappedConversations);
+          if (mappedConversations.length > 0) {
+            setSelectedConversation(mappedConversations[0]);
+          }
+        } else {
+          setError('No conversations found.');
         }
       } catch (err) {
         setError('Failed to load conversations. Please try again later.');
@@ -86,8 +81,7 @@ export default function Home() {
       } finally {
         setIsLoading(false);
       }
-    }
-
+    };
     fetchConversations();
   }, []);
 
@@ -100,6 +94,13 @@ export default function Home() {
       avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
     };
     setMessages([...messages, newMessage]);
+    
+    // Update last message in conversations
+    setConversations(conversations.map(conv => 
+      conv.id === selectedConversation?.id 
+        ? { ...conv, lastMessage: text }
+        : conv
+    ));
   };
 
   return (
