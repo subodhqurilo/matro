@@ -6,10 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import Modal from './Modal';
 
+interface AboutMeSectionProps {
+  aboutMe?: string;
+}
+
 const initialAbout = `I am a software engineer by profession and a creative thinker at heart. I value intellect, honesty, and kindness. Outside of work, I enjoy reading, exploring new places, and spending quality time with family. I am looking for someone who is respectful, supportive, and shares a positive outlook towards life.`;
 
-const AboutMeSection: React.FC = () => {
-  const [about, setAbout] = useState(initialAbout);
+const AboutMeSection: React.FC<AboutMeSectionProps> = ({ aboutMe }) => {
+  const [about, setAbout] = useState(aboutMe || initialAbout);
   const [modalOpen, setModalOpen] = useState(false);
   const [editValue, setEditValue] = useState(about);
 

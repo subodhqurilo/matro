@@ -7,11 +7,12 @@ import Image from "next/image"
 
 interface ShortlistedProfile {
   _id: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
+  name?: string
   id: string
-  createdAt: string
-  updatedAt: string
+  createdAt?: string
+  updatedAt?: string
   annualIncome?: string
   caste?: string
   city?: string
@@ -24,6 +25,13 @@ interface ShortlistedProfile {
   profileImage?: string
   religion?: string
   state?: string
+  age?: number
+  education?: string
+  location?: string
+  languages?: string
+  salary?: string
+  lastSeen?: string
+  viewedAt?: string
 }
 
 interface ApiResponse {
@@ -74,8 +82,6 @@ export default function MatrimonialApp() {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          // Add authorization header if needed
-          // 'Authorization': `Bearer ${token}`
         }
       })
 
@@ -106,7 +112,7 @@ export default function MatrimonialApp() {
 
           transformedProfiles.push({
             id: profile._id,
-            name: `${profile.firstName} ${profile.lastName}`,
+            name: `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || "Not specified",
             profileId: profile.id,
             lastSeen: "Recently active",
             age: age,
@@ -128,22 +134,19 @@ export default function MatrimonialApp() {
       if (theyShortlistData.success && theyShortlistData.theyShortlist) {
         theyShortlistData.theyShortlist.forEach((profile) => {
           if (profile) {
-            const age = profile.dateOfBirth ? 
-              new Date().getFullYear() - new Date(profile.dateOfBirth).getFullYear() : 0
-
             transformedProfiles.push({
               id: profile._id,
-              name: `${profile.firstName} ${profile.lastName}`,
+              name: profile.name || `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || "Not specified",
               profileId: profile.id,
-              lastSeen: "Recently active",
-              age: age,
+              lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : "Recently active",
+              age: profile.age || (profile.dateOfBirth ? new Date().getFullYear() - new Date(profile.dateOfBirth).getFullYear() : 0),
               height: profile.height || "Not specified",
               caste: profile.caste || "Not specified",
               profession: profile.designation || "Not specified",
-              salary: profile.annualIncome || "Not specified",
-              education: profile.highestEducation || "Not specified",
-              location: `${profile.city || ""} ${profile.state || ""}`.trim() || "Not specified",
-              languages: profile.motherTongue ? [profile.motherTongue] : ["Not specified"],
+              salary: profile.salary || profile.annualIncome || "Not specified",
+              education: profile.education || profile.highestEducation || "Not specified",
+              location: profile.location || `${profile.city || ""} ${profile.state || ""}`.trim() || "Not specified",
+              languages: profile.languages ? profile.languages.split(",") : (profile.motherTongue ? [profile.motherTongue] : ["Not specified"]),
               image: profile.profileImage || "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=400",
               shortlistType: "theyShortlisted",
               status: "active"

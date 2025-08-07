@@ -2,12 +2,16 @@ import React from 'react';
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
 
-const ProfilePhotoSection: React.FC = () => (
+interface ProfilePhotoSectionProps {
+  imageUrl?: string;
+}
+
+const ProfilePhotoSection: React.FC<ProfilePhotoSectionProps> = ({ imageUrl }) => (
   <div className="bg-white rounded-2xl p-6 shadow-sm">
     <div className="relative">
       <div className="w-40 h-40 mx-auto rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden">
         <Image 
-          src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop"
+          src={imageUrl || "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop"}
           alt="Profile"
           width={160}
           height={160}

@@ -101,48 +101,7 @@ function ProfilePage() {
       ]
     : [];
 
-  const partnerPreferences = [
-    {
-      category: "Basic preferences",
-      preferences: [
-        { label: "Preferred Groom's Age", value: "25-30 Yrs", match: true },
-        { label: "Preferred Height", value: "5'4\" - 5'10\"", match: false },
-        { label: "Preferred Marital status", value: "Never married", match: true },
-        { label: "Preferred Mother Tongue", value: "Gujarati", match: false },
-        { label: "Preferred Physical Status", value: "Normal", match: true },
-        { label: "Preferred Eating Habits", value: "Vegetarian, Eggetarian", match: true },
-        { label: "Preferred Smoking Habits", value: "Never smokes", match: false },
-        { label: "Preferred Drinking Habits", value: "Never drinks", match: false },
-      ],
-    },
-    {
-      category: "Religious Preference",
-      preferences: [
-        { label: "Preferred Religion", value: "Hindu", match: true },
-        { label: "Preferred Caste", value: "Yadhuva", match: true },
-        { label: "Preferred Subcaste", value: "Any", match: true },
-        { label: "Preferred Dosham", value: "Doesn't matter", match: true },
-      ],
-    },
-    {
-      category: "Professional Preference",
-      preferences: [
-        { label: "Preferred Education", value: "Any", match: true },
-        { label: "Preferred Employment type", value: "Any", match: true },
-        { label: "Preferred Occupation", value: "Any", match: true },
-        { label: "Preferred Annual Income", value: "₹5 lakhs - 20 lakhs", match: true },
-      ],
-    },
-    {
-      category: "Location Preference",
-      preferences: [
-        { label: "Preferred Country", value: "10 lakhs - 20 lakhs", match: true },
-        { label: "Preferred Residing state", value: "10 lakhs - 20 lakhs", match: true },
-        { label: "Preferred Residing city", value: "10 lakhs - 20 lakhs", match: true },
-        { label: "Preferred Citizenship", value: "10 lakhs - 20 lakhs", match: true },
-      ],
-    },
-  ];
+  
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -339,30 +298,8 @@ function ProfilePage() {
                 </p>
               </div>
             </div>
-            {/* Partner Preferences */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Partner Preferences</h2>
-              {partnerPreferences.map((category, index) => (
-                <div key={index} className="mb-6">
-                  <h3 className="text-lg font-medium text-gray-700 mb-3">{category.category}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {category.preferences.map((pref, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-                        <div className="text-purple-600">
-                          {pref.match ? <Check className="w-4 h-4" /> : <Star className="w-4 h-4" />}
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">{pref.label}</p>
-                          <p className="font-medium text-gray-800">{pref.value}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+         </div>
+         </div>
       </div>
     </div>
   );
