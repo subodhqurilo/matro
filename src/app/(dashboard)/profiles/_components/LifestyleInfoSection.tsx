@@ -1,11 +1,16 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Edit3, Plus, X } from 'lucide-react';
+import { Edit3 } from 'lucide-react';
 import Modal from './Modal';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
-type LifestyleSection = { label: string; items: string[]; isArray?: boolean };
+type LifestyleSection = { 
+  label: string; 
+  items: string[];
+  subLabels?: string[]; // Added optional subLabels property
+};
+
 interface LifestyleInfoSectionProps {
   lifestyleInfo: LifestyleSection[];
 }
@@ -20,75 +25,6 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string | null>(null);
-
-  // Helper function to map API data to UI structure
-  const mapApiDataToSections = (lifestyleHobbies: any): LifestyleSection[] => {
-    return [
-      {
-        label: 'Personal Habits',
-        items: [
-          lifestyleHobbies.diet || '',
-          lifestyleHobbies.smoking || '',
-          lifestyleHobbies.drinking || '',
-        ],
-        isArray: false,
-      },
-      {
-        label: 'Assets',
-        items: [
-          lifestyleHobbies.ownHouse || '',
-          lifestyleHobbies.ownCar || '',
-          lifestyleHobbies.openToPets || '',
-        ],
-        isArray: false,
-      },
-      {
-        label: 'Food I Cook',
-        items: Array.isArray(lifestyleHobbies.foodICook) ? lifestyleHobbies.foodICook : [''],
-        isArray: true,
-      },
-      {
-        label: 'Hobbies',
-        items: Array.isArray(lifestyleHobbies.hobbies) ? lifestyleHobbies.hobbies : [''],
-        isArray: true,
-      },
-      {
-        label: 'Interests',
-        items: Array.isArray(lifestyleHobbies.interests) ? lifestyleHobbies.interests : [''],
-        isArray: true,
-      },
-      {
-        label: 'Favorite Music',
-        items: Array.isArray(lifestyleHobbies.favoriteMusic) ? lifestyleHobbies.favoriteMusic : [''],
-        isArray: true,
-      },
-      {
-        label: 'Sports',
-        items: Array.isArray(lifestyleHobbies.sports) ? lifestyleHobbies.sports : [''],
-        isArray: true,
-      },
-      {
-        label: 'Cuisine',
-        items: Array.isArray(lifestyleHobbies.cuisine) ? lifestyleHobbies.cuisine : [''],
-        isArray: true,
-      },
-      {
-        label: 'Movies',
-        items: Array.isArray(lifestyleHobbies.movies) ? lifestyleHobbies.movies : [''],
-        isArray: true,
-      },
-      {
-        label: 'TV Shows',
-        items: Array.isArray(lifestyleHobbies.tvShows) ? lifestyleHobbies.tvShows : [''],
-        isArray: true,
-      },
-      {
-        label: 'Vacation Destination',
-        items: Array.isArray(lifestyleHobbies.vacationDestination) ? lifestyleHobbies.vacationDestination : [''],
-        isArray: true,
-      },
-    ];
-  };
 
   // Fetch lifestyle info on mount
   useEffect(() => {
@@ -108,8 +44,62 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
         if (!response.ok) throw new Error('Failed to fetch profile');
         const data = await response.json();
         const lifestyleHobbies = data?.data?.lifestyleHobbies || data?.lifestyleHobbies || {};
-        
-        const mappedLifestyleInfo = mapApiDataToSections(lifestyleHobbies);
+        const mappedLifestyleInfo: LifestyleSection[] = [
+          {
+            label: 'Personal Habits',
+            items: [
+              lifestyleHobbies.diet || '',
+              lifestyleHobbies.smoking || '',
+              lifestyleHobbies.drinking || '',
+            ],
+            subLabels: ['Diet', 'Smoking', 'Drinking'],
+          },
+          {
+            label: 'Assets',
+            items: [
+              lifestyleHobbies.openToPets || '',
+              lifestyleHobbies.ownCar || '',
+              lifestyleHobbies.ownHouse || '',
+            ],
+            subLabels: ['Open to Pets', 'Own Car', 'Own House'],
+          },
+          {
+            label: 'Food I Cook',
+            items: lifestyleHobbies.foodICook || [''],
+          },
+          {
+            label: 'Hobbies',
+            items: lifestyleHobbies.hobbies || [''],
+          },
+          {
+            label: 'Interests',
+            items: lifestyleHobbies.interests || [''],
+          },
+          {
+            label: 'Favorite Music',
+            items: lifestyleHobbies.favoriteMusic || [''],
+          },
+          {
+            label: 'Sports',
+            items: lifestyleHobbies.sports || [''],
+          },
+          {
+            label: 'Cuisine',
+            items: lifestyleHobbies.cuisine || [''],
+          },
+          {
+            label: 'Movies',
+            items: lifestyleHobbies.movies || [''],
+          },
+          {
+            label: 'TV Shows',
+            items: lifestyleHobbies.tvShows || [''],
+          },
+          {
+            label: 'Vacation Destination',
+            items: lifestyleHobbies.vacationDestination || [''],
+          },
+        ];
         setInfo(mappedLifestyleInfo);
         setEditValues(mappedLifestyleInfo);
       } catch (err: any) {
@@ -122,7 +112,7 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
   }, []);
 
   const handleEdit = () => {
-    setEditValues([...info]);
+    setEditValues(info);
     setModalOpen(true);
   };
 
@@ -135,32 +125,6 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
               items: section.items.map((item, iIdx) =>
                 iIdx === itemIdx ? value : item
               ),
-            }
-          : section
-      )
-    );
-  };
-
-  const handleAddItem = (sectionIdx: number) => {
-    setEditValues(prev =>
-      prev.map((section, sIdx) =>
-        sIdx === sectionIdx
-          ? {
-              ...section,
-              items: [...section.items, ''],
-            }
-          : section
-      )
-    );
-  };
-
-  const handleRemoveItem = (sectionIdx: number, itemIdx: number) => {
-    setEditValues(prev =>
-      prev.map((section, sIdx) =>
-        sIdx === sectionIdx
-          ? {
-              ...section,
-              items: section.items.filter((_, iIdx) => iIdx !== itemIdx),
             }
           : section
       )
@@ -190,9 +154,9 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
           diet: personalHabitsSection[0] || '',
           smoking: personalHabitsSection[1] || '',
           drinking: personalHabitsSection[2] || '',
-          ownHouse: assetsSection[0] || '',
+          openToPets: assetsSection[0] || '',
           ownCar: assetsSection[1] || '',
-          openToPets: assetsSection[2] || '',
+          ownHouse: assetsSection[2] || '',
           foodICook: foodICookSection.filter(item => item.trim() !== ''),
           hobbies: hobbiesSection.filter(item => item.trim() !== ''),
           interests: interestsSection.filter(item => item.trim() !== ''),
@@ -217,8 +181,62 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
       if (!response.ok) throw new Error('Failed to update lifestyle info');
       const updatedData = await response.json();
       const updatedLifestyleHobbies = updatedData?.data?.lifestyleHobbies || updatedData?.lifestyleHobbies || {};
-      
-      const mappedLifestyleInfo = mapApiDataToSections(updatedLifestyleHobbies);
+      const mappedLifestyleInfo: LifestyleSection[] = [
+        {
+          label: 'Personal Habits',
+          items: [
+            updatedLifestyleHobbies.diet || '',
+            updatedLifestyleHobbies.smoking || '',
+            updatedLifestyleHobbies.drinking || '',
+          ],
+          subLabels: ['Diet', 'Smoking', 'Drinking'],
+        },
+        {
+          label: 'Assets',
+          items: [
+            updatedLifestyleHobbies.openToPets || '',
+            updatedLifestyleHobbies.ownCar || '',
+            updatedLifestyleHobbies.ownHouse || '',
+          ],
+          subLabels: ['Open to Pets', 'Own Car', 'Own House'],
+        },
+        {
+          label: 'Food I Cook',
+          items: updatedLifestyleHobbies.foodICook || [''],
+        },
+        {
+          label: 'Hobbies',
+          items: updatedLifestyleHobbies.hobbies || [''],
+        },
+        {
+          label: 'Interests',
+          items: updatedLifestyleHobbies.interests || [''],
+        },
+        {
+          label: 'Favorite Music',
+          items: updatedLifestyleHobbies.favoriteMusic || [''],
+        },
+        {
+          label: 'Sports',
+          items: updatedLifestyleHobbies.sports || [''],
+        },
+        {
+          label: 'Cuisine',
+          items: updatedLifestyleHobbies.cuisine || [''],
+        },
+        {
+          label: 'Movies',
+          items: updatedLifestyleHobbies.movies || [''],
+        },
+        {
+          label: 'TV Shows',
+          items: updatedLifestyleHobbies.tvShows || [''],
+        },
+        {
+          label: 'Vacation Destination',
+          items: updatedLifestyleHobbies.vacationDestination || [''],
+        },
+      ];
       setInfo(mappedLifestyleInfo);
       setModalOpen(false);
       setUpdateStatus('Lifestyle info updated successfully!');
@@ -258,19 +276,14 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
           <div key={index}>
             <h4 className="text-sm font-semibold text-gray-900 mb-3">{section.label}</h4>
             <div className="space-y-2">
-              {section.items.length === 0 ? (
-                <div className="text-sm text-gray-600 flex items-center gap-2">
+              {section.items.map((item, itemIndex) => (
+                <div key={itemIndex} className="text-sm text-gray-600 flex items-center gap-2">
                   <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  Not specified
+                  <span>
+                    {section.subLabels ? `${section.subLabels[itemIndex]}: ` : ''}{item || 'Not specified'}
+                  </span>
                 </div>
-              ) : (
-                section.items.map((item, itemIndex) => (
-                  <div key={itemIndex} className="text-sm text-gray-600 flex items-center gap-2">
-                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                    {item || 'Not specified'}
-                  </div>
-                ))
-              )}
+              ))}
             </div>
           </div>
         ))}
@@ -286,52 +299,31 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
             handleSave();
           }}
         >
-          <div className="mb-4 w-full space-y-6 max-h-96 overflow-y-auto">
+          <div className="mb-4 w-full space-y-6">
             {editValues.map((section, sectionIdx) => (
               <div key={sectionIdx}>
                 <Label className="text-sm font-Inter text-gray-700 mb-1 block">
                   {section.label}
-                  {section.isArray && (
-                    <Button
-                      type="button"
-                      onClick={() => handleAddItem(sectionIdx)}
-                      className="ml-2 p-1 h-6 w-6 bg-rose-100 hover:bg-rose-200 text-rose-700"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </Button>
-                  )}
                 </Label>
                 {section.items.map((item, itemIdx) => (
-                  <div key={itemIdx} className="flex items-center gap-2 mb-2">
+                  <div key={itemIdx} className="mb-2">
+                    {section.subLabels && (
+                      <Label className="text-xs font-Inter text-gray-600 mb-1 block">
+                        {section.subLabels[itemIdx]}
+                      </Label>
+                    )}
                     <input
-                      className="flex-1 rounded-md border border-gray-300 p-2 font-Inter bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-700"
-                      value={item || ''}
+                      className="w-full rounded-md border border-gray-300 p-2 font-Inter bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-700"
+                      value={item || ''} // Prevent uncontrolled input
                       onChange={e => handleSectionChange(sectionIdx, itemIdx, e.target.value)}
                       placeholder={
                         section.label === 'Personal Habits'
-                          ? itemIdx === 0
-                            ? 'Diet (e.g., Vegetarian)'
-                            : itemIdx === 1
-                            ? 'Smoking (e.g., Yes/No)'
-                            : 'Drinking (e.g., Yes/No)'
+                          ? section.subLabels?.[itemIdx] || `Enter ${section.label.toLowerCase()}`
                           : section.label === 'Assets'
-                          ? itemIdx === 0
-                            ? 'Own House (e.g., Yes/No)'
-                            : itemIdx === 1
-                            ? 'Own Car (e.g., Yes/No)'
-                            : 'Open to Pets (e.g., Yes/No)'
+                          ? section.subLabels?.[itemIdx] || `Enter ${section.label.toLowerCase()}`
                           : `Enter ${section.label.toLowerCase()}`
                       }
                     />
-                    {section.isArray && section.items.length > 1 && (
-                      <Button
-                        type="button"
-                        onClick={() => handleRemoveItem(sectionIdx, itemIdx)}
-                        className="p-1 h-8 w-8 bg-red-100 hover:bg-red-200 text-red-700"
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
-                    )}
                   </div>
                 ))}
               </div>
