@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit3 } from 'lucide-react';
 import Modal from './Modal';
 import { Button } from '@/components/ui/button';
@@ -10,10 +10,53 @@ interface FamilyInfoSectionProps {
   familyInfo: FamilyInfoItem[];
 }
 
+const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+
 const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => {
   const [info, setInfo] = useState<FamilyInfoItem[]>(familyInfo);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editValues, setEditValues] = useState<FamilyInfoItem[]>(info);
+  const [editValues, setEditValues] = useState<FamilyInfoItem[]>(familyInfo);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
+
+  // Fetch family info on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) throw new Error('No authentication token found. Please log in.');
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        const familyDetails = data?.data?.familyDetails || data?.familyDetails || {};
+        const mappedFamilyInfo: FamilyInfoItem[] = [
+          { label: 'Family Background', value: familyDetails.familyBackground || '' },
+          { label: 'Father is', value: familyDetails.fatherOccupation || '' },
+          { label: 'Mother is', value: familyDetails.motherOccupation || '' },
+          { label: 'Brother', value: familyDetails.brother?.toString() || '' },
+          { label: 'Sister', value: familyDetails.sister?.toString() || '' },
+          { label: 'Family Based Out of', value: familyDetails.familyBasedOutOf || '' },
+        ];
+        setInfo(mappedFamilyInfo);
+        setEditValues(mappedFamilyInfo);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch family info');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleEdit = () => {
     setEditValues(info);
@@ -26,13 +69,70 @@ const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => 
     );
   };
 
-  const handleSave = () => {
-    setInfo(editValues);
-    setModalOpen(false);
+  const handleSave = async () => {
+    setUpdateStatus(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found. Please log in.');
+
+      const updatedFamilyInfo = {
+        familyDetails: {
+          familyBackground: editValues.find(item => item.label === 'Family Background')?.value || '',
+          fatherOccupation: editValues.find(item => item.label === 'Father is')?.value || '',
+          motherOccupation: editValues.find(item => item.label === 'Mother is')?.value || '',
+          brother: parseInt(editValues.find(item => item.label === 'Brother')?.value || '0', 10) || 0,
+          sister: parseInt(editValues.find(item => item.label === 'Sister')?.value || '0', 10) || 0,
+          familyBasedOutOf: editValues.find(item => item.label === 'Family Based Out of')?.value || '',
+        },
+      };
+
+      const response = await fetch(UPDATE_API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedFamilyInfo),
+      });
+
+      if (!response.ok) throw new Error('Failed to update family info');
+      const updatedData = await response.json();
+      const updatedFamilyDetails = updatedData?.data?.familyDetails || updatedData?.familyDetails || {};
+      const mappedFamilyInfo: FamilyInfoItem[] = [
+        { label: 'Family Background', value: updatedFamilyDetails.familyBackground || '' },
+        { label: 'Father is', value: updatedFamilyDetails.fatherOccupation || '' },
+        { label: 'Mother is', value: updatedFamilyDetails.motherOccupation || '' },
+        { label: 'Brother', value: updatedFamilyDetails.brother?.toString() || '' },
+        { label: 'Sister', value: updatedFamilyDetails.sister?.toString() || '' },
+        { label: 'Family Based Out of', value: updatedFamilyDetails.familyBasedOutOf || '' },
+      ];
+      setInfo(mappedFamilyInfo);
+      setModalOpen(false);
+      setUpdateStatus('Family info updated successfully!');
+    } catch (err: any) {
+      setUpdateStatus(err.message || 'Failed to update family info');
+    }
   };
+
+  if (loading) {
+    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-gray-600">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-red-500">{error}</div>;
+  }
 
   return (
     <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
+      {updateStatus && (
+        <div
+          className={`mb-4 p-2 rounded ${
+            updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {updateStatus}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Family</h3>
         <Edit3
@@ -67,7 +167,7 @@ const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => 
                 </Label>
                 <input
                   className="w-full rounded-md border border-gray-300 p-2 font-Inter bg-white text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-700"
-                  value={item.value}
+                  value={item.value || ''} // Prevent uncontrolled input
                   onChange={e => handleInputChange(index, e.target.value)}
                 />
               </div>

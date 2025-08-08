@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit3 } from 'lucide-react';
 import Modal from './Modal';
 import { Button } from '@/components/ui/button';
@@ -10,10 +10,52 @@ interface EducationSectionProps {
   education: EducationItem[];
 }
 
+const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+
 const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
   const [info, setInfo] = useState<EducationItem[]>(education);
   const [modalOpen, setModalOpen] = useState(false);
   const [editValues, setEditValues] = useState<EducationItem[]>(info);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
+
+  // Fetch education data on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) throw new Error('No authentication token found. Please log in.');
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        const data = await response.json();
+        const educationDetails = data?.data?.educationDetails || data?.educationDetails || {};
+        const mappedEducation: EducationItem[] = [
+          { label: 'Highest Degree', value: educationDetails.highestDegree || '' },
+          { label: 'Post Graduation', value: educationDetails.postGraduation || '' },
+          { label: 'Under Graduation', value: educationDetails.underGraduation || '' },
+          { label: 'School', value: educationDetails.school || '' },
+          { label: 'School Stream', value: educationDetails.schoolStream || '' },
+        ];
+        setInfo(mappedEducation);
+        setEditValues(mappedEducation);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch education details');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const handleEdit = () => {
     setEditValues(info);
@@ -26,13 +68,68 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
     );
   };
 
-  const handleSave = () => {
-    setInfo(editValues);
-    setModalOpen(false);
+  const handleSave = async () => {
+    setUpdateStatus(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found. Please log in.');
+
+      const updatedEducation = {
+        educationDetails: {
+          highestDegree: editValues.find(item => item.label === 'Highest Degree')?.value || '',
+          postGraduation: editValues.find(item => item.label === 'Post Graduation')?.value || '',
+          underGraduation: editValues.find(item => item.label === 'Under Graduation')?.value || '',
+          school: editValues.find(item => item.label === 'School')?.value || '',
+          schoolStream: editValues.find(item => item.label === 'School Stream')?.value || '',
+        },
+      };
+
+      const response = await fetch(UPDATE_API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedEducation),
+      });
+
+      if (!response.ok) throw new Error('Failed to update education details');
+      const updatedData = await response.json();
+      const updatedEducationDetails = updatedData?.data?.educationDetails || updatedData?.educationDetails || {};
+      const mappedEducation: EducationItem[] = [
+        { label: 'Highest Degree', value: updatedEducationDetails.highestDegree || '' },
+        { label: 'Post Graduation', value: updatedEducationDetails.postGraduation || '' },
+        { label: 'Under Graduation', value: updatedEducationDetails.underGraduation || '' },
+        { label: 'School', value: updatedEducationDetails.school || '' },
+        { label: 'School Stream', value: updatedEducationDetails.schoolStream || '' },
+      ];
+      setInfo(mappedEducation);
+      setModalOpen(false);
+      setUpdateStatus('Education details updated successfully!');
+    } catch (err: any) {
+      setUpdateStatus(err.message || 'Failed to update education details');
+    }
   };
+
+  if (loading) {
+    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-gray-600">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-red-500">{error}</div>;
+  }
 
   return (
     <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
+      {updateStatus && (
+        <div
+          className={`mb-4 p-2 rounded ${
+            updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {updateStatus}
+        </div>
+      )}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Education</h3>
         <Edit3

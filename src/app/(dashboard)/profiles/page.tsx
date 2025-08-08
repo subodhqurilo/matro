@@ -12,11 +12,13 @@ import BasicInfoSection from './_components/BasicInfoSection';
 import FamilyInfoSection from './_components/FamilyInfoSection';
 
 const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -34,7 +36,7 @@ const ProfilePage: React.FC = () => {
         });
         if (!response.ok) throw new Error('Failed to fetch profile');
         const data = await response.json();
-        setProfile(data.data || data); // adjust if API response shape is different
+        setProfile(data.data || data);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch profile');
       } finally {
@@ -43,6 +45,96 @@ const ProfilePage: React.FC = () => {
     };
     fetchProfile();
   }, []);
+
+  const handleUpdateProfile = async () => {
+    setUpdateStatus(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found. Please log in.');
+
+      const updatedProfile = {
+        basicInfo: {
+          postedBy: profile?.basicInfo?.postedBy || "Self",
+          firstName: profile?.basicInfo?.firstName || "ashok",
+          middleName: profile?.basicInfo?.middleName || "None",
+          lastName: profile?.basicInfo?.lastName || "kumar",
+          maritalStatus: profile?.basicInfo?.maritalStatus || "single",
+          anyDisability: profile?.basicInfo?.anyDisability || "No",
+          weight: profile?.basicInfo?.weight || 60,
+          complexion: profile?.basicInfo?.complexion || "Fair",
+          healthInformation: profile?.basicInfo?.healthInformation || "Healthy and active",
+          height: profile?.basicInfo?.height || "5ft 8in"
+        },
+        religionDetails: {
+          religion: profile?.religionDetails?.religion || "Hindu",
+          motherTongue: profile?.religionDetails?.motherTongue || "Tamil",
+          community: profile?.religionDetails?.community || "Iyer",
+          casteNoBar: profile?.religionDetails?.casteNoBar || "Yes",
+          gothra: profile?.religionDetails?.gothra || "None"
+        },
+        familyDetails: {
+          familyBackground: profile?.familyDetails?.familyBackground || "Nuclear",
+          fatherOccupation: profile?.familyDetails?.fatherOccupation || "Business",
+          motherOccupation: profile?.familyDetails?.motherOccupation || "Housewife",
+          brother: profile?.familyDetails?.brother || 4,
+          sister: profile?.familyDetails?.sister || 3,
+          familyBasedOutOf: profile?.familyDetails?.familyBasedOutOf || "Chennai"
+        },
+        astroDetails: {
+          manglik: profile?.astroDetails?.manglik || "Yes",
+          dateOfBirth: profile?.astroDetails?.dateOfBirth || "1995-05-21",
+          timeOfBirth: profile?.astroDetails?.timeOfBirth || "11:34 AM",
+          cityOfBirth: profile?.astroDetails?.cityOfBirth || "Delhi"
+        },
+        educationDetails: {
+          highestDegree: profile?.educationDetails?.highestDegree || "B.Tech",
+          postGraduation: profile?.educationDetails?.postGraduation || "MCA",
+          underGraduation: profile?.educationDetails?.underGraduation || "BCA",
+          school: profile?.educationDetails?.school || "DPS VK",
+          schoolStream: profile?.educationDetails?.schoolStream || "Science"
+        },
+        careerDetails: {
+          employedIn: profile?.careerDetails?.employedIn || "Private",
+          occupation: profile?.careerDetails?.occupation || "Developer",
+          company: profile?.careerDetails?.company || "Infosys",
+          annualIncome: profile?.careerDetails?.annualIncome || "8 LPA"
+        },
+        lifestyleHobbies: {
+          diet: profile?.lifestyleHobbies?.diet || "Vegetarian",
+          ownHouse: profile?.lifestyleHobbies?.ownHouse || "Yes",
+          ownCar: profile?.lifestyleHobbies?.ownCar || "Yes",
+          smoking: profile?.lifestyleHobbies?.smoking || "Yes",
+          drinking: profile?.lifestyleHobbies?.drinking || "Yes",
+          openToPets: profile?.lifestyleHobbies?.openToPets || "Yes",
+          foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Chicken"],
+          hobbies: profile?.lifestyleHobbies?.hobbies || ["Dancing", "Singing"],
+          interests: profile?.lifestyleHobbies?.interests || ["Traveling"],
+          favoriteMusic: profile?.lifestyleHobbies?.favoriteMusic || ["Pop"],
+          sports: profile?.lifestyleHobbies?.sports || ["Football"],
+          cuisine: profile?.lifestyleHobbies?.cuisine || ["Indian", "Chinese"],
+          tvShows: profile?.lifestyleHobbies?.tvShows || ["Friends", "Stranger Things"],
+          vacationDestination: profile?.lifestyleHobbies?.vacationDestination || ["Goa", "Manali"]
+        },
+        aboutMe: profile?.aboutMe || "I am a creative"
+      };
+
+      const response = await fetch(UPDATE_API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedProfile)
+      });
+
+      if (!response.ok) throw new Error('Failed to update profile');
+      const updatedData = await response.json();
+      setProfile(updatedData.data || updatedData);
+      setUpdateStatus('Profile updated successfully!');
+    } catch (err: any) {
+      setUpdateStatus(err.message || 'Failed to update profile');
+    }
+  };
 
   // Map API data to component props (using new structure)
   const mapBasicInfo = (p: any) => [
@@ -112,7 +204,6 @@ const ProfilePage: React.FC = () => {
     { label: 'Company', value: p?.careerDetails?.company || '' },
     { label: 'Annual Income', value: p?.careerDetails?.annualIncome || '' },
   ];
-  // Stats are not present in this API response, so use dummy values or remove if not needed
   const mapStats = (p: any) => [
     { number: '0', label: 'Profile Visits', color: 'bg-purple-50 text-purple-600' },
     { number: '0', label: 'Shortlisted Profiles', color: 'bg-yellow-50 text-yellow-600' },
@@ -133,6 +224,19 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white p-4">
       <div className="max-w-7xl mx-auto">
+        {/* <div className="flex justify-end mb-4">
+          <button
+            onClick={handleUpdateProfile}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Update Profile
+          </button>
+        </div>
+        {updateStatus && (
+          <div className={`mb-4 p-2 rounded ${updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            {updateStatus}
+          </div>
+        )} */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">

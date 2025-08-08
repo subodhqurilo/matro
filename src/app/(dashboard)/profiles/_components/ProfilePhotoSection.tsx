@@ -30,7 +30,7 @@ const ProfilePhotoSection: React.FC<ProfilePhotoSectionProps> = ({ imageUrl }) =
         <span className="text-sm">Get 2x more matches</span>
       </div>
     </div>
-    <div className="mt-6">
+    {/* <div className="mt-6">
       <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-gray-700">Complete your profile</span>
         <span className="text-sm text-gray-500">5%</span>
@@ -38,7 +38,7 @@ const ProfilePhotoSection: React.FC<ProfilePhotoSectionProps> = ({ imageUrl }) =
       <div className="w-full bg-gray-200 rounded-full h-2">
         <div className="bg-[#7D0A0A] h-2 rounded-full" style={{ width: '5%' }}></div>
       </div>
-    </div>
+    </div> */}
   </div>
 );
 
