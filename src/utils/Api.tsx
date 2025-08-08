@@ -11,3 +11,9 @@ export const PROFILE = {
   UPDATE_PROFILE: `${PROFILE_API_BASE_URL}/auth/profile`,
   GET_USER_DATA: `${PROFILE_API_BASE_URL}/auth/user`,
 };
+
+export const MESSAGE = {
+  ALL_USERS: '/api/message/allUserGet',
+  SEND: '/api/message',
+  getMessagesForUser: (currentUserId: string) => `/api/message?currentUserId=${encodeURIComponent(currentUserId)}`,
+};

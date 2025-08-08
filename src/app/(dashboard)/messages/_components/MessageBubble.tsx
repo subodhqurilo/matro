@@ -21,7 +21,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
             height={32}
             className="w-8 h-8 rounded-full object-cover"
           />
-        )}
+        )} 
+        
         
         <div className={`px-4 py-2 rounded-2xl ${
           isMe 

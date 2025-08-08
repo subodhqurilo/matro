@@ -1,106 +1,183 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Conversation, Message } from '@/types/chat';
+
 import MessageSidebar from '@/app/(dashboard)/messages/_components/MessageSidebar';
 import ChatArea from '@/app/(dashboard)/messages/_components/ChatArea';
-
-const initialMessages: Message[] = [
-  {
-    id: 1,
-    text: "Hey, how's it going?",
-    sender: "other",
-    timestamp: "8:00 PM",
-    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-  },
-  {
-    id: 2,
-    text: "Pretty good, thanks for asking!",
-    sender: "me",
-    timestamp: "8:02 PM",
-    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-  },
-  {
-    id: 3,
-    text: "Got any plans for the weekend?",
-    sender: "other",
-    timestamp: "8:03 PM",
-    avatar: "https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-  },
-  {
-    id: 4,
-    text: "Thinking about going hiking, you?",
-    sender: "me",
-    timestamp: "8:05 PM",
-    avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-  },
-];
-
-const DEFAULT_AVATAR = "/Images/person.png";
+import { Conversation, Message } from '@/types/chat';
 
 export default function Home() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Get current user ID from localStorage
+  const getCurrentUserId = async (): Promise<string | null> => {
+    try {
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        const parsedData = JSON.parse(userData);
+        
+        // Try different possible field names for user ID
+        const userId = parsedData._id || parsedData.userId || parsedData.id || parsedData.user?._id || parsedData.user?.userId || parsedData.user?.id;
+        
+        if (userId) {
+          return userId;
+        }
+        
+        // If no user ID found, log the structure for debugging
+        console.warn('User data structure:', parsedData);
+        console.warn('No user ID found in userData. Available fields:', Object.keys(parsedData));
+      }
+      
+      // Fallback: Try to fetch user data from API
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (response.ok) {
+            const userData = await response.json();
+            const userId = userData._id || userData.userId || userData.id || userData.user?._id || userData.user?.userId || userData.user?.id;
+            
+            if (userId) {
+              // Store the user data for future use
+              localStorage.setItem('userData', JSON.stringify(userData));
+              return userId;
+            }
+          }
+        } catch (apiError) {
+          console.error('Error fetching user data from API:', apiError);
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+    return null;
+  };
+
+  // Fetch messages for the current user
+  const fetchMessages = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found');
+
+      const currentUserId = await getCurrentUserId();
+      if (!currentUserId) throw new Error('No current user ID found');
+
+      const response = await fetch(`https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message?currentUserId=688c58fdac4ea7678d389a8d`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch messages');
+      }
+
+      const result = await response.json();
+      
+      if (result.success && Array.isArray(result.data)) {
+        // Process messages to add sender information
+        const processedMessages: Message[] = result.data.map((msg: any) => ({
+          id: msg._id,
+          senderId: msg.senderId,
+          receiverId: msg.receiverId,
+          text: msg.messageText,
+          isRead: msg.isRead,
+          timestamp: msg.timestamp,
+          createdAt: msg.createdAt,
+          updatedAt: msg.updatedAt,
+          sender: msg.senderId === currentUserId ? 'me' : 'other',
+          avatar: msg.senderId === currentUserId ? '/my-avatar.png' : '/default-avatar.png',
+        }));
+        
+        setMessages(processedMessages);
+      } else {
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      setError('Failed to fetch messages');
+    }
+  };
+
+  // Fetch conversations (users)
+  const fetchConversations = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found');
+
+      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch conversations');
+      }
+
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.data)) {
+        const mappedConversations: Conversation[] = data.data.map((user: any) => ({
+          id: user._id,
+          name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
+          avatar: user.profileImage || '/default-avatar.png',
+          lastMessage: '',
+          isOnline: false,
+          unreadCount: 0,
+        }));
+        
+        setConversations(mappedConversations);
+        if (mappedConversations.length > 0 && !selectedConversation) {
+          setSelectedConversation(mappedConversations[0]);
+        }
+      } else {
+        setConversations([]);
+      }
+    } catch (error) {
+      console.error('Error fetching conversations:', error);
+      setError('Failed to fetch conversations');
+    }
+  };
+
   useEffect(() => {
-    const fetchConversations = async () => {
+    const initializeData = async () => {
       setIsLoading(true);
       setError(null);
+      
       try {
-        const res = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet')
-
-        const data = await res.json();
-        if (data.success && Array.isArray(data.data)) {
-          const mappedConversations: Conversation[] = data.data.map((item: any, idx: number) => {
-            // Determine the other user (not the current user)
-            // For demo, just use receiverId
-            const user = item.receiverId || item.requesterId;
-            return {
-              id: item._id || idx,
-              name: user ? `${user.firstName} ${user.lastName}` : 'Unknown',
-              avatar: user && user.avatar ? user.avatar : DEFAULT_AVATAR,
-              lastMessage: item.status || '',
-              isOnline: false, // API does not provide online status
-              unreadCount: 0, // API does not provide unread count
-            };
-          });
-          setConversations(mappedConversations);
-          if (mappedConversations.length > 0) {
-            setSelectedConversation(mappedConversations[0]);
-          }
-        } else {
-          setError('No conversations found.');
-        }
-      } catch (err) {
-        setError('Failed to load conversations. Please try again later.');
-        console.error(err);
+        await Promise.all([fetchConversations(), fetchMessages()]);
+      } catch (error) {
+        console.error('Error initializing data:', error);
+        setError('Failed to initialize data');
       } finally {
         setIsLoading(false);
       }
     };
-    fetchConversations();
+
+    initializeData();
   }, []);
 
   const handleSendMessage = (text: string) => {
-    const newMessage: Message = {
-      id: messages.length + 1,
-      text,
-      sender: "me",
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      avatar: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=1",
-    };
-    setMessages([...messages, newMessage]);
-    
-    // Update last message in conversations
-    setConversations(conversations.map(conv => 
-      conv.id === selectedConversation?.id 
-        ? { ...conv, lastMessage: text }
-        : conv
-    ));
+    // This will be handled by the ChatArea component
+    // We just need to refresh messages after sending
+    fetchMessages();
   };
 
   return (
@@ -120,12 +197,15 @@ export default function Home() {
         ) : error ? (
           <div className="p-4 text-red-500">{error}</div>
         ) : (
-          <MessageSidebar 
-            conversations={conversations}
-            selectedConversation={selectedConversation || conversations[0]}
-            onSelectConversation={setSelectedConversation}
-            onCloseSidebar={() => setIsSidebarOpen(false)}
-          />
+          (selectedConversation || conversations.length > 0) ? (
+            <MessageSidebar 
+              selectedConversation={(selectedConversation ?? conversations[0])!}
+              onSelectConversation={(conversation) => setSelectedConversation(conversation)}
+              onCloseSidebar={() => setIsSidebarOpen(false)}
+            />
+          ) : (
+            <div className="p-4">No conversations</div>
+          )
         )}
       </div>
 
@@ -134,8 +214,7 @@ export default function Home() {
         {selectedConversation ? (
           <ChatArea 
             conversation={selectedConversation}
-            messages={messages}
-            onSendMessage={handleSendMessage}
+            initialMessages={messages}
             onOpenSidebar={() => setIsSidebarOpen(true)}
           />
         ) : (
