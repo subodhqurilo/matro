@@ -10,8 +10,8 @@ interface FamilyInfoSectionProps {
   familyInfo: FamilyInfoItem[];
 }
 
-const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
 
 const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => {
   const [info, setInfo] = useState<FamilyInfoItem[]>(familyInfo);
@@ -115,18 +115,18 @@ const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => 
   };
 
   if (loading) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-gray-600">Loading...</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;
   }
 
   if (error) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-red-500">{error}</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-red-500">{error}</div>;
   }
 
   return (
-    <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
+    <div className="bg-[#FFF8F0]  p-6 shadow-sm">
       {updateStatus && (
         <div
-          className={`mb-4 p-2 rounded ${
+          className={`mb-4 p-2  ${
             updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
           }`}
         >
@@ -140,14 +140,25 @@ const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => 
           onClick={handleEdit}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {info.map((item, index) => (
-          <div key={index} className="flex justify-between items-center py-2">
-            <span className="text-sm text-gray-600">{item.label}</span>
-            <span className="text-sm font-medium text-gray-900">{item.value}</span>
-          </div>
-        ))}
+      <div className="grid grid-cols-2 divide-x divide-dashed divide-gray-300">
+  <div className="space-y-3 pr-6">
+    {info.slice(0, Math.ceil(info.length / 2)).map((item, index) => (
+      <div key={index} className="flex justify-between text-sm">
+        <span className="text-gray-600 w-1/2">{item.label}</span>
+        <span className="text-gray-900 font-medium w-1/2">: {item.value}</span>
       </div>
+    ))}
+  </div>
+  <div className="space-y-3 pl-6">
+    {info.slice(Math.ceil(info.length / 2)).map((item, index) => (
+      <div key={index} className="flex justify-between text-sm">
+        <span className="text-gray-600 w-1/2">{item.label}</span>
+        <span className="text-gray-900 font-medium w-1/2">: {item.value}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="flex flex-col items-center justify-center gap-3 mb-4">

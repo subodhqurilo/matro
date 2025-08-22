@@ -65,7 +65,7 @@ export default function MatrimonialApp() {
       }
 
       // Fetch profiles I viewed
-      const viewedResponse = await fetch("https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/view/i-viewed", {
+      const viewedResponse = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/view/i-viewed", {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export default function MatrimonialApp() {
       const viewedData = await viewedResponse.json()
       
       // Fetch profiles who viewed me
-      const visitorsResponse = await fetch("https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/view/viewed-me", {
+      const visitorsResponse = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/view/viewed-me", {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

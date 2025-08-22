@@ -53,7 +53,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         throw new Error('No authentication token found. Please log in.');
       }
       setIsLoadingRecommendations(true);
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/recommendation/daily', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/recommendation/daily', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/request/send', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/request/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/like/send', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/like/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         throw new Error('No authentication token found. Please log in.');
       }
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/cross/user', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/cross/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

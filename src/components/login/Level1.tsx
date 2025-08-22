@@ -74,7 +74,7 @@ const Level1Form = ({
       const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
       
       // Verify the OTP using the login endpoint
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/login', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

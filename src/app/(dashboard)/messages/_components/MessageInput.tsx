@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Send, Paperclip, MoreHorizontal } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Send, Paperclip, X, Image as ImageIcon, FileText } from 'lucide-react';
 
 interface MessageInputProps {
   onSendMessage: (text: string) => void;
@@ -9,40 +9,59 @@ interface MessageInputProps {
 
 export default function MessageInput({ onSendMessage }: MessageInputProps) {
   const [message, setMessage] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      onSendMessage(message);
+      onSendMessage(message.trim());
       setMessage('');
+     
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  
+
+ 
+
   return (
     <div className="p-4 border-t border-gray-200 bg-white">
-      <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+      {/* File Preview */}
+    
+
+      <form onSubmit={handleSubmit} className="flex items-end space-x-3">
        
         
-        <div className="flex-1 relative">
-          <input
-            type="text"
+        <div className="flex-1">
+          <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="w-full px-4 py-2 pr-12 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message..."
+            className="w-full resize-none border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            rows={1}
+            style={{ minHeight: "44px", maxHeight: "120px" }}
           />
-          
-        
         </div>
         
         <button
           type="submit"
-          disabled={!message.trim()}
-          className="p-2 bg-purple-500 text-white rounded-full hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          disabled={!message.trim() && selectedFiles.length === 0}
+          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white mb-2 p-3 rounded-lg hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl"
         >
-          <Send size={20} />
+          <Send className="h-5 w-5" />
         </button>
       </form>
+
+     
     </div>
   );
 }

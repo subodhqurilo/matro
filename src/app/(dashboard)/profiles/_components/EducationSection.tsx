@@ -10,8 +10,8 @@ interface EducationSectionProps {
   education: EducationItem[];
 }
 
-const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
 
 const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
   const [info, setInfo] = useState<EducationItem[]>(education);
@@ -112,18 +112,18 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
   };
 
   if (loading) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-gray-600">Loading...</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;
   }
 
   if (error) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-red-500">{error}</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-red-500">{error}</div>;
   }
 
   return (
-    <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
+    <div className="bg-[#FFF8F0]  p-6 shadow-sm">
       {updateStatus && (
         <div
-          className={`mb-4 p-2 rounded ${
+          className={`mb-4 p-2  ${
             updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
           }`}
         >
@@ -137,14 +137,19 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
           onClick={handleEdit}
         />
       </div>
-      <div className="space-y-3">
-        {info.map((item, index) => (
-          <div key={index} className="flex justify-between items-center">
-            <span className="text-sm text-gray-600">{item.label}</span>
-            <span className="text-sm font-medium text-gray-900">{item.value}</span>
-          </div>
-        ))}
+     
+      <div className="space-y-2">
+  {info.map((item, index) => (
+    <div key={index} className="flex text-sm text-gray-700">
+      <div className="w-1/2 flex">
+        <span className="text-gray-600">{item.label}</span>
+        <span className="ml-1">:</span>
       </div>
+      <div className="w-1/2 font-medium">{item.value || 'Not specified'}</div>
+    </div>
+  ))}
+</div>
+
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="flex flex-col items-center justify-center gap-3 mb-4">

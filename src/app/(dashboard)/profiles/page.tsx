@@ -11,8 +11,8 @@ import AstroDetailsSection from './_components/AstroDetailsSection';
 import BasicInfoSection from './_components/BasicInfoSection';
 import FamilyInfoSection from './_components/FamilyInfoSection';
 
-const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -103,19 +103,19 @@ const ProfilePage: React.FC = () => {
           diet: profile?.lifestyleHobbies?.diet || "Vegetarian",
           ownHouse: profile?.lifestyleHobbies?.ownHouse || "Yes",
           ownCar: profile?.lifestyleHobbies?.ownCar || "Yes",
-          smoking: profile?.lifestyleHobbies?.smoking || "Yes",
-          drinking: profile?.lifestyleHobbies?.drinking || "Yes",
+          smoking: profile?.lifestyleHobbies?.smoking || "No",
+          drinking: profile?.lifestyleHobbies?.drinking || "NO",
           openToPets: profile?.lifestyleHobbies?.openToPets || "Yes",
-          foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Chicken"],
+          foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Veggies"],
           hobbies: profile?.lifestyleHobbies?.hobbies || ["Dancing", "Singing"],
           interests: profile?.lifestyleHobbies?.interests || ["Traveling"],
-          favoriteMusic: profile?.lifestyleHobbies?.favoriteMusic || ["Pop"],
-          sports: profile?.lifestyleHobbies?.sports || ["Football"],
-          cuisine: profile?.lifestyleHobbies?.cuisine || ["Indian", "Chinese"],
-          tvShows: profile?.lifestyleHobbies?.tvShows || ["Friends", "Stranger Things"],
-          vacationDestination: profile?.lifestyleHobbies?.vacationDestination || ["Goa", "Manali"]
+          favoriteMusic: profile?.lifestyleHobbies?.favoriteMusic || ["Depend on mood bro"],
+          sports: profile?.lifestyleHobbies?.sports || ["Cricket"],
+          cuisine: profile?.lifestyleHobbies?.cuisine || ["Indian", "only indian bro"],
+          tvShows: profile?.lifestyleHobbies?.tvShows || ["Mahabharat", "Ramayan"],
+          vacationDestination: profile?.lifestyleHobbies?.vacationDestination || ["Uttrakhand", "Temples"]
         },
-        aboutMe: profile?.aboutMe || "I am a creative"
+        aboutMe: profile?.aboutMe || "I am a Mindblowing"
       };
 
       const response = await fetch(UPDATE_API_URL, {
@@ -237,7 +237,7 @@ const ProfilePage: React.FC = () => {
             {updateStatus}
           </div>
         )} */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-white">
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
             <ProfilePhotoSection imageUrl={profile?.profileImage?.profileImage} />

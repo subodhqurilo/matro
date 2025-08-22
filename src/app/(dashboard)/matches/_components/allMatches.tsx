@@ -36,7 +36,7 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
       setIsLoadingMatches(true);
       
       const response = await fetch(
-        "https://bxcfrrl4-3000.inc1.devtunnels.ms/api/like/allMatches",
+        "https://393rb0pp-3000.inc1.devtunnels.ms/api/like/allMatches",
         {
           method: "GET",
           headers: {

@@ -15,8 +15,8 @@ interface LifestyleInfoSectionProps {
   lifestyleInfo: LifestyleSection[];
 }
 
-const API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
+const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
 
 const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleInfo }) => {
   const [info, setInfo] = useState<LifestyleSection[]>(lifestyleInfo);
@@ -246,18 +246,18 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
   };
 
   if (loading) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-gray-600">Loading...</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;
   }
 
   if (error) {
-    return <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm text-red-500">{error}</div>;
+    return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-red-500">{error}</div>;
   }
 
   return (
-    <div className="bg-[#FFF8F0] rounded-2xl p-6 shadow-sm">
+    <div className="bg-[#FFF8F0]  p-6 shadow-sm">
       {updateStatus && (
         <div
-          className={`mb-4 p-2 rounded ${
+          className={`mb-4 p-2  ${
             updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
           }`}
         >
@@ -271,23 +271,40 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
           onClick={handleEdit}
         />
       </div>
-      <div className="space-y-6">
-        {info.map((section, index) => (
-          <div key={index}>
-            <h4 className="text-sm font-semibold text-gray-900 mb-3">{section.label}</h4>
-            <div className="space-y-2">
-              {section.items.map((item, itemIndex) => (
-                <div key={itemIndex} className="text-sm text-gray-600 flex items-center gap-2">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                  <span>
-                    {section.subLabels ? `${section.subLabels[itemIndex]}: ` : ''}{item || 'Not specified'}
-                  </span>
-                </div>
-              ))}
-            </div>
+     
+      <div className="grid grid-cols-1 md:grid-cols-2 divide-x divide-dashed divide-gray-300">
+  <div className="pr-6 space-y-4">
+    {info.slice(0, Math.ceil(info.length / 2)).map((section, index) => (
+      <div key={index}>
+        <div className="text-sm font-semibold text-gray-900 mb-1">{section.label}</div>
+        {section.items.map((item, itemIndex) => (
+          <div key={itemIndex} className="flex justify-between text-sm text-gray-700">
+            <span className="text-gray-600 w-1/2">
+              {section.subLabels ? section.subLabels[itemIndex] : section.label}
+            </span>
+            <span className="font-medium w-1/2 text-right">{item || 'Not specified'}</span>
           </div>
         ))}
       </div>
+    ))}
+  </div>
+  <div className="pl-6 space-y-4">
+    {info.slice(Math.ceil(info.length / 2)).map((section, index) => (
+      <div key={index}>
+        <div className="text-sm font-semibold text-gray-900 mb-1">{section.label}</div>
+        {section.items.map((item, itemIndex) => (
+          <div key={itemIndex} className="flex justify-between text-sm text-gray-700">
+            <span className="text-gray-600 w-1/2">
+              {section.subLabels ? section.subLabels[itemIndex] : section.label}
+            </span>
+            <span className="font-medium w-1/2 text-right">{item || 'Not specified'}</span>
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="flex flex-col items-center justify-center gap-3 mb-4">

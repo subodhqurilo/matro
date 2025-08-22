@@ -50,7 +50,7 @@ const Follow2Form = ({
         throw new Error('No authentication token found. Please try registering again.');
       }
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/auth/otp', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/auth/otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

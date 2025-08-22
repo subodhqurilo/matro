@@ -31,7 +31,7 @@ export default function MatrimonialApp() {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error('No authentication token found');
-        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
+        const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/message/allUserGet', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -81,12 +81,12 @@ export default function MatrimonialApp() {
   const filteredProfiles = getFilteredProfiles(matches, activeTab);
 
   return (
-    <div className="min-h-screen bg-gray-50 border border-blue-800">
+    <div className="min-h-screen bg-gray-50  ">
       <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+            <div className="animate-spin rounded-full h-12 w-12 "></div>
           </div>
         ) : error ? (
           <div className="text-center py-8 text-red-600">{error}</div>

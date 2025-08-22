@@ -615,7 +615,7 @@ export default function Navbar() {
                     openLoginModal();
                   }}
                 >
-                  Loginнивер
+                  Login
                 </button>
               ) : (
                 <>
@@ -646,7 +646,7 @@ export default function Navbar() {
 
       {/* LOGIN MODAL */}
       {isLoginOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 backdrop-blur-sm">
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <button
               className="absolute right-3 top-3 text-gray-500 hover:text-red-500"
@@ -675,7 +675,7 @@ export default function Navbar() {
 
       {/* SIGNUP MODAL */}
       {isSignupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-40 backdrop-blur-sm">
           <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
             <button
               className="absolute right-3 top-3 text-gray-500 hover:text-red-500"
@@ -690,8 +690,8 @@ export default function Navbar() {
 
       {/* PROFILE SETUP MODAL */}
       {isProfileSetupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
-          <div className="relative bg-[#FFFFF1] rounded-lg shadow-xl w-full max-w-md mx-auto p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-opacity-40">
+          <div className="relative rounded-lg shadow-xl w-full max-w-md mx-auto p-6 animate-fade-in custom-scrollbar bg-white px-4 py-4 min-w-[450px] max-h-[90vh] overflow-y-auto">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
               onClick={() => setIsProfileSetupOpen(false)}

@@ -32,11 +32,7 @@ const Hero: React.FC = () => {
   const [motherTongue, setMotherTongue] = useState('English');
   const [showPreferenceForm, setShowPreferenceForm] = useState(false);
 
-  const handleQuickSearch = () => {
-    // Handle quick search functionality here
-    console.log('Quick search with:', { lookingFor, ageFrom, ageTo, religion, motherTongue });
-    // You can redirect to search results page or handle search logic
-  };
+ 
 
   const handleDetailedPreferences = () => {
     setShowPreferenceForm(true);
@@ -49,7 +45,7 @@ const Hero: React.FC = () => {
         throw new Error('Authentication token not found. Please log in again.');
       }
 
-      const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/partner/preference', {
+      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/partner/preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,13 +162,7 @@ const Hero: React.FC = () => {
             
             {/* Button Group */}
             <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                className="bg-[#7D0A0A] text-white w-full py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#5A0707] transition-colors duration-200"
-                onClick={handleQuickSearch}
-              >
-                Quick Search
-              </button>
+            
               <button
                 type="button"
                 className="bg-white text-[#7D0A0A] border-2 border-[#7D0A0A] w-full py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#7D0A0A] hover:text-white transition-colors duration-200"
@@ -190,7 +180,7 @@ const Hero: React.FC = () => {
             {/* Main Search Row */}
             <div className="flex items-center justify-evenly gap-6 w-full">
               <div className="flex flex-col">
-                <label className="text-sm mb-1 font-medium text-[#757575] font-sans">I'm looking for a</label>
+                <label className="text-sm mb-1 font-medium text-[#1C1C1C] font-sans">I'm looking for a</label>
                 <select 
                   value={lookingFor}
                   onChange={(e) => setLookingFor(e.target.value)}
@@ -202,7 +192,7 @@ const Hero: React.FC = () => {
               </div>
               <div className="flex items-end gap-2 text-md font-medium font-Mulish">
                 <div className="flex flex-col">
-                  <label className="text-sm mb-1 font-medium text-[#757575] font-sans">Age</label>
+                  <label className="text-sm mb-1 font-medium text-[#1C1C1C] font-sans">Age</label>
                   <input 
                     type="number" 
                     min="18" 
@@ -226,7 +216,7 @@ const Hero: React.FC = () => {
                 </div>
               </div>
               <div className="flex flex-col">
-                <label className="text-sm mb-1 font-medium text-[#757575] font-sans">Of Religion</label>
+                <label className="text-sm mb-1 font-medium text-[#1C1C1C] font-sans">Of Religion</label>
                 <select 
                   value={religion}
                   onChange={(e) => setReligion(e.target.value)}
@@ -238,7 +228,7 @@ const Hero: React.FC = () => {
                 </select>
               </div>
               <div className="flex flex-col">
-                <label className="text-sm mb-1 font-medium text-[#757575] font-sans">And Mother Tongue</label>
+                <label className="text-sm mb-1 font-medium text-[#1C1C1C] font-sans">And Mother Tongue</label>
                 <select 
                   value={motherTongue}
                   onChange={(e) => setMotherTongue(e.target.value)}
@@ -248,25 +238,20 @@ const Hero: React.FC = () => {
                   <option>Hindi</option>
                 </select>
               </div>
+              <div className="mt-4">
+             
+              <button
+                type="button"
+                className="bg-[#7D0A0A] text-white border-2 border-[#7B0A0A] px-8 py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#7D0A0A] hover:text-white transition-colors duration-200"
+                onClick={handleDetailedPreferences}
+              >
+                Set  Preferences
+              </button>
+            </div>
             </div>
             
             {/* Button Row */}
-            <div className="flex items-center gap-4 w-full justify-center">
-              <button
-                type="button"
-                className="bg-[#7D0A0A] text-white px-8 py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#5A0707] transition-colors duration-200"
-                onClick={handleQuickSearch}
-              >
-                Quick Search
-              </button>
-              <button
-                type="button"
-                className="bg-white text-[#7D0A0A] border-2 border-[#7D0A0A] px-8 py-3 rounded text-md font-semibold font-Mulish shadow-md hover:bg-[#7D0A0A] hover:text-white transition-colors duration-200"
-                onClick={handleDetailedPreferences}
-              >
-                Set Detailed Preferences
-              </button>
-            </div>
+            
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ function ProfilePage() {
       }
 
       try {
-        const response = await fetch(`https://bxcfrrl4-3000.inc1.devtunnels.ms/api/profile/users/${id}`);
+        const response = await fetch(`https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/users/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -121,7 +121,7 @@ function ProfilePage() {
               <h1 className="text-2xl font-bold text-gray-800">{profileData?.name || "User"}</h1>
               <p className="text-sm text-gray-500">ID: {profileData?.id || "N/A"}</p>
             </div>
-            <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-purple-200">
+            <div className="w-16 h-16 rounded-full overflow-hidden ">
               <Image
                 src={profileData?.profileImage || fallbackImage}
                 alt={profileData?.name || "Profile"}
@@ -144,7 +144,7 @@ function ProfilePage() {
                     alt={profileData?.name || "Profile"}
                     width={192}
                     height={192}
-                    className="w-full h-full object-cover rounded-full border-4 border-purple-200"
+                    className="w-full h-full object-cover rounded-full border-4"
                   />
                 </div>
                 <div className="bg-[#FFEDFA] border rounded-xl p-4 mb-4">

@@ -1,123 +1,99 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Search, X } from 'lucide-react';
-import Image from 'next/image';
-import { Conversation } from '@/types/chat';
+import { useState } from "react";
+import { Search, X, Users, User, LogOut } from "lucide-react";
+import Image from "next/image";
+import { Conversation } from "@/types/chat";
 
-interface ApiUser {
+interface User {
   _id: string;
   firstName: string;
   lastName: string;
-  profileImage: string;
+  profileImage?: string;
 }
 
 interface MessageSidebarProps {
-  selectedConversation: Conversation;
+  conversations: Conversation[];
+  selectedConversation: Conversation | null;
+  currentUser: User | null;
   onSelectConversation: (conversation: Conversation) => void;
   onCloseSidebar: () => void;
+  onLogout: () => void;
+  onRetry: () => void;
 }
 
-export default function MessageSidebar({
+export default function MessageSidebar({ 
+  conversations,
   selectedConversation,
+  currentUser,
   onSelectConversation,
   onCloseSidebar,
+  onLogout,
+  onRetry,
 }: MessageSidebarProps) {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('No authentication token found');
-
-        const response = await fetch('https://bxcfrrl4-3000.inc1.devtunnels.ms/api/message/allUserGet', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('API Response:', data);
-
-        if (data.success && Array.isArray(data.data)) {
-          const mappedConversations: Conversation[] = data.data.map((user: ApiUser) => ({
-            id: user._id,
-            name: `${user.firstName} ${user.lastName}`,
-            avatar: user.profileImage,
-            lastMessage: '', // Default value
-          }));
-          setConversations(mappedConversations);
-        } else {
-          setError('Failed to load users: Invalid response format');
-        }
-      } catch (err: any) {
-        setError(err.message || 'An error occurred while fetching users');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConversations = conversations.filter((conversation) =>
     conversation.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
-    <div className="w-100 bg-white border-r border-gray-200 flex flex-col h-full px-4 py-4">
-      <div className="border shadow-2xl rounded-2xl border-gray-200">
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
-            <button
-              onClick={onCloseSidebar}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <X size={20} />
-            </button>
-          </div>
+    <div className="w-full bg-white shadow-xl flex flex-col h-full">
+  
 
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+      {/* Search */}
+      <div className="p-4 ">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <input
+            type="text"
+            placeholder="Search users..."
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
+      </div>
 
-        {loading && <div className="p-4 text-center text-gray-500">Loading...</div>}
-        {error && <div className="p-4 text-center text-red-500">{error}</div>}
+      {/* Users List */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-2">
+          <div className="flex items-center space-x-2 mb-3 px-2">
+            <Users className="h-4 w-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-500">
+              Contacts ({filteredConversations.length})
+            </span>
+          </div>
 
-        {!loading && !error && (
-          <div className="flex-1 overflow-y-auto">
-            {filteredConversations.map((conversation) => (
+          {conversations.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">
+              <User className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No users loaded</p>
+              <button
+                onClick={onRetry}
+                className="mt-2 text-indigo-600 text-sm hover:underline"
+              >
+                Retry loading users
+              </button>
+            </div>
+          ) : filteredConversations.length === 0 ? (
+            <div className="text-center text-gray-500 py-8">
+              <User className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No users found</p>
+            </div>
+          ) : (
+            filteredConversations.map((conversation) => (
               <div
                 key={conversation.id}
-                onClick={() => {
-                  onSelectConversation(conversation);
-                  onCloseSidebar();
-                }}
-                className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  selectedConversation.id === conversation.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                onClick={() => onSelectConversation(conversation)}
+                className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                  selectedConversation?.id === conversation.id
+                    ? "bg-indigo-50 border-l-4 border-indigo-500"
+                    : "hover:bg-gray-50"
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
+                <div className="relative">
+                  {conversation.avatar ? (
                     <Image
                       src={conversation.avatar}
                       alt={conversation.name}
@@ -125,18 +101,31 @@ export default function MessageSidebar({
                       height={48}
                       className="w-12 h-12 rounded-full object-cover"
                     />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium text-gray-900 truncate">{conversation.name}</h3>
+                  ) : (
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                      {conversation.name?.charAt(0)?.toUpperCase() || "?"}
+                      {conversation.name?.split(" ")[1]?.charAt(0)?.toUpperCase() || ""}
                     </div>
-                    <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
-                  </div>
+                  )}
+                  {conversation.isOnline && (
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
+                  )}
                 </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-gray-900 truncate">{conversation.name}</h3>
+                  <p className="text-sm text-gray-500 truncate">
+                    {conversation.lastMessage || `ID: ${conversation.id.slice(-8)}`}
+                  </p>
+                </div>
+                { (conversation.unreadCount ?? 0) > 0 && (
+  <div className="bg-indigo-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+    {conversation.unreadCount}
+  </div>
+)}
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

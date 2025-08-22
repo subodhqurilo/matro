@@ -47,7 +47,7 @@ interface Profile {
   status: "active" | "shortlisted" | "sent" | "notNow"
 }
 
-const API_BASE_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms/api/like/'
+const API_BASE_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/like/'
 
 export default function MatrimonialApp() {
   const [activeTab, setActiveTab] = useState("They Shortlisted")
