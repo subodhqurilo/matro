@@ -15,8 +15,8 @@ interface LifestyleInfoSectionProps {
   lifestyleInfo: LifestyleSection[];
 }
 
-const API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/self';
-const UPDATE_API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/update-profile';
+const API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/self';
+const UPDATE_API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/update-profile';
 
 const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleInfo }) => {
   const [info, setInfo] = useState<LifestyleSection[]>(lifestyleInfo);

@@ -45,7 +45,7 @@ interface Profile {
   status: "active" | "shortlisted" | "sent" | "notNow"
 }
 
-const API_BASE_URL = "https://matrimonial-backend-chi.vercel.app/api/like/iShortlist"
+const API_BASE_URL = "https://matrimonial-backend-7ahc.onrender.com/api/like/iShortlist"
 
 export default function IShortlisted() {
   const [profiles, setProfiles] = useState<Profile[]>([])

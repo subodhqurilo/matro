@@ -65,7 +65,7 @@ const Level1Form = ({
   try {
     const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
 
-    const response = await fetch('https://matrimonial-backend-chi.vercel.app/auth/otp-login-request', {
+    const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/otp-login-request', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mobile: cleanedPhone }), // backend expects "mobile"
@@ -97,7 +97,7 @@ const Level1Form = ({
   try {
     const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
 
-    const response = await fetch('https://matrimonial-backend-chi.vercel.app/auth/login', {
+    const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 

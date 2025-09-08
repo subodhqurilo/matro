@@ -160,7 +160,7 @@ export default function ChatArea({
         formData.append('file', file);
 
         const token = localStorage.getItem('authToken');
-        const response = await fetch('https://matrimonial-backend-chi.vercel.app/api/upload', {
+        const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/upload', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

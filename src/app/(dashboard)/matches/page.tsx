@@ -31,7 +31,7 @@ export default function MatrimonialApp() {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error('No authentication token found');
-        const response = await fetch('https://matrimonial-backend-chi.vercel.app/api/message/AllUser', {
+        const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/message/AllUser', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

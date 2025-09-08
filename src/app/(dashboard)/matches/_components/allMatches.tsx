@@ -36,7 +36,7 @@ export default function AllMatches({ activeTab }: AllMatchesProps) {
       setIsLoadingMatches(true);
       
       const response = await fetch(
-        "https://matrimonial-backend-chi.vercel.app/api/like/allMatches",
+        "https://matrimonial-backend-7ahc.onrender.com/api/like/allMatches",
         {
           method: "GET",
           headers: {

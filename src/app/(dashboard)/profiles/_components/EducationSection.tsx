@@ -10,8 +10,8 @@ interface EducationSectionProps {
   education: EducationItem[];
 }
 
-const API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/self';
-const UPDATE_API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/update-profile';
+const API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/self';
+const UPDATE_API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/update-profile';
 
 const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
   const [info, setInfo] = useState<EducationItem[]>(education);

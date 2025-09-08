@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
         throw new Error('Authentication token not found. Please log in again.');
       }
 
-      const response = await fetch('https://matrimonial-backend-chi.vercel.app/api/partner/preference', {
+      const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/partner/preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

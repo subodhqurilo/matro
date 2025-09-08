@@ -17,7 +17,7 @@ export default function NotNowPage() {
 
   const fetchBlockedUsers = async () => {
     try {
-      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/cross/user", {
+      const res = await fetch("https://matrimonial-backend-7ahc.onrender.com/api/cross/user", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export default function NotNowPage() {
 
   const handleUnblock = async (userId: string) => {
     try {
-      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/cross/user", {
+      const res = await fetch("https://matrimonial-backend-7ahc.onrender.com/api/cross/user", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

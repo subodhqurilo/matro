@@ -92,7 +92,7 @@ export default function MatrimonialApp() {
   const [loading, setLoading] = useState(false)
   
 
-  const apiBase = "https://matrimonial-backend-chi.vercel.app/api/request/"
+  const apiBase = "https://matrimonial-backend-7ahc.onrender.com/api/request/"
 
   const transformToProfile = (
   item: Request | ReceivedProfile,
@@ -386,7 +386,7 @@ const tabs = [
 
 const handleNotNow = async (profileId: string) => {
   try {
-    await fetch("https://matrimonial-backend-chi.vercel.app/api/cross/user", {
+    await fetch("https://matrimonial-backend-7ahc.onrender.com/api/cross/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
