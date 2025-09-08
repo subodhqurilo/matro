@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
-import { Phone, Video, Info, Menu } from 'lucide-react';
+import {  Video, Info, Menu } from 'lucide-react';
 import Image from "next/image";
 import { Socket } from "socket.io-client";
 import { Conversation, Message, MessageFile } from '@/types/chat';
