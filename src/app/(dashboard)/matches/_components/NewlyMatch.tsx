@@ -44,7 +44,7 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
         const token = localStorage.getItem("authToken");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/newly-user", {
+        const response = await fetch("http://localhost:3000/api/profile/newly-user", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/request/send", {
+      const res = await fetch("http://localhost:3000/api/request/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
 
       setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/like/send", {
+      const res = await fetch("http://localhost:3000/api/like/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,7 +158,7 @@ export default function NewlyMatched({ activeTab }: { activeTab: string }) {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No auth token");
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/cross/user", {
+      const res = await fetch("http://localhost:3000/api/cross/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

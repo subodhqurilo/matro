@@ -13,7 +13,7 @@ interface User {
   profileImage?: string;
 }
 
-const socket: Socket = io("https://bxcfrrl4-3000.inc1.devtunnels.ms", {
+const socket: Socket = io("http://localhost:3000", {
   transports: ["websocket"],
 });
 
@@ -70,7 +70,7 @@ export default function Home() {
       }
       
       // Fetch all users
-      await fetchAllUsers(authToken);
+      await fetchAllUser(authToken);
       
     } catch (err) {
       console.error("❌ Error initializing app:", err);
@@ -80,11 +80,11 @@ export default function Home() {
     }
   };
 
-  const fetchAllUsers = async (authToken: string) => {
+  const fetchAllUser = async (authToken: string) => {
     console.log("👥 Fetching all users...");
     try {
       const res = await fetch(
-        "https://393rb0pp-3000.inc1.devtunnels.ms/api/message/allUserGet",
+        "http://localhost:3000/api/message/AllUser",
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -145,7 +145,7 @@ export default function Home() {
   const handleMessageSent = () => {
     // Refresh conversations if needed
     if (token) {
-      fetchAllUsers(token);
+      fetchAllUser(token);
     }
   };
 

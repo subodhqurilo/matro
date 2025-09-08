@@ -46,7 +46,7 @@ export default function MutualMatches({ activeTab }: { activeTab: string }) {
     const fetchMutualMatches = async () => {
       try {
         const data = await callApi(
-          "https://393rb0pp-3000.inc1.devtunnels.ms/api/mutual-matches",
+          "http://localhost:3000/api/mutual-matches",
           "GET"
         );
 
@@ -99,7 +99,7 @@ export default function MutualMatches({ activeTab }: { activeTab: string }) {
   try {
     setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-    await callApi("https://393rb0pp-3000.inc1.devtunnels.ms/api/request/send", "POST", {
+    await callApi("http://localhost:3000/api/request/send", "POST", {
       receiverId: id,
     });
 
@@ -122,7 +122,7 @@ const handleShortlist = async (id: string) => {
   try {
     setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-    await callApi("https://393rb0pp-3000.inc1.devtunnels.ms/api/like/send", "POST", {
+    await callApi("http://localhost:3000/api/like/send", "POST", {
       receiverId: id,
     });
 
@@ -143,7 +143,7 @@ const handleShortlist = async (id: string) => {
 
 const handleNotNow = async (id: string) => {
   try {
-    await callApi("https://393rb0pp-3000.inc1.devtunnels.ms/api/cross/user", "POST", {
+    await callApi("http://localhost:3000/api/cross/user", "POST", {
       userIdToBlock: id,
     });
 

@@ -11,9 +11,6 @@ interface Profile {
   _id: string;
   firstName: string;
   lastName: string;
-  id: string;
-  createdAt: string;
-  updatedAt: string;
   annualIncome: string;
   caste: string;
   city: string;
@@ -35,7 +32,11 @@ interface Profile {
   location?: string;
 }
 
-export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
+interface ProfilePhotoProps {
+  activeTab: string;
+}
+
+export default function ProfilePhoto({ activeTab }: ProfilePhotoProps) {
   const [profilesWithPhoto, setProfilesWithPhoto] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,9 +45,7 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (activeTab === "Profiles with photo") {
-      fetchProfilesWithPhoto();
-    }
+    if (activeTab === "Profiles with photo") fetchProfilesWithPhoto();
   }, [activeTab]);
 
   const fetchProfilesWithPhoto = async () => {
@@ -54,12 +53,8 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No authentication token found");
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/with-photo", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const res = await fetch("http://localhost:3000/api/profile/with-photo", {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
 
       if (!res.ok) throw new Error("Failed to fetch profiles");
@@ -67,10 +62,11 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
       const data = await res.json();
 
       if (data.success && Array.isArray(data.photo)) {
-        const cleanedProfiles = data.photo.map((p: Profile) => {
+        const cleanedProfiles: Profile[] = data.photo.map((p: Profile) => {
           const birthDate = new Date(p.dateOfBirth);
           const age = new Date().getFullYear() - birthDate.getFullYear();
-          const languages = Array.isArray(p.languages)
+
+          const languages: string[] = Array.isArray(p.languages)
             ? p.languages
             : typeof p.languages === "string"
             ? p.languages.split(",").map((lang) => lang.trim())
@@ -105,12 +101,9 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/request/send", {
+      const res = await fetch("http://localhost:3000/api/request/send", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ receiverId: id }),
       });
 
@@ -127,7 +120,6 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
         toast.success("Connection request sent successfully.");
       }
 
-      // Remove profile from UI
       setProfilesWithPhoto((prev) => prev.filter((profile) => profile._id !== id));
     } catch (error) {
       console.error("Send Connection Error:", error);
@@ -137,52 +129,49 @@ export default function ProfilePhoto({ activeTab }: { activeTab: string }) {
     }
   };
 
-  const handleShortlist = async (id: string) => {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) throw new Error("No authentication token");
+const handleShortlist = async (id: string) => {
+  try {
+    const token = localStorage.getItem("authToken");
+    if (!token) throw new Error("No authentication token");
 
-      setIsSendingLike((prev) => ({ ...prev, [id]: true }));
+    setIsSendingLike(prev => ({ ...prev, [id]: true }));
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/like/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ receiverId: id }),
-      });
+    const res = await fetch("http://localhost:3000/api/like/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ receiverId: id }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        if (data.message === "Already liked") {
-          toast.success("Profile already liked.");
-        } else {
-          toast.error(data.message || "Failed to like profile");
-        }
-      } else {
-        toast.success("Profile shortlisted.");
-      }
-    } catch (error) {
-      console.error("Shortlist Error:", error);
-      toast.error("Failed to shortlist profile");
-    } finally {
-      setIsSendingLike((prev) => ({ ...prev, [id]: false }));
+    if (data.success || data.message === "Already liked") {
+      toast.success(data.message || "Profile shortlisted.");
+      // Remove from tab regardless of whether it was already liked
+      setProfilesWithPhoto(prev => prev.filter(profile => profile._id !== id));
+    } else {
+      toast.error(data.message || "Failed to shortlist profile");
     }
-  };
+  } catch (error) {
+    console.error("Shortlist Error:", error);
+    toast.error("Failed to shortlist profile");
+  } finally {
+    setIsSendingLike(prev => ({ ...prev, [id]: false }));
+  }
+};
+
+
 
   const handleNotNow = async (id: string) => {
     try {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No authentication token");
 
-      const res = await fetch("https://393rb0pp-3000.inc1.devtunnels.ms/api/cross/user", {
+      const res = await fetch("http://localhost:3000/api/cross/user", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ userIdToBlock: id }),
       });
 

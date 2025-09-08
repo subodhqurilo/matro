@@ -63,7 +63,7 @@ function ProfilePage() {
       }
 
       try {
-        const response = await fetch(`https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/users/${id}`);
+        const response = await fetch(`http://localhost:3000/api/profile/users/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

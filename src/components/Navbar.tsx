@@ -1,5 +1,6 @@
 'use client';
 
+import { useUser } from './ui/UserContext';  // ✅ import context
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -14,6 +15,9 @@ import Step6Form from './steps/Step6';
 import Step7Form from './steps/Step7';
 import { PROFILE } from '@/utils/Api';
 import Link from 'next/link';
+const DEFAULT_PROFILE_IMAGE =
+  "https://res.cloudinary.com/dppe3ni5z/image/upload/v1234567890/default-profile.png";
+
 
 const navLinks = [
   { name: 'Home', href: '/' },
@@ -35,6 +39,8 @@ export default function Navbar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+  const { profileImage, setProfileImage } = useUser();   // ✅ दोनों मिलेंगे
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Login state
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -71,36 +77,98 @@ export default function Navbar() {
   const [annualIncome, setAnnualIncome] = useState('');
   const [workLocation, setWorkLocation] = useState('');
   const [designation, setDesignation] = useState('');
-  const [profileImage, setProfileImage] = useState<File | null>(null);
+  
   const [adhaarCardFrontImage, setAdhaarCardFrontImage] = useState<File | null>(null);
   const [adhaarCardBackImage, setAdhaarCardBackImage] = useState<File | null>(null);
 
-  // Check auth status on component mount
-  useEffect(() => {
+
+  
+  const getUserFirstName = (userData: any) => {
+  return (
+    userData.basicInfo?.firstName ||
+    userData.firstName ||
+    userData.user?.firstName ||
+    'User'
+  );
+};
+const fetchUser = async () => {
+  try {
     const token = localStorage.getItem('authToken');
-    if (token) {
-      setIsAuthenticated(true);
-      const userData = localStorage.getItem('userData');
-      if (userData) {
-        try {
-          const parsedData = JSON.parse(userData);
-          if (parsedData.firstName) {
-            setUserFirstName(parsedData.firstName);
-          }
-          if (parsedData.profileComplete === false) {
-            // Add 5-second delay before opening profile setup
-            const timer = setTimeout(() => {
-              setIsProfileSetupOpen(true);
-            }, 5000);
-            
-            return () => clearTimeout(timer);
-          }
-        } catch (error) {
-          console.error('Error parsing user data:', error);
-        }
+    if (!token) return;
+
+    const res = await fetch('http://localhost:3000/auth/user', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      console.error('Failed to fetch user data', res.status);
+      return;
+    }
+
+    const result = await res.json();
+
+    // Safely get first name
+    const firstName =
+      result.basicInfo?.firstName ||
+      result.firstName ||
+      result.user?.firstName ||
+      '';
+
+    setUserFirstName(firstName); // ✅ update navbar
+    localStorage.setItem('userData', JSON.stringify(result)); // optional, keep storage updated
+  } catch (error) {
+    console.error('Error fetching user:', error);
+  }
+};
+
+
+
+  // Check auth status on component mount
+useEffect(() => {
+  const token = localStorage.getItem('authToken');
+
+  if (token) {
+    setIsAuthenticated(true);
+
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      try {
+        const parsedData = JSON.parse(userData);
+
+        // ✅ Name set
+        const firstName =
+          parsedData.basicInfo?.firstName ||
+          parsedData.firstName ||
+          parsedData.user?.firstName ||
+          '';
+        setUserFirstName(firstName);
+
+        // ✅ Profile Image set
+// ✅ Profile Image set (fallback included)
+const storedImage =
+  parsedData.profileImage ||
+  parsedData.basicInfo?.profileImage ||
+  parsedData.user?.profileImage ||
+  DEFAULT_PROFILE_IMAGE;
+
+setProfileImage(storedImage); // हमेशा कोई न कोई image set होगी
+
+      } catch (error) {
+        console.error('Error parsing user data:', error);
       }
     }
-  }, []);
+
+    fetchUser(); // fetch latest user info (backend se)
+  }
+}, [setProfileImage]);
+
+
+  
+
 
   const handleLoginSuccess = async (token: string, userId: string) => {
     localStorage.setItem('authToken', token);
@@ -115,9 +183,17 @@ export default function Navbar() {
       if (response.ok) {
         const userData = await response.json();
         localStorage.setItem('userData', JSON.stringify(userData));
-        if (userData.firstName) {
-          setUserFirstName(userData.firstName);
-        }
+
+        // Safe first name extraction
+        const firstName =
+          userData.firstName ||
+          userData.basicInfo?.firstName ||
+          userData.user?.firstName ||
+          '';
+
+        console.log('Login firstName:', firstName); // Debug
+        setUserFirstName(firstName);
+
         if (userData.profileComplete === false) {
           // Add 5-second delay before opening profile setup
           setTimeout(() => {
@@ -134,6 +210,7 @@ export default function Navbar() {
     setIsLoginOpen(false);
     setCurrentLevel(1);
   };
+
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -156,17 +233,17 @@ export default function Navbar() {
       ...profileData,
       profileComplete: true,
     };
-    
+
     localStorage.setItem('userData', JSON.stringify(updatedUserData));
-    
+
     if (profileData.firstName) {
       setUserFirstName(profileData.firstName);
     }
-    
+
     setIsProfileSetupOpen(false);
     setProfileStep(1);
     setErrorMessage('');
-    
+
     console.log('Profile updated successfully:', updatedUserData);
   };
 
@@ -185,7 +262,7 @@ export default function Navbar() {
   const handleContinueLevel1 = () => setCurrentLevel(2);
   const handleContinueLevel2 = async () => {
     try {
-      const response = await fetch('https://apimatri.qurilo.com/auth/otp', {
+      const response = await fetch('http://localhost:3000/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -197,6 +274,7 @@ export default function Navbar() {
       if (data.success) {
         handleLoginSuccess(data.token, data.userData);
         setPhoneNumber('');
+
         setOtp('');
       } else {
         console.error('OTP verification failed:', data.message);
@@ -413,6 +491,7 @@ export default function Navbar() {
       } catch (testError) {
         console.warn('API endpoint test failed:', testError);
       }
+console.log('Submitting profile to:', PROFILE.UPDATE_PROFILE);
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
@@ -436,7 +515,7 @@ export default function Navbar() {
       if (response.ok) {
         try {
           const responseData = JSON.parse(responseText);
-          
+
           if (responseData.success && responseData.data) {
             handleProfileUpdateSuccess(responseData.data);
             alert('Profile submitted successfully!');
@@ -455,7 +534,7 @@ export default function Navbar() {
         } catch {
           errorData = { message: responseText || 'Unknown server error' };
         }
-        
+
         const errorMessage = errorData.message || errorData.error || 'Unknown server error';
         setErrorMessage(`Profile submission failed: ${errorMessage} (Status: ${response.status})`);
         console.error('Profile submission failed:', {
@@ -534,9 +613,55 @@ export default function Navbar() {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-2 focus:outline-none"
               >
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <FaUserCircle className="text-3xl text-gray-600" />
-                </div>
+<div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+  {(() => {
+    // 1️⃣ Try context
+if (profileImage) {
+  return (
+    <img
+      src={
+        typeof profileImage === 'string'
+          ? profileImage
+          : URL.createObjectURL(profileImage)
+      }
+      alt="Profile"
+      className="w-full h-full object-cover"
+      onError={(e) => {
+        e.currentTarget.src = DEFAULT_PROFILE_IMAGE; // fallback जब image टूटे
+      }}
+    />
+  );
+}
+
+    // 2️⃣ Try localStorage
+    const storedUserData = localStorage.getItem('userData');
+    if (storedUserData) {
+      try {
+        const parsed = JSON.parse(storedUserData);
+        const storedImage =
+          parsed.profileImage ||
+          parsed.basicInfo?.profileImage ||
+          parsed.user?.profileImage;
+
+        if (storedImage) {
+          return (
+            <img
+              src={storedImage}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          );
+        }
+      } catch (e) {
+        console.error("Error parsing stored userData:", e);
+      }
+    }
+
+    // 3️⃣ Default icon
+    return <FaUserCircle className="text-3xl text-gray-600" />;
+  })()}
+</div>
+
                 <div className="flex items-center space-x-1">
                   <span className="font-medium text-gray-800">
                     {userFirstName || 'Profile'}
@@ -553,7 +678,7 @@ export default function Navbar() {
                   <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                     <p className="font-medium">{userFirstName || 'User'}</p>
                     <Link href="/profiles">
-                    <p className="text-xs text-gray-500">View Profile</p>
+                      <p className="text-xs text-gray-500">View Profile</p>
                     </Link>
                   </div>
                   <button
@@ -683,7 +808,11 @@ export default function Navbar() {
             >
               ✕
             </button>
-            <SignupWrapper onSignupSuccess={handleLoginSuccess} />
+            <SignupWrapper
+              onSignupSuccess={handleLoginSuccess}
+              setIsProfileSetupOpen={setIsProfileSetupOpen}
+            />
+
           </div>
         </div>
       )}

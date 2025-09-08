@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 interface RecommendedProfile {
   _id: string;
@@ -36,10 +36,17 @@ interface RecommendationProps {
 }
 
 export default function Recommendation({ activeTab }: RecommendationProps) {
-  const [recommendedProfiles, setRecommendedProfiles] = useState<RecommendedProfile[]>([]);
-  const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
-  const [isSendingConnection, setIsSendingConnection] = useState<{ [key: string]: boolean }>({});
-  const [isSendingLike, setIsSendingLike] = useState<{ [key: string]: boolean }>({});
+  const [recommendedProfiles, setRecommendedProfiles] = useState<
+    RecommendedProfile[]
+  >([]);
+  const [isLoadingRecommendations, setIsLoadingRecommendations] =
+    useState(false);
+  const [isSendingConnection, setIsSendingConnection] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [isSendingLike, setIsSendingLike] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
   const [dialogTitle, setDialogTitle] = useState("Success");
@@ -48,20 +55,23 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const fetchRecommendedProfiles = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+        throw new Error("No authentication token found. Please log in.");
       }
       setIsLoadingRecommendations(true);
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/recommendation/daily', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3000/api/recommendation/daily",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (!response.ok) {
-        throw new Error('Failed to fetch recommended profiles');
+        throw new Error("Failed to fetch recommended profiles");
       }
       const data = await response.json();
       if (data.success && Array.isArray(data.profiles)) {
@@ -70,13 +80,17 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
           if (Array.isArray(profile.languages)) {
             languages = profile.languages;
           } else if (typeof profile.languages === "string") {
-            languages = profile.languages.split(",").map((lang: string) => lang.trim());
+            languages = profile.languages
+              .split(",")
+              .map((lang: string) => lang.trim());
           }
           return {
             ...profile,
-            lastSeen: profile.lastSeen ? new Date(profile.lastSeen).toLocaleString() : 'Recently',
+            lastSeen: profile.lastSeen
+              ? new Date(profile.lastSeen).toLocaleString()
+              : "Recently",
             profileImages: profile.profileImage ? [profile.profileImage] : [],
-            profession: profile.designation || profile.profession || '',
+            profession: profile.designation || profile.profession || "",
             languages,
             requestSent: false,
           };
@@ -84,8 +98,8 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         setRecommendedProfiles(cleanedProfiles);
       }
     } catch (error) {
-      console.error('Error fetching recommended profiles:', error);
-      toast.error('Failed to load recommended profiles');
+      console.error("Error fetching recommended profiles:", error);
+      toast.error("Failed to load recommended profiles");
     } finally {
       setIsLoadingRecommendations(false);
     }
@@ -99,18 +113,18 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const handleSendConnection = async (id: string) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+        throw new Error("No authentication token found. Please log in.");
       }
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/request/send', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/api/request/send", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           receiverId: id,
@@ -137,20 +151,23 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       if (data.success) {
         setDialogTitle("Success");
-        setDialogMessage('Connection request sent successfully');
+        setDialogMessage("Connection request sent successfully");
         setDialogOpen(true);
+        // ✅ Remove from list after sending request
         setRecommendedProfiles((prev) =>
-          prev.map((profile) =>
-            profile._id === id ? { ...profile, requestSent: true } : profile
-          )
+          prev.filter((profile) => profile._id !== id)
         );
       } else {
-        throw new Error(data.message || 'Failed to send connection request');
+        throw new Error(data.message || "Failed to send connection request");
       }
     } catch (error) {
-      console.error('Error sending connection request:', error);
+      console.error("Error sending connection request:", error);
       setDialogTitle("Error");
-      setDialogMessage(error instanceof Error ? error.message : 'Failed to send connection request');
+      setDialogMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to send connection request"
+      );
       setDialogOpen(true);
     } finally {
       setIsSendingConnection((prev) => ({ ...prev, [id]: false }));
@@ -159,18 +176,18 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const handleShortlist = async (id: string) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+        throw new Error("No authentication token found. Please log in.");
       }
 
       setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/like/send', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/api/like/send", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           receiverId: id,
@@ -197,15 +214,21 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       if (data.success) {
         setDialogTitle("Success");
-        setDialogMessage(data.message || 'Like Sent');
+        setDialogMessage(data.message || "Like Sent");
         setDialogOpen(true);
+        // ✅ Remove from list after shortlisting
+        setRecommendedProfiles((prev) =>
+          prev.filter((profile) => profile._id !== id)
+        );
       } else {
-        throw new Error(data.message || 'Failed to send like');
+        throw new Error(data.message || "Failed to send like");
       }
     } catch (error) {
-      console.error('Error sending like:', error);
+      console.error("Error sending like:", error);
       setDialogTitle("Error");
-      setDialogMessage(error instanceof Error ? error.message : 'Failed to send like');
+      setDialogMessage(
+        error instanceof Error ? error.message : "Failed to send like"
+      );
       setDialogOpen(true);
     } finally {
       setIsSendingLike((prev) => ({ ...prev, [id]: false }));
@@ -214,16 +237,16 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
   const handleNotNow = async (id: string) => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = localStorage.getItem("authToken");
       if (!token) {
-        throw new Error('No authentication token found. Please log in.');
+        throw new Error("No authentication token found. Please log in.");
       }
 
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/cross/user', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3000/api/cross/user", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           userIdToBlock: id,
@@ -231,21 +254,25 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to process not now action');
+        throw new Error("Failed to process not now action");
       }
 
       const data = await response.json();
 
       if (data.success) {
         toast.success(`Skipped profile ${id}`);
-        setRecommendedProfiles((prev) => prev.filter((profile) => profile._id !== id));
+        setRecommendedProfiles((prev) =>
+          prev.filter((profile) => profile._id !== id)
+        );
       } else {
-        throw new Error(data.message || 'Failed to process not now action');
+        throw new Error(data.message || "Failed to process not now action");
       }
     } catch (error) {
-      console.error('Error processing not now action:', error);
+      console.error("Error processing not now action:", error);
       setDialogTitle("Error");
-      setDialogMessage(error instanceof Error ? error.message : 'Failed to process not now action');
+      setDialogMessage(
+        error instanceof Error ? error.message : "Failed to process not now action"
+      );
       setDialogOpen(true);
     }
   };
@@ -266,7 +293,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       </Dialog>
 
       {isLoadingRecommendations ? (
-        <div className="text-center text-gray-500">Loading recommendations...</div>
+        <div className="text-center text-gray-500">
+          Loading recommendations...
+        </div>
       ) : recommendedProfiles.length > 0 ? (
         recommendedProfiles.map((profile) => (
           <div
@@ -292,7 +321,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
               </div>
             </div>
             <div className="flex-1 px-6 mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">{profile.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {profile.name}
+              </h3>
               <p className="text-sm text-gray-500 mb-1 border-b border-[#757575] mt-2">
                 {profile._id} | Last seen {profile.lastSeen}
               </p>
@@ -305,21 +336,31 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
               <p className="text-sm text-gray-700">{profile.education}</p>
               <p className="text-sm text-gray-700">{profile.location}</p>
               <p className="text-sm text-gray-700">
-                {Array.isArray(profile.languages) ? profile.languages.join(", ") : ""}
+                {Array.isArray(profile.languages)
+                  ? profile.languages.join(", ")
+                  : ""}
               </p>
             </div>
             <div className="flex flex-col items-center gap-5 min-w-[300px] border-l border-[#757575]">
               <div className="flex gap-6 items-center">
                 <div className="text-regular text-[#000000] mb-2 font-Lato mt-2">
-                  {profile.requestSent ? 'Sent' : 'Send Connection'}
+                  {profile.requestSent ? "Sent" : "Send Connection"}
                 </div>
                 <Button
                   className={`bg-gradient-to-r from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 p-0 ${
-                    isSendingConnection[profile._id] || profile.requestSent ? 'opacity-50 cursor-not-allowed' : ''
+                    isSendingConnection[profile._id] || profile.requestSent
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
                   size="sm"
-                  onClick={() => !isSendingConnection[profile._id] && !profile.requestSent && handleSendConnection(profile._id)}
-                  disabled={isSendingConnection[profile._id] || profile.requestSent}
+                  onClick={() =>
+                    !isSendingConnection[profile._id] &&
+                    !profile.requestSent &&
+                    handleSendConnection(profile._id)
+                  }
+                  disabled={
+                    isSendingConnection[profile._id] || profile.requestSent
+                  }
                 >
                   {isSendingConnection[profile._id] ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -329,14 +370,20 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                 </Button>
               </div>
               <div className="flex gap-6 items-center">
-                <div className="text-regular text-[#000000] mb-2 font-Lato ml-16">Shortlist</div>
+                <div className="text-regular text-[#000000] mb-2 font-Lato ml-16">
+                  Shortlist
+                </div>
                 <Button
                   variant="outline"
                   className={`border-[#F2F2F2] hover:bg-gray-50 rounded-full w-12 h-12 p-0 bg-transparent ${
-                    isSendingLike[profile._id] ? 'opacity-50 cursor-not-allowed' : ''
+                    isSendingLike[profile._id]
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
                   size="sm"
-                  onClick={() => !isSendingLike[profile._id] && handleShortlist(profile._id)}
+                  onClick={() =>
+                    !isSendingLike[profile._id] && handleShortlist(profile._id)
+                  }
                   disabled={isSendingLike[profile._id]}
                 >
                   {isSendingLike[profile._id] ? (
@@ -347,7 +394,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
                 </Button>
               </div>
               <div className="flex gap-6 items-center">
-                <div className="text-regular text-[#000000] font-Lato ml-16">Not Now</div>
+                <div className="text-regular text-[#000000] font-Lato ml-16">
+                  Not Now
+                </div>
                 <Button
                   variant="outline"
                   className="bg-[#ADADAD] hover:bg-gray-50 rounded-full w-12 h-12 p-0"
@@ -361,7 +410,9 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
           </div>
         ))
       ) : (
-        <div className="text-gray-500 text-center">No recommended profiles found.</div>
+        <div className="text-gray-500 text-center">
+          No recommended profiles found.
+        </div>
       )}
     </div>
   );

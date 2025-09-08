@@ -43,79 +43,98 @@ const Level1Form = ({
   };
 
   const handleSendOtp = async () => {
-    if (!validatePhoneNumber(phoneNumber)) {
-      setError('Please enter a valid 10-digit phone number');
-      toast.error('Please enter a valid 10-digit phone number');
+  if (!validatePhoneNumber(phoneNumber)) {
+    setError('Please enter a valid 10-digit phone number');
+    toast.error('Please enter a valid 10-digit phone number');
+    return;
+  }
+
+  // If OTP is already shown, this is a verification attempt
+  if (showOtpField) {
+    if (otp.length !== 4) {
+      toast.error('Please enter a valid 4-digit OTP');
       return;
     }
+    await handleVerifyOtp();
+    return;
+  }
 
-    // If OTP is already shown, this is a verification attempt
-    if (showOtpField) {
-      if (otp.length !== 4) {
-        toast.error('Please enter a valid 4-digit OTP');
-        return;
-      }
-      await handleVerifyOtp();
-      return;
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
+
+    const response = await fetch('http://localhost:3000/auth/otp-login-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mobile: cleanedPhone }), // backend expects "mobile"
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'Failed to send OTP');
     }
 
-    // Simply show the OTP field without making an API call
-    // since the send-otp endpoint doesn't exist
-    setError(null);
-    toast.info('Please enter the OTP you received via SMS');
+    toast.success(data.message || 'OTP sent successfully');
     setShowOtpField(true);
-  };
+
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to send OTP';
+    setError(message);
+    toast.error(message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleVerifyOtp = async () => {
-    setIsLoading(true);
-    setError(null);
+  setIsLoading(true);
+  setError(null);
 
-    try {
-      const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
-      
-      // Verify the OTP using the login endpoint
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          mobile: cleanedPhone,           // Use 'mobile' instead of 'phoneNumber'
-          otp: parseInt(otp.trim())       // Convert OTP to number
-        }),
-      });
+  try {
+    const cleanedPhone = phoneNumber.trim().replace(/\D/g, '');
 
-      const data = await response.json();
-      console.log('Login Response:', {
-        status: response.status,
-        statusText: response.statusText,
-        data
-      });
+    const response = await fetch('http://localhost:3000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        mobile: cleanedPhone,
+        otp: otp.trim(), // or parseInt(otp.trim()) if backend expects number
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
+    const data = await response.json();
+    console.log('Login Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      data,
+    });
 
-      if (!data.success) {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      // Success - call the login success handler
-      toast.success(data.message || 'Login successful');
-      onLoginSuccess(data.token, data.userId);
-      
-      // Reset form state
-      setPhoneNumber('');
-      setOtp('');
-      setShowOtpField(false);
-      
-    } catch (err: any) {
-      setError(err.message || 'Verification failed');
-      toast.error(err.message || 'Verification failed');
-    } finally {
-      setIsLoading(false);
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || 'OTP verification failed');
     }
-  };
+
+    // Success
+    toast.success(data.message || 'Login successful');
+    onLoginSuccess(data.token, data.userId);
+
+    // Reset form
+    setPhoneNumber('');
+    setOtp('');
+    setShowOtpField(false);
+
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Verification failed';
+    setError(message);
+    toast.error(message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>

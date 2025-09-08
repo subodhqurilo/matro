@@ -4,24 +4,27 @@ import { useState } from 'react';
 import Follow1Form from './follow1';
 import Follow2Form from './follow2';
 
+
 interface SignupWrapperProps {
   onSignupSuccess: (token: string, userData?: any) => void;
+  setIsProfileSetupOpen: (value: boolean) => void;
 }
 
-const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
+const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen }: SignupWrapperProps) => {
   const [step, setStep] = useState(1);
 
+
   // Step 1 state
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-
 
   // Step 2 state
   const [otp, setOtp] = useState('');
 
   const handleContinueFollow2 = () => {
-    if (!fullName || !mobileNumber) {
+    if (!firstName || !lastName || !mobileNumber) {
       alert('Please fill all required fields');
       return;
     }
@@ -35,7 +38,9 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
   const handleOtpVerify = () => {
     if (otp.length === 4) {
       alert('OTP Verified. Signup Complete!');
-      // You can redirect here
+      // After OTP verification, you can redirect to Step 3 or dashboard
+      setIsProfileSetupOpen(true);
+
     } else {
       alert('Please enter a valid OTP.');
     }
@@ -45,14 +50,17 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
     <div className="max-w-md mx-auto p-4">
       {step === 1 && (
         <Follow1Form
-          fullName={fullName}
-          setFullName={setFullName}
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
           email={email}
           setEmail={setEmail}
           mobileNumber={mobileNumber}
           setMobileNumber={setMobileNumber}
           onBack={() => window.history.back()}
           handleContinueFollow2={handleContinueFollow2}
+          
         />
       )}
       {step === 2 && (
@@ -62,6 +70,7 @@ const SignupWrapper = ({ onSignupSuccess }: SignupWrapperProps) => {
           setOtp={setOtp}
           onBack={handleBackToFollow1}
           handleContinueFollow1Form={handleOtpVerify}
+              setIsProfileSetupOpen={setIsProfileSetupOpen} 
         />
       )}
     </div>

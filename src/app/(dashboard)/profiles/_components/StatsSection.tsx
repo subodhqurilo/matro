@@ -17,12 +17,10 @@ const StatsSection: React.FC<StatsSectionProps> = ({ stats }) => (
         case 'Shortlisted Profiles':
           href = '/profiles/shortlisted-profiles';
           break;
-        case 'Horoscope Matches':
-          href = '/profiles/horoscope-matches';
+        case 'Not-Now':
+          href = '/profiles/not-now';
           break;
-        case 'Nearby Matches':
-          href = '/profiles/nearby-matches';
-          break;
+        
         default:
           href = '#';
       }

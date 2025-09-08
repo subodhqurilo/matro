@@ -15,8 +15,8 @@ interface LifestyleInfoSectionProps {
   lifestyleInfo: LifestyleSection[];
 }
 
-const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'http://localhost:3000/api/profile/self';
+const UPDATE_API_URL = 'http://localhost:3000/api/profile/update-profile';
 
 const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleInfo }) => {
   const [info, setInfo] = useState<LifestyleSection[]>(lifestyleInfo);

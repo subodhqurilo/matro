@@ -160,7 +160,7 @@ export default function ChatArea({
         formData.append('file', file);
 
         const token = localStorage.getItem('authToken');
-        const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/upload', {
+        const response = await fetch('http://localhost:3000/api/upload', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

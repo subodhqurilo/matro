@@ -18,7 +18,7 @@ export default function MatrimonialApp() {
   const [error, setError] = useState<string | null>(null);
 
   const tabs = [
-    { name: "All Matches", count: matches.length },
+    { name: "All Matches", count: null },
     { name: "Recommendation", count: null }, // Count can be updated if needed
     { name: "Profiles with photo", count: null },
     { name: "Newly Matched", count: null }, // Add this line
@@ -31,7 +31,7 @@ export default function MatrimonialApp() {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) throw new Error('No authentication token found');
-        const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/message/allUserGet', {
+        const response = await fetch('http://localhost:3000/api/message/AllUser', {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

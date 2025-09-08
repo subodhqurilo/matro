@@ -1,5 +1,5 @@
 export const API_BASE_URL = 'https://apimatri.qurilo.com/api/v1/'
-export const PROFILE_API_BASE_URL = 'https://bxcfrrl4-3000.inc1.devtunnels.ms'
+export const PROFILE_API_BASE_URL = 'http://localhost:3000'
 
 export const AUTH = {
   SEND_lOGIN_REGISTER_OTP: `${API_BASE_URL}auth/sendOtp`,
@@ -13,7 +13,7 @@ export const PROFILE = {
 };
 
 export const MESSAGE = {
-  ALL_USERS: '/api/message/allUserGet',
+  ALL_USERS: '/api/message/AllUser',
   SEND: '/api/message',
   getMessagesForUser: (currentUserId: string) => `/api/message?currentUserId=${encodeURIComponent(currentUserId)}`,
 };

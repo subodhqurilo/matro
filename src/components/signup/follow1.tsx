@@ -8,8 +8,13 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft } from 'lucide-react';
 
 type Follow1FormProps = {
-  fullName: string;
-  setFullName: (value: string) => void;
+
+
+profileFor?: string;
+  firstName: string;
+  setFirstName: (value: string) => void;
+  lastName: string;
+  setLastName: (value: string) => void;
   email: string;
   setEmail: (value: string) => void;
   mobileNumber: string;
@@ -19,8 +24,11 @@ type Follow1FormProps = {
 };
 
 const Follow1Form = ({
-  fullName,
-  setFullName,
+ 
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   email,
   setEmail,
   mobileNumber,
@@ -31,20 +39,9 @@ const Follow1Form = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Function to parse full name into first, middle, and last names
-  const parseFullName = (fullName: string) => {
-    const nameParts = fullName.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts[nameParts.length - 1] || '';
-    const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : '';
-    
-    return { firstName, middleName, lastName };
-  };
-
   // Function to handle registration API call
   const handleRegister = async () => {
-    // Validate required fields
-    if (!fullName.trim() || !mobileNumber.trim()) {
+    if (!firstName.trim() || !lastName.trim() || !mobileNumber.trim()) {
       setError('Please fill in all required fields');
       return;
     }
@@ -53,19 +50,16 @@ const Follow1Form = ({
     setError('');
 
     try {
-      const { firstName, middleName, lastName } = parseFullName(fullName);
-      
       const requestBody = {
         firstName,
-        middleName: middleName || '',
-        lastName: lastName || '',
+        lastName,
+        email,
         mobile: mobileNumber,
-        email: email
       };
-      
+
       console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
 
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/auth/register', {
+      const response = await fetch('http://localhost:3000/auth/otp-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,23 +70,16 @@ const Follow1Form = ({
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Save token to localStorage
         if (data.token) {
           localStorage.setItem('authToken', data.token);
-          console.log('Token saved to localStorage');
         }
-        
-        console.log('Registration successful! Token:', data.token);
-        console.log('User ID:', data.userId);
-        
-        // Continue to next step
         handleContinueFollow2();
       } else {
         setError(data.message || 'Registration failed. Please try again.');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setError('Network error. Please check your connection and try again.');
+      setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -114,20 +101,37 @@ const Follow1Form = ({
       )}
 
       <div className="space-y-4 mb-6">
+        {/* First Name */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            Full Name *
+            First Name *
           </Label>
           <Input
-            placeholder="Enter your full name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Enter your first name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
             className="w-full bg-white"
             required
             disabled={isLoading}
           />
         </div>
 
+        {/* Last Name */}
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-2 block">
+            Last Name *
+          </Label>
+          <Input
+            placeholder="Enter your last name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full bg-white"
+            required
+            disabled={isLoading}
+          />
+        </div>
+
+        {/* Email */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
             Email
@@ -142,6 +146,7 @@ const Follow1Form = ({
           />
         </div>
 
+        {/* Mobile */}
         <div>
           <Label className="text-sm font-medium text-gray-700 mb-2 block">
             Mobile Number *
@@ -170,8 +175,10 @@ const Follow1Form = ({
 };
 
 Follow1Form.propTypes = {
-  fullName: PropTypes.string.isRequired,
-  setFullName: PropTypes.func.isRequired,
+  firstName: PropTypes.string.isRequired,
+  setFirstName: PropTypes.func.isRequired,
+  lastName: PropTypes.string.isRequired,
+  setLastName: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   setEmail: PropTypes.func.isRequired,
   mobileNumber: PropTypes.string.isRequired,

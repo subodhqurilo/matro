@@ -10,8 +10,8 @@ interface BasicInfoSectionProps {
   basicInfo: BasicInfoItem[];
 }
 
-const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const API_URL = 'http://localhost:3000/api/profile/self';
+const UPDATE_API_URL = 'http://localhost:3000/api/profile/update-profile';
 
 const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo }) => {
   const [info, setInfo] = useState<BasicInfoItem[]>(basicInfo);
@@ -39,6 +39,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo }) => {
         if (!response.ok) throw new Error('Failed to fetch profile');
         const data = await response.json();
         const basicInfoData = data?.data?.basicInfo || data?.basicInfo || {};
+        
         const mappedBasicInfo: BasicInfoItem[] = [
           { label: 'Posted by', value: basicInfoData.postedBy || 'Self' },
           { 

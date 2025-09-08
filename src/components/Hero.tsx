@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
         throw new Error('Authentication token not found. Please log in again.');
       }
 
-      const response = await fetch('https://393rb0pp-3000.inc1.devtunnels.ms/api/partner/preference', {
+      const response = await fetch('http://localhost:3000/api/partner/preference', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

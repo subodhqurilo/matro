@@ -1,4 +1,5 @@
 "use client"
+
 import React, { useEffect, useState } from 'react';
 import ProfilePhotoSection from '@/app/(dashboard)/profiles/_components/ProfilePhotoSection';
 import StatsSection from '@/app/(dashboard)/profiles/_components/StatsSection';
@@ -10,41 +11,128 @@ import CareerSection from './_components/CareerSection';
 import AstroDetailsSection from './_components/AstroDetailsSection';
 import BasicInfoSection from './_components/BasicInfoSection';
 import FamilyInfoSection from './_components/FamilyInfoSection';
+import { useUser } from '../../../components/ui/UserContext';
 
-const API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/self';
-const UPDATE_API_URL = 'https://393rb0pp-3000.inc1.devtunnels.ms/api/profile/update-profile';
+const DEFAULT_PROFILE_IMAGE = "https://res.cloudinary.com/dppe3ni5z/image/upload/v1757144487/default-profile.png";
+
+
+const API_URL = 'http://localhost:3000/api/profile/self';
+const UPDATE_API_URL = 'http://localhost:3000/api/profile/update-profile';
+const UPLOAD_PHOTO_API = 'http://localhost:3000/api/basic-details';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string | null>(null);
+const [photoUploading, setPhotoUploading] = useState(false);
+const { profileImage, setProfileImage } = useUser();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('No authentication token found. Please log in.');
-        const response = await fetch(API_URL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch profile');
-        const data = await response.json();
-        setProfile(data.data || data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch profile');
-      } finally {
-        setLoading(false);
+  const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found. Please log in.');
+
+      const response = await fetch(API_URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch profile');
+      const data = await response.json();
+      console.log("Profile Image from backend (self API):", data.data?.profileImage);
+
+      const fullProfile = data.data || data;
+
+      // ✅ Correct conversion
+      if (fullProfile.profileImage) {
+        if (typeof fullProfile.profileImage === "object") {
+          // backend se object aa raha hai
+          if (fullProfile.profileImage.filename) {
+            fullProfile.profileImage = `http://localhost:3000/uploads/${fullProfile.profileImage.filename}`;
+          } else if (fullProfile.profileImage.url) {
+            fullProfile.profileImage = `http://localhost:3000${fullProfile.profileImage.url}`;
+          }
+        }
+        // Agar string hi aa gaya to use directly
       }
-    };
-    fetchProfile();
-  }, []);
+
+      setProfile(fullProfile);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProfile();
+}, []);
+
+
+
+const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files?.length) return;
+
+  const file = e.target.files[0];
+  const formData = new FormData();
+  formData.append('profileImage', file);
+
+  setPhotoUploading(true);
+  setUpdateStatus(null);
+
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found.');
+
+    const response = await fetch('http://localhost:3000/api/basic-details/', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`, // Only this header for FormData
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.message || 'Failed to upload image');
+    }
+
+    const data = await response.json();
+
+    // Use Cloudinary URL directly
+    const uploadedUrl = data.data?.profileImage || DEFAULT_PROFILE_IMAGE;
+
+    setProfile(prev => ({ ...prev, profileImage: uploadedUrl }));
+    setProfileImage(uploadedUrl);
+
+    setUpdateStatus('Profile photo updated successfully!');
+  } catch (err: any) {
+    console.error('Upload Error:', err);
+    setUpdateStatus(err.message || 'Failed to upload photo');
+  } finally {
+    setPhotoUploading(false);
+  }
+};
+
+
+
+
+
+
+
+
+
+  // Helper for displaying basic info, lifestyle, etc. (your existing mapping functions)
+  
+const normalizeEnum = (value: any) => {
+  if (value === true || value === "true" || value === "Yes") return "Yes";
+  return "No";
+};
 
   const handleUpdateProfile = async () => {
     setUpdateStatus(null);
@@ -81,7 +169,8 @@ const ProfilePage: React.FC = () => {
           familyBasedOutOf: profile?.familyDetails?.familyBasedOutOf || "Chennai"
         },
         astroDetails: {
-          manglik: profile?.astroDetails?.manglik || "Yes",
+          manglik: normalizeEnum(profile?.astroDetails?.manglik),
+
           dateOfBirth: profile?.astroDetails?.dateOfBirth || "1995-05-21",
           timeOfBirth: profile?.astroDetails?.timeOfBirth || "11:34 AM",
           cityOfBirth: profile?.astroDetails?.cityOfBirth || "Delhi"
@@ -103,8 +192,10 @@ const ProfilePage: React.FC = () => {
           diet: profile?.lifestyleHobbies?.diet || "Vegetarian",
           ownHouse: profile?.lifestyleHobbies?.ownHouse || "Yes",
           ownCar: profile?.lifestyleHobbies?.ownCar || "Yes",
-          smoking: profile?.lifestyleHobbies?.smoking || "No",
-          drinking: profile?.lifestyleHobbies?.drinking || "NO",
+          
+          smoking: normalizeEnum(profile?.lifestyleHobbies?.smoking),
+drinking: normalizeEnum(profile?.lifestyleHobbies?.drinking),
+
           openToPets: profile?.lifestyleHobbies?.openToPets || "Yes",
           foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Veggies"],
           hobbies: profile?.lifestyleHobbies?.hobbies || ["Dancing", "Singing"],
@@ -164,33 +255,35 @@ const ProfilePage: React.FC = () => {
     { label: 'Family Based Out of', value: p?.familyDetails?.familyBasedOutOf || '' },
   ];
   const mapLifestyleInfo = (p: any) => [
-    { label: 'Habits', items: [
+  { label: 'Habits', items: [
       `Diet - ${p?.lifestyleHobbies?.diet || ''}`,
-      `Drinking - ${p?.lifestyleHobbies?.drinking === 'true' ? 'Yes' : 'No'}`,
-      `Smoking - ${p?.lifestyleHobbies?.smoking === 'true' ? 'Yes' : 'No'}`,
+      `Drinking - ${normalizeEnum(p?.lifestyleHobbies?.drinking)}`,
+      `Smoking - ${normalizeEnum(p?.lifestyleHobbies?.smoking)}`,
       `Open to pets - ${p?.lifestyleHobbies?.openToPets || ''}`,
-    ] },
-    { label: 'Assets', items: [
+  ] },
+  { label: 'Assets', items: [
       `Own a House - ${p?.lifestyleHobbies?.ownHouse || ''}`,
       `Own a Car - ${p?.lifestyleHobbies?.ownCar || ''}`,
-    ] },
-    { label: 'Food I cook', items: p?.lifestyleHobbies?.foodICook || [] },
-    { label: 'Hobbies', items: p?.lifestyleHobbies?.hobbies || [] },
-    { label: 'Interests', items: p?.lifestyleHobbies?.interests || [] },
-    { label: 'Favorite Music', items: p?.lifestyleHobbies?.favoriteMusic || [] },
-    { label: 'Sports', items: p?.lifestyleHobbies?.sports || [] },
-    { label: 'Cuisine', items: p?.lifestyleHobbies?.cuisine || [] },
-    { label: 'Movies', items: p?.lifestyleHobbies?.movies || [] },
-    { label: 'TV Shows', items: p?.lifestyleHobbies?.tvShows || [] },
-    { label: 'Vacation Destination', items: p?.lifestyleHobbies?.vacationDestination || [] },
-  ];
+  ] },
+  { label: 'Food I cook', items: p?.lifestyleHobbies?.foodICook || [] },
+  { label: 'Hobbies', items: p?.lifestyleHobbies?.hobbies || [] },
+  { label: 'Interests', items: p?.lifestyleHobbies?.interests || [] },
+  { label: 'Favorite Music', items: p?.lifestyleHobbies?.favoriteMusic || [] },
+  { label: 'Sports', items: p?.lifestyleHobbies?.sports || [] },
+  { label: 'Cuisine', items: p?.lifestyleHobbies?.cuisine || [] },
+  { label: 'Movies', items: p?.lifestyleHobbies?.movies || [] },
+  { label: 'TV Shows', items: p?.lifestyleHobbies?.tvShows || [] },
+  { label: 'Vacation Destination', items: p?.lifestyleHobbies?.vacationDestination || [] },
+];
+
   const mapAstroDetails = (p: any) => [
-    { label: 'Zodiac', value: p?.astroDetails?.zodiacSign || '' },
-    { label: 'Date of Birth', value: p?.astroDetails?.dateOfBirth || '' },
-    { label: 'Time of Birth', value: p?.astroDetails?.timeOfBirth || '' },
-    { label: 'City of Birth', value: p?.astroDetails?.cityOfBirth || '' },
-    { label: 'Manglik', value: p?.astroDetails?.manglik || '' },
-  ];
+  { label: 'Zodiac', value: p?.astroDetails?.zodiacSign || '' },
+  { label: 'Date of Birth', value: p?.astroDetails?.dateOfBirth || '' },
+  { label: 'Time of Birth', value: p?.astroDetails?.timeOfBirth || '' },
+  { label: 'City of Birth', value: p?.astroDetails?.cityOfBirth || '' },
+  { label: 'Manglik', value: normalizeEnum(p?.astroDetails?.manglik) },
+];
+
   const mapEducation = (p: any) => [
     { label: 'Highest Degree', value: p?.educationDetails?.highestDegree || '' },
     { label: 'Post Graduation', value: p?.educationDetails?.postGraduation || '' },
@@ -207,8 +300,8 @@ const ProfilePage: React.FC = () => {
   const mapStats = (p: any) => [
     { number: '0', label: 'Profile Visits', color: 'bg-purple-50 text-purple-600' },
     { number: '0', label: 'Shortlisted Profiles', color: 'bg-yellow-50 text-yellow-600' },
-    { number: '0', label: 'Horoscope Matches', color: 'bg-pink-50 text-pink-600' },
-    { number: '0', label: 'Nearby Matches', color: 'bg-orange-50 text-orange-600' },
+    { number: '0', label: 'Not-Now', color: 'bg-pink-50 text-pink-600' },
+    // { number: '0', label: 'Nearby Matches', color: 'bg-orange-50 text-orange-600' },
   ];
 
   if (loading) {
@@ -224,23 +317,29 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white p-4">
       <div className="max-w-7xl mx-auto">
-        {/* <div className="flex justify-end mb-4">
-          <button
+        <div className="flex justify-end mb-4">
+          {/* <button
             onClick={handleUpdateProfile}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Update Profile
-          </button>
+          </button> */}
         </div>
         {updateStatus && (
           <div className={`mb-4 p-2 rounded ${updateStatus.includes('successfully') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
             {updateStatus}
           </div>
-        )} */}
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-white">
           {/* Left Column */}
           <div className="lg:col-span-1 space-y-6">
-            <ProfilePhotoSection imageUrl={profile?.profileImage?.profileImage} />
+
+<ProfilePhotoSection
+  imageUrl={profile?.profileImage || DEFAULT_PROFILE_IMAGE}
+  photoUploading={photoUploading}
+  onPhotoChange={handlePhotoUpload}
+/>
+
             <AboutMeSection aboutMe={profile?.aboutMe} />
             <EducationSection education={mapEducation(profile)} />
             <CareerSection career={mapCareer(profile)} />
