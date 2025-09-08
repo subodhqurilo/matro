@@ -47,7 +47,7 @@ const Follow2Form = ({
       return;
     }
 
-    const response = await fetch('http://localhost:3000/auth/verify-otp-register', {
+    const response = await fetch('https://matrimonial-backend-chi.vercel.app/auth/verify-otp-register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -61,7 +61,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
       }
       setIsLoadingRecommendations(true);
       const response = await fetch(
-        "http://localhost:3000/api/recommendation/daily",
+        "https://matrimonial-backend-chi.vercel.app/api/recommendation/daily",
         {
           method: "GET",
           headers: {
@@ -120,7 +120,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch("http://localhost:3000/api/request/send", {
+      const response = await fetch("https://matrimonial-backend-chi.vercel.app/api/request/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -183,7 +183,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
 
       setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-      const response = await fetch("http://localhost:3000/api/like/send", {
+      const response = await fetch("https://matrimonial-backend-chi.vercel.app/api/like/send", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -242,7 +242,7 @@ export default function Recommendation({ activeTab }: RecommendationProps) {
         throw new Error("No authentication token found. Please log in.");
       }
 
-      const response = await fetch("http://localhost:3000/api/cross/user", {
+      const response = await fetch("https://matrimonial-backend-chi.vercel.app/api/cross/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

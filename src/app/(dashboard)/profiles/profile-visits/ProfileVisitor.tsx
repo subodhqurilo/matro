@@ -48,7 +48,7 @@ export default function ProfileVisitor() {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No authentication token found. Please log in.");
 
-      const res = await fetch("http://localhost:3000/api/profile/view/viewed-me", {
+      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/profile/view/viewed-me", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

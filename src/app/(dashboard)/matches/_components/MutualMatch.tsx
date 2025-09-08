@@ -46,7 +46,7 @@ export default function MutualMatches({ activeTab }: { activeTab: string }) {
     const fetchMutualMatches = async () => {
       try {
         const data = await callApi(
-          "http://localhost:3000/api/mutual-matches",
+          "https://matrimonial-backend-chi.vercel.app//api/mutual-matches",
           "GET"
         );
 
@@ -99,7 +99,7 @@ export default function MutualMatches({ activeTab }: { activeTab: string }) {
   try {
     setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-    await callApi("http://localhost:3000/api/request/send", "POST", {
+    await callApi("https://matrimonial-backend-chi.vercel.app/api/request/send", "POST", {
       receiverId: id,
     });
 
@@ -122,7 +122,7 @@ const handleShortlist = async (id: string) => {
   try {
     setIsSendingLike((prev) => ({ ...prev, [id]: true }));
 
-    await callApi("http://localhost:3000/api/like/send", "POST", {
+    await callApi("https://matrimonial-backend-chi.vercel.app/api/like/send", "POST", {
       receiverId: id,
     });
 
@@ -143,7 +143,7 @@ const handleShortlist = async (id: string) => {
 
 const handleNotNow = async (id: string) => {
   try {
-    await callApi("http://localhost:3000/api/cross/user", "POST", {
+    await callApi("https://matrimonial-backend-chi.vercel.app/api/cross/user", "POST", {
       userIdToBlock: id,
     });
 

@@ -53,7 +53,7 @@ export default function ProfilePhoto({ activeTab }: ProfilePhotoProps) {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No authentication token found");
 
-      const res = await fetch("http://localhost:3000/api/profile/with-photo", {
+      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/profile/with-photo", {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
 
@@ -101,7 +101,7 @@ export default function ProfilePhoto({ activeTab }: ProfilePhotoProps) {
 
       setIsSendingConnection((prev) => ({ ...prev, [id]: true }));
 
-      const res = await fetch("http://localhost:3000/api/request/send", {
+      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/request/send", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ receiverId: id }),
@@ -136,7 +136,7 @@ const handleShortlist = async (id: string) => {
 
     setIsSendingLike(prev => ({ ...prev, [id]: true }));
 
-    const res = await fetch("http://localhost:3000/api/like/send", {
+    const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/like/send", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -169,7 +169,7 @@ const handleShortlist = async (id: string) => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("No authentication token");
 
-      const res = await fetch("http://localhost:3000/api/cross/user", {
+      const res = await fetch("https://matrimonial-backend-chi.vercel.app/api/cross/user", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ userIdToBlock: id }),

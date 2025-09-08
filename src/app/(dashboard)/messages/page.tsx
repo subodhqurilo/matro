@@ -13,7 +13,7 @@ interface User {
   profileImage?: string;
 }
 
-const socket: Socket = io("http://localhost:3000", {
+const socket: Socket = io("https://matrimonial-backend-chi.vercel.app", {
   transports: ["websocket"],
 });
 
@@ -84,7 +84,7 @@ export default function Home() {
     console.log("👥 Fetching all users...");
     try {
       const res = await fetch(
-        "http://localhost:3000/api/message/AllUser",
+        "https://matrimonial-backend-chi.vercel.app/api/message/AllUser",
         {
           headers: {
             Authorization: `Bearer ${authToken}`,

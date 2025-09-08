@@ -96,7 +96,7 @@ const fetchUser = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
 
-    const res = await fetch('http://localhost:3000/auth/user', {
+    const res = await fetch('https://matrimonial-backend-chi.vercel.app/auth/user', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ setProfileImage(storedImage); // हमेशा कोई न कोई image s
   const handleContinueLevel1 = () => setCurrentLevel(2);
   const handleContinueLevel2 = async () => {
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch('https://matrimonial-backend-chi.vercel.app/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

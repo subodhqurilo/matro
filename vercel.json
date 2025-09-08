@@ -13,13 +13,13 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://your-backend-url.com",
-    "NEXTAUTH_URL": "https://your-vercel-app.vercel.app"
+    "NEXT_PUBLIC_API_URL": "https://matrimonial-backend-chi.vercel.app",
+    "NEXTAUTH_URL": "https://vercel.com/qurilos-projects/matro-br87"
   },
   "build": {
     "env": {
-      "NEXT_PUBLIC_API_URL": "https://your-backend-url.com",
-      "NEXTAUTH_URL": "https://your-vercel-app.vercel.app"
+      "NEXT_PUBLIC_API_URL": "https://matrimonial-backend-chi.vercel.app",
+      "NEXTAUTH_URL": "https://vercel.com/qurilos-projects/matro-br87"
     }
   }
 }

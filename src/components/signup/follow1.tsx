@@ -59,7 +59,7 @@ const Follow1Form = ({
 
       console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
 
-      const response = await fetch('http://localhost:3000/auth/otp-request', {
+      const response = await fetch('https://matrimonial-backend-chi.vercel.app/auth/otp-request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

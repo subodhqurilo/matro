@@ -45,7 +45,7 @@ const Step7Form: React.FC<Step7Props> = ({
 
       const token = localStorage.getItem('token');
 
-      const res = await fetch('http://localhost:3000/api/basic-details', {
+      const res = await fetch('https://matrimonial-backend-chi.vercel.app/api/basic-details', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

@@ -63,7 +63,7 @@ function ProfilePage() {
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/api/profile/users/${id}`);
+        const response = await fetch(`https://matrimonial-backend-chi.vercel.app/api/profile/users/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

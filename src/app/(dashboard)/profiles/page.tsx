@@ -16,9 +16,9 @@ import { useUser } from '../../../components/ui/UserContext';
 const DEFAULT_PROFILE_IMAGE = "https://res.cloudinary.com/dppe3ni5z/image/upload/v1757144487/default-profile.png";
 
 
-const API_URL = 'http://localhost:3000/api/profile/self';
-const UPDATE_API_URL = 'http://localhost:3000/api/profile/update-profile';
-const UPLOAD_PHOTO_API = 'http://localhost:3000/api/basic-details';
+const API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/self';
+const UPDATE_API_URL = 'https://matrimonial-backend-chi.vercel.app/api/profile/update-profile';
+const UPLOAD_PHOTO_API = 'https://matrimonial-backend-chi.vercel.app/api/basic-details';
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -55,9 +55,9 @@ const { profileImage, setProfileImage } = useUser();
         if (typeof fullProfile.profileImage === "object") {
           // backend se object aa raha hai
           if (fullProfile.profileImage.filename) {
-            fullProfile.profileImage = `http://localhost:3000/uploads/${fullProfile.profileImage.filename}`;
+            fullProfile.profileImage = `https://matrimonial-backend-chi.vercel.app/uploads/${fullProfile.profileImage.filename}`;
           } else if (fullProfile.profileImage.url) {
-            fullProfile.profileImage = `http://localhost:3000${fullProfile.profileImage.url}`;
+            fullProfile.profileImage = `https://matrimonial-backend-chi.vercel.app${fullProfile.profileImage.url}`;
           }
         }
         // Agar string hi aa gaya to use directly
@@ -89,7 +89,7 @@ const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const token = localStorage.getItem('authToken');
     if (!token) throw new Error('No authentication token found.');
 
-    const response = await fetch('http://localhost:3000/api/basic-details/', {
+    const response = await fetch('https://matrimonial-backend-chi.vercel.app/api/basic-details/', {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`, // Only this header for FormData
