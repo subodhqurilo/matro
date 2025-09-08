@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   eslint: {
-    ignoreDuringBuilds: true, // <-- Add this line
+    ignoreDuringBuilds: true, // ✅ Ignore ESLint errors during production build
   },
   images: {
     domains: ["images.pexels.com", "res.cloudinary.com", "localhost"],
@@ -11,4 +11,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-//hgit
+
