@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PhoneCall, X, MessageCircleMore } from "lucide-react"
+import {  X, MessageCircleMore } from "lucide-react"
 // import { PiPhoneCallThin } from "react-icons/pi";
 import Image from "next/image"
 interface Profile {
@@ -140,7 +140,7 @@ export default function Accepted() {
                                         size="icon"
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <PhoneCall className="text-black group-hover:text-white" />
+                                        {/* <PhoneCall className="text-black group-hover:text-white" /> */}
                                     </Button>
                                 </div>
 

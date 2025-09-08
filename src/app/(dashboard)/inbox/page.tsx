@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Heart, X, Send, PhoneCall, MessageCircleMore, ClockFading } from "lucide-react"
+import { Heart, X, Send,  MessageCircleMore, ClockFading } from "lucide-react"
 import Image from "next/image"
 import { toast } from "react-hot-toast";
 
@@ -191,7 +191,7 @@ const validProfiles =
     ?.map((item: Request) => transformToProfile(item))
     .filter((p): p is Profile => p !== null)   // null profiles हटाए
     .filter(p => !deletedProfiles.find(d => d.id === p.id)) || [];
-
+setReceivedProfiles(validProfiles)
     } catch (error) {
       console.error("Error fetching received requests:", error)
     } finally {

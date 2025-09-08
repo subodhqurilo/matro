@@ -134,98 +134,98 @@ const normalizeEnum = (value: any) => {
   return "No";
 };
 
-  const handleUpdateProfile = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+//   const handleUpdateProfile = async () => {
+//     setUpdateStatus(null);
+//     try {
+//       const token = localStorage.getItem('authToken');
+//       if (!token) throw new Error('No authentication token found. Please log in.');
 
-      const updatedProfile = {
-        basicInfo: {
-          postedBy: profile?.basicInfo?.postedBy || "Self",
-          firstName: profile?.basicInfo?.firstName || "ashok",
-          middleName: profile?.basicInfo?.middleName || "None",
-          lastName: profile?.basicInfo?.lastName || "kumar",
-          maritalStatus: profile?.basicInfo?.maritalStatus || "single",
-          anyDisability: profile?.basicInfo?.anyDisability || "No",
-          weight: profile?.basicInfo?.weight || 60,
-          complexion: profile?.basicInfo?.complexion || "Fair",
-          healthInformation: profile?.basicInfo?.healthInformation || "Healthy and active",
-          height: profile?.basicInfo?.height || "5ft 8in"
-        },
-        religionDetails: {
-          religion: profile?.religionDetails?.religion || "Hindu",
-          motherTongue: profile?.religionDetails?.motherTongue || "Tamil",
-          community: profile?.religionDetails?.community || "Iyer",
-          casteNoBar: profile?.religionDetails?.casteNoBar || "Yes",
-          gothra: profile?.religionDetails?.gothra || "None"
-        },
-        familyDetails: {
-          familyBackground: profile?.familyDetails?.familyBackground || "Nuclear",
-          fatherOccupation: profile?.familyDetails?.fatherOccupation || "Business",
-          motherOccupation: profile?.familyDetails?.motherOccupation || "Housewife",
-          brother: profile?.familyDetails?.brother || 4,
-          sister: profile?.familyDetails?.sister || 3,
-          familyBasedOutOf: profile?.familyDetails?.familyBasedOutOf || "Chennai"
-        },
-        astroDetails: {
-          manglik: normalizeEnum(profile?.astroDetails?.manglik),
+//       const updatedProfile = {
+//         basicInfo: {
+//           postedBy: profile?.basicInfo?.postedBy || "Self",
+//           firstName: profile?.basicInfo?.firstName || "ashok",
+//           middleName: profile?.basicInfo?.middleName || "None",
+//           lastName: profile?.basicInfo?.lastName || "kumar",
+//           maritalStatus: profile?.basicInfo?.maritalStatus || "single",
+//           anyDisability: profile?.basicInfo?.anyDisability || "No",
+//           weight: profile?.basicInfo?.weight || 60,
+//           complexion: profile?.basicInfo?.complexion || "Fair",
+//           healthInformation: profile?.basicInfo?.healthInformation || "Healthy and active",
+//           height: profile?.basicInfo?.height || "5ft 8in"
+//         },
+//         religionDetails: {
+//           religion: profile?.religionDetails?.religion || "Hindu",
+//           motherTongue: profile?.religionDetails?.motherTongue || "Tamil",
+//           community: profile?.religionDetails?.community || "Iyer",
+//           casteNoBar: profile?.religionDetails?.casteNoBar || "Yes",
+//           gothra: profile?.religionDetails?.gothra || "None"
+//         },
+//         familyDetails: {
+//           familyBackground: profile?.familyDetails?.familyBackground || "Nuclear",
+//           fatherOccupation: profile?.familyDetails?.fatherOccupation || "Business",
+//           motherOccupation: profile?.familyDetails?.motherOccupation || "Housewife",
+//           brother: profile?.familyDetails?.brother || 4,
+//           sister: profile?.familyDetails?.sister || 3,
+//           familyBasedOutOf: profile?.familyDetails?.familyBasedOutOf || "Chennai"
+//         },
+//         astroDetails: {
+//           manglik: normalizeEnum(profile?.astroDetails?.manglik),
 
-          dateOfBirth: profile?.astroDetails?.dateOfBirth || "1995-05-21",
-          timeOfBirth: profile?.astroDetails?.timeOfBirth || "11:34 AM",
-          cityOfBirth: profile?.astroDetails?.cityOfBirth || "Delhi"
-        },
-        educationDetails: {
-          highestDegree: profile?.educationDetails?.highestDegree || "B.Tech",
-          postGraduation: profile?.educationDetails?.postGraduation || "MCA",
-          underGraduation: profile?.educationDetails?.underGraduation || "BCA",
-          school: profile?.educationDetails?.school || "DPS VK",
-          schoolStream: profile?.educationDetails?.schoolStream || "Science"
-        },
-        careerDetails: {
-          employedIn: profile?.careerDetails?.employedIn || "Private",
-          occupation: profile?.careerDetails?.occupation || "Developer",
-          company: profile?.careerDetails?.company || "Infosys",
-          annualIncome: profile?.careerDetails?.annualIncome || "8 LPA"
-        },
-        lifestyleHobbies: {
-          diet: profile?.lifestyleHobbies?.diet || "Vegetarian",
-          ownHouse: profile?.lifestyleHobbies?.ownHouse || "Yes",
-          ownCar: profile?.lifestyleHobbies?.ownCar || "Yes",
+//           dateOfBirth: profile?.astroDetails?.dateOfBirth || "1995-05-21",
+//           timeOfBirth: profile?.astroDetails?.timeOfBirth || "11:34 AM",
+//           cityOfBirth: profile?.astroDetails?.cityOfBirth || "Delhi"
+//         },
+//         educationDetails: {
+//           highestDegree: profile?.educationDetails?.highestDegree || "B.Tech",
+//           postGraduation: profile?.educationDetails?.postGraduation || "MCA",
+//           underGraduation: profile?.educationDetails?.underGraduation || "BCA",
+//           school: profile?.educationDetails?.school || "DPS VK",
+//           schoolStream: profile?.educationDetails?.schoolStream || "Science"
+//         },
+//         careerDetails: {
+//           employedIn: profile?.careerDetails?.employedIn || "Private",
+//           occupation: profile?.careerDetails?.occupation || "Developer",
+//           company: profile?.careerDetails?.company || "Infosys",
+//           annualIncome: profile?.careerDetails?.annualIncome || "8 LPA"
+//         },
+//         lifestyleHobbies: {
+//           diet: profile?.lifestyleHobbies?.diet || "Vegetarian",
+//           ownHouse: profile?.lifestyleHobbies?.ownHouse || "Yes",
+//           ownCar: profile?.lifestyleHobbies?.ownCar || "Yes",
           
-          smoking: normalizeEnum(profile?.lifestyleHobbies?.smoking),
-drinking: normalizeEnum(profile?.lifestyleHobbies?.drinking),
+//           smoking: normalizeEnum(profile?.lifestyleHobbies?.smoking),
+// drinking: normalizeEnum(profile?.lifestyleHobbies?.drinking),
 
-          openToPets: profile?.lifestyleHobbies?.openToPets || "Yes",
-          foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Veggies"],
-          hobbies: profile?.lifestyleHobbies?.hobbies || ["Dancing", "Singing"],
-          interests: profile?.lifestyleHobbies?.interests || ["Traveling"],
-          favoriteMusic: profile?.lifestyleHobbies?.favoriteMusic || ["Depend on mood bro"],
-          sports: profile?.lifestyleHobbies?.sports || ["Cricket"],
-          cuisine: profile?.lifestyleHobbies?.cuisine || ["Indian", "only indian bro"],
-          tvShows: profile?.lifestyleHobbies?.tvShows || ["Mahabharat", "Ramayan"],
-          vacationDestination: profile?.lifestyleHobbies?.vacationDestination || ["Uttrakhand", "Temples"]
-        },
-        aboutMe: profile?.aboutMe || "I am a Mindblowing"
-      };
+//           openToPets: profile?.lifestyleHobbies?.openToPets || "Yes",
+//           foodICook: profile?.lifestyleHobbies?.foodICook || ["Maggi", "Veggies"],
+//           hobbies: profile?.lifestyleHobbies?.hobbies || ["Dancing", "Singing"],
+//           interests: profile?.lifestyleHobbies?.interests || ["Traveling"],
+//           favoriteMusic: profile?.lifestyleHobbies?.favoriteMusic || ["Depend on mood bro"],
+//           sports: profile?.lifestyleHobbies?.sports || ["Cricket"],
+//           cuisine: profile?.lifestyleHobbies?.cuisine || ["Indian", "only indian bro"],
+//           tvShows: profile?.lifestyleHobbies?.tvShows || ["Mahabharat", "Ramayan"],
+//           vacationDestination: profile?.lifestyleHobbies?.vacationDestination || ["Uttrakhand", "Temples"]
+//         },
+//         aboutMe: profile?.aboutMe || "I am a Mindblowing"
+//       };
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedProfile)
-      });
+//       const response = await fetch(UPDATE_API_URL, {
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Authorization': `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(updatedProfile)
+//       });
 
-      if (!response.ok) throw new Error('Failed to update profile');
-      const updatedData = await response.json();
-      setProfile(updatedData.data || updatedData);
-      setUpdateStatus('Profile updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update profile');
-    }
-  };
+//       if (!response.ok) throw new Error('Failed to update profile');
+//       const updatedData = await response.json();
+//       setProfile(updatedData.data || updatedData);
+//       setUpdateStatus('Profile updated successfully!');
+//     } catch (err: any) {
+//       setUpdateStatus(err.message || 'Failed to update profile');
+//     }
+//   };
 
   // Map API data to component props (using new structure)
   const mapBasicInfo = (p: any) => [

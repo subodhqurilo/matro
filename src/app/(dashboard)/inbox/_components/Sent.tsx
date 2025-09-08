@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { PhoneCall, X,ClockFading } from "lucide-react"
+import {  X,ClockFading } from "lucide-react"
 // import { PiPhoneCallThin } from "react-icons/pi";
 import Image from "next/image"
 interface Profile {
@@ -129,7 +129,7 @@ export default function Sent() {
                                         size="icon"
                                         className="bg-transparent border-none p-0 hover:bg-transparent"
                                     >
-                                        <PhoneCall className="text-black group-hover:text-white border border-amber-400" />
+                                        {/* <PhoneCall className="text-black group-hover:text-white border border-amber-400" /> */}
                                     </Button>
                                 </div>
                                 {/* Pending Button */}
