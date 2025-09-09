@@ -8,8 +8,6 @@ import { useUser } from '@/components/ui/UserContext';
 import { useState } from 'react';
 
 interface Step7Props {
-  profileImage: File | null;
-  setProfileImage: (file: File | null) => void;
   adhaarCardFrontImage: File | null;
   setAdhaarCardFrontImage: (file: File | null) => void;
   adhaarCardBackImage: File | null;
@@ -18,8 +16,6 @@ interface Step7Props {
 }
 
 const Step7Form: React.FC<Step7Props> = ({
-  profileImage,
-  setProfileImage,
   adhaarCardFrontImage,
   setAdhaarCardFrontImage,
   adhaarCardBackImage,
@@ -29,31 +25,43 @@ const Step7Form: React.FC<Step7Props> = ({
   const { setProfileImage: setGlobalProfileImage } = useUser();
   const [loading, setLoading] = useState(false);
 
+  // Local state for profile image
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+
   const handleContinueStep7 = async () => {
+    if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
+      alert('Please upload all required files.');
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
-        alert('Please upload all required images.');
-        return;
-      }
-
-      setLoading(true);
-
       const formData = new FormData();
       formData.append('profileImage', profileImage);
       formData.append('adhaarCardFrontImage', adhaarCardFrontImage);
       formData.append('adhaarCardBackImage', adhaarCardBackImage);
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
 
-      const res = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/basic-details', {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const res = await fetch(
+        'https://matrimonial-backend-7ahc.onrender.com/auth/profile',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (jsonErr) {
+        console.error('Backend did not return JSON:', await res.text());
+        throw new Error('Invalid server response');
+      }
 
       if (res.ok && data.success) {
         const uploadedUrl = data.data.profileImage;
@@ -107,9 +115,7 @@ const Step7Form: React.FC<Step7Props> = ({
             <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
           </div>
           {profileImage && (
-            <p className="text-sm text-gray-600 mt-1">
-              Selected: {profileImage.name}
-            </p>
+            <p className="text-sm text-gray-600 mt-1">{profileImage.name}</p>
           )}
         </div>
 
@@ -132,9 +138,7 @@ const Step7Form: React.FC<Step7Props> = ({
             <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
           </div>
           {adhaarCardFrontImage && (
-            <p className="text-sm text-gray-600 mt-1">
-              Selected: {adhaarCardFrontImage.name}
-            </p>
+            <p className="text-sm text-gray-600 mt-1">{adhaarCardFrontImage.name}</p>
           )}
         </div>
 
@@ -157,9 +161,7 @@ const Step7Form: React.FC<Step7Props> = ({
             <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
           </div>
           {adhaarCardBackImage && (
-            <p className="text-sm text-gray-600 mt-1">
-              Selected: {adhaarCardBackImage.name}
-            </p>
+            <p className="text-sm text-gray-600 mt-1">{adhaarCardBackImage.name}</p>
           )}
         </div>
       </div>
@@ -179,4 +181,5 @@ const Step7Form: React.FC<Step7Props> = ({
     </>
   );
 };
+
 export default Step7Form;
