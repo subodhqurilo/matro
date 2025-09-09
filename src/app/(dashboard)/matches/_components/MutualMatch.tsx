@@ -46,7 +46,7 @@ export default function MutualMatches({ activeTab }: { activeTab: string }) {
     const fetchMutualMatches = async () => {
       try {
         const data = await callApi(
-          "https://matrimonial-backend-7ahc.onrender.com//api/mutual-matches",
+          "https://matrimonial-backend-7ahc.onrender.com/api/mutual-matches",
           "GET"
         );
 
