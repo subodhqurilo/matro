@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useRef } from 'react';
 import ProfilePhotoSection from '@/app/(dashboard)/profiles/_components/ProfilePhotoSection';
 import StatsSection from '@/app/(dashboard)/profiles/_components/StatsSection';
 import ReligiousInfoSection from '@/app/(dashboard)/profiles/_components/ReligiousInfoSection';
@@ -22,11 +22,42 @@ const UPLOAD_PHOTO_API = 'https://matrimonial-backend-7ahc.onrender.com/api/basi
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
+  const [editableProfile, setEditableProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 const [photoUploading, setPhotoUploading] = useState(false);
 const { profileImage, setProfileImage } = useUser();
+const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+
+const autoSaveProfile = (updatedProfile: any) => {
+  if (saveTimeout.current) clearTimeout(saveTimeout.current);
+
+  saveTimeout.current = setTimeout(async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch(UPDATE_API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedProfile),
+      });
+
+      if (!response.ok) throw new Error('Failed to save');
+
+      const data = await response.json();
+      setProfile(data.data || data); // update main profile
+      console.log('Profile auto-saved!');
+    } catch (err) {
+      console.error('Auto-save failed:', err);
+    }
+  }, 1000); // wait 1s after last change
+};
+
 
   useEffect(() => {
   const fetchProfile = async () => {
@@ -64,6 +95,7 @@ const { profileImage, setProfileImage } = useUser();
       }
 
       setProfile(fullProfile);
+      setEditableProfile(fullProfile);
     } catch (err: any) {
       setError(err.message || 'Failed to fetch profile');
     } finally {
@@ -89,7 +121,7 @@ const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const token = localStorage.getItem('authToken');
     if (!token) throw new Error('No authentication token found.');
 
-    const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/basic-details/', {
+    const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/api/basic-details', {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`, // Only this header for FormData

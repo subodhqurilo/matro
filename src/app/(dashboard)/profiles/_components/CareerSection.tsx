@@ -65,6 +65,7 @@ const CareerSection: React.FC<CareerSectionProps> = ({ career }) => {
     setEditValues((prev) =>
       prev.map((item, i) => (i === index ? { ...item, value } : item))
     );
+    
   };
 
   const handleSave = async () => {

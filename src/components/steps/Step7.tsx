@@ -13,6 +13,8 @@ interface Step7Props {
   adhaarCardBackImage: File | null;
   setAdhaarCardBackImage: (file: File | null) => void;
   onBack: () => void;
+    onSuccess: (uploadedData: any) => void; // ✅ notify parent
+
 }
 
 const Step7Form: React.FC<Step7Props> = ({
@@ -21,11 +23,10 @@ const Step7Form: React.FC<Step7Props> = ({
   adhaarCardBackImage,
   setAdhaarCardBackImage,
   onBack,
+  onSuccess,
 }) => {
   const { setProfileImage: setGlobalProfileImage } = useUser();
   const [loading, setLoading] = useState(false);
-
-  // Local state for profile image
   const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const handleContinueStep7 = async () => {
@@ -58,6 +59,7 @@ const Step7Form: React.FC<Step7Props> = ({
       let data;
       try {
         data = await res.json();
+        console.log(data);
       } catch (jsonErr) {
         console.error('Backend did not return JSON:', await res.text());
         throw new Error('Invalid server response');
@@ -67,6 +69,10 @@ const Step7Form: React.FC<Step7Props> = ({
         const uploadedUrl = data.data.profileImage;
         setGlobalProfileImage(uploadedUrl);
         localStorage.setItem('profileImage', uploadedUrl);
+onSuccess(data.data);
+        // Notify parent to close modal
+        if (onSuccess) onSuccess(uploadedUrl);
+
         alert('Profile updated successfully ✅');
       } else {
         console.error('Upload failed', data);

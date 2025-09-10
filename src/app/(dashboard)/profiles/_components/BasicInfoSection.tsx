@@ -8,12 +8,14 @@ import { Label } from '@/components/ui/label';
 type BasicInfoItem = { label: string; value: string };
 interface BasicInfoSectionProps {
   basicInfo: BasicInfoItem[];
+    onChange?: (updatedBasicInfo: BasicInfoItem[]) => void; // new
+
 }
 
 const API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/self';
 const UPDATE_API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/update-profile';
 
-const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo }) => {
+const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo, onChange  }) => {
   const [info, setInfo] = useState<BasicInfoItem[]>(basicInfo);
   const [modalOpen, setModalOpen] = useState(false);
   const [editValues, setEditValues] = useState<BasicInfoItem[]>(basicInfo);
@@ -71,10 +73,16 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo }) => {
   };
 
   const handleInputChange = (index: number, value: string) => {
-    setEditValues((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, value } : item))
-    );
-  };
+  const updatedValues = editValues.map((item, i) =>
+    i === index ? { ...item, value } : item
+  );
+  setEditValues(updatedValues);
+
+  // Notify parent if onChange prop is provided
+    if (onChange) onChange(updatedValues);
+
+};
+
 
   const handleSave = async () => {
     setUpdateStatus(null);

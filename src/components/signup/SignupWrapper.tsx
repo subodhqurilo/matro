@@ -8,9 +8,11 @@ import Follow2Form from './follow2';
 interface SignupWrapperProps {
   onSignupSuccess: (token: string, userData?: any) => void;
   setIsProfileSetupOpen: (value: boolean) => void;
+    closeModal: () => void; // 
+
 }
 
-const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen }: SignupWrapperProps) => {
+const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen,closeModal }: SignupWrapperProps) => {
   const [step, setStep] = useState(1);
 
 
@@ -71,6 +73,7 @@ const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen }: SignupWrapper
           onBack={handleBackToFollow1}
           handleContinueFollow1Form={handleOtpVerify}
               setIsProfileSetupOpen={setIsProfileSetupOpen} 
+              closeModal={closeModal}
         />
       )}
     </div>

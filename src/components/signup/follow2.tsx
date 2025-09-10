@@ -19,7 +19,7 @@ type Follow2FormProps = {
   phoneNumber: string;
   handleContinueFollow1Form: () => void;
   setIsProfileSetupOpen: (value: boolean) => void;
-  
+  closeModal: () => void;
 };
 
 const Follow2Form = ({
@@ -29,6 +29,7 @@ const Follow2Form = ({
   phoneNumber,
   handleContinueFollow1Form,
   setIsProfileSetupOpen,
+  closeModal,
 }: Follow2FormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +45,8 @@ const Follow2Form = ({
     if (otp === '1234') {
       toast.success('OTP verified successfully! (Test mode)');
       handleContinueFollow1Form();
+            closeModal(); 
+
       return;
     }
 
@@ -68,6 +71,8 @@ const Follow2Form = ({
 
       handleContinueFollow1Form();
       setIsProfileSetupOpen(true);
+            closeModal(); 
+
     } else {
       setError(data.message || 'Invalid OTP. Please try again.');
       toast.error('Verification failed');
@@ -158,6 +163,7 @@ Follow2Form.propTypes = {
   onBack: PropTypes.func.isRequired,
   handleContinueFollow1Form: PropTypes.func.isRequired,
   setIsProfileSetupOpen: PropTypes.func.isRequired,
+  
 };
 
 export default Follow2Form;

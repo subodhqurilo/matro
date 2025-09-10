@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from './ui/UserContext';  // ✅ import context
+import { useUser } from './ui/UserContext';  
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
@@ -39,7 +39,7 @@ export default function Navbar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
-  const { profileImage, setProfileImage } = useUser();   // ✅ दोनों मिलेंगे
+  const { profileImage, setProfileImage } = useUser();   
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Login state
@@ -77,10 +77,15 @@ export default function Navbar() {
   const [annualIncome, setAnnualIncome] = useState('');
   const [workLocation, setWorkLocation] = useState('');
   const [designation, setDesignation] = useState('');
+  const [profileData, setProfileData] = useState<any>({});
+  const [profileImageLocal, setProfileImageLocal] = useState<File | string | null>(null);
   
   const [adhaarCardFrontImage, setAdhaarCardFrontImage] = useState<File | null>(null);
   const [adhaarCardBackImage, setAdhaarCardBackImage] = useState<File | null>(null);
 
+const convertStringToBooleanLocal = (value: string): boolean => {
+  return value === 'Yes' || value === 'true';
+};
 
   
   const getUserFirstName = (userData: any) => {
@@ -96,7 +101,7 @@ const fetchUser = async () => {
     const token = localStorage.getItem('authToken');
     if (!token) return;
 
-    const res = await fetch('http://localhost:3000/auth/user', {
+    const res = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/user', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -198,7 +203,7 @@ setProfileImage(storedImage); // हमेशा कोई न कोई image s
           // Add 5-second delay before opening profile setup
           setTimeout(() => {
             setIsProfileSetupOpen(true);
-          }, 5000);
+          }, 3000);
         }
       } else {
         console.error('Failed to fetch user data:', await response.text());
@@ -262,7 +267,7 @@ setProfileImage(storedImage); // हमेशा कोई न कोई image s
   const handleContinueLevel1 = () => setCurrentLevel(2);
   const handleContinueLevel2 = async () => {
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -485,25 +490,15 @@ setProfileImage(storedImage); // हमेशा कोई न कोई image s
       console.log('Request method: POST');
       console.log('Request headers:', {
         Authorization: `Bearer ${token.substring(0, 20)}...`,
-        'Content-Type': 'multipart/form-data (auto-generated)'
+        
       });
 
       // Test if the API endpoint is accessible
-      try {
-        const testResponse = await fetch(PROFILE.UPDATE_PROFILE, {
-          method: 'OPTIONS',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log('API endpoint test response:', testResponse.status);
-      } catch (testError) {
-        console.warn('API endpoint test failed:', testError);
-      }
+
 console.log('Submitting profile to:', PROFILE.UPDATE_PROFILE);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
 
       const response = await fetch(PROFILE.UPDATE_PROFILE, {
         method: 'POST',
@@ -525,10 +520,14 @@ console.log('Submitting profile to:', PROFILE.UPDATE_PROFILE);
         try {
           const responseData = JSON.parse(responseText);
 
-          if (responseData.success && responseData.data) {
-            handleProfileUpdateSuccess(responseData.data);
-            alert('Profile submitted successfully!');
-          } else {
+if (responseData.success && responseData.data) {
+    
+    handleProfileUpdateSuccess(responseData.data);
+    alert('Profile submitted successfully!');
+}
+
+
+          else {
             setErrorMessage('Invalid response format from server. Please try again.');
             console.error('Invalid response format:', responseData);
           }
@@ -820,6 +819,7 @@ if (profileImage) {
             <SignupWrapper
               onSignupSuccess={handleLoginSuccess}
               setIsProfileSetupOpen={setIsProfileSetupOpen}
+              closeModal={() => setIsSignupOpen(false)}
             />
 
           </div>
@@ -945,8 +945,15 @@ if (profileImage) {
                 adhaarCardBackImage={adhaarCardBackImage}
                 setAdhaarCardBackImage={setAdhaarCardBackImage}
                 onBack={handleBack}
-                handleContinueStep7={handleContinueStep7}
-              />
+                  handleContinueStep7={handleContinueStep7}  
+
+                onSuccess={(uploadedData) => {
+      handleProfileUpdateSuccess(uploadedData); 
+      setIsProfileSetupOpen(false);             
+      setProfileStep(1);
+      setErrorMessage('');
+    }}
+  />
             )}
             {isSubmitting && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
