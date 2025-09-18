@@ -555,7 +555,7 @@ const router = useRouter();
 
 const handleChatClick = (profile: Profile) => {
   localStorage.setItem("chatUser", JSON.stringify(profile));
-  router.push(`http://localhost:3001/messages?userId=${profile.id}&name=${profile.name}`);
+  router.push(`https://matro-m6d5.vercel.app/messages?userId=${profile.id}&name=${profile.name}`);
 };
 
 

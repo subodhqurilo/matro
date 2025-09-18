@@ -262,7 +262,7 @@ useEffect(() => {
         const formData = new FormData();
         formData.append("file", file);
         const token = localStorage.getItem("authToken");
-        const res = await fetch("http://localhost:3000/api/upload", {
+        const res = await fetch("https://matrimonial-backend-7ahc.onrender.com/api/upload", {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },
           body: formData,
@@ -402,7 +402,7 @@ useEffect(() => {
     if (msgId.startsWith("temp-")) return setMessages((prev) => prev.filter((m) => m.id !== msgId));
     try {
       const token = localStorage.getItem("authToken");
-      const res = await fetch(`http://localhost:3000/api/message/${msgId}`, {
+      const res = await fetch(`https://matrimonial-backend-7ahc.onrender.com/api/message/${msgId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
