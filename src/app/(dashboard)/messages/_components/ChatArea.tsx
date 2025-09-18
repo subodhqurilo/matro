@@ -90,17 +90,10 @@ export default function ChatArea({
     }
   }, [conversation.id]);
 
-
 useEffect(() => {
   if (!currentUser || !conversation) return;
 
-  const handleIncomingMessage = (msg: SocketMessage) => {
-    const isRelevant =
-      (msg.senderId === currentUser._id && msg.receiverId === conversation.id) ||
-      (msg.senderId === conversation.id && msg.receiverId === currentUser._id);
-
-    if (!isRelevant) return;
-
+  const handleSentMessage = (msg: SocketMessage) => {
     setMessages(prev => {
       const tempIndex = prev.findIndex(m => m.id === msg.tempId);
       if (tempIndex !== -1) {
@@ -108,21 +101,60 @@ useEffect(() => {
         updated[tempIndex] = mapSocketToMessage(msg, currentUser, conversation);
         return updated;
       }
-
+      // अगर tempId नहीं मिला, तो normal add करें
       if (prev.some(m => m.id === msg._id)) return prev;
+      return [...prev, mapSocketToMessage(msg, currentUser, conversation)];
+    });
+  };
+
+  socket.on("msg-sent", handleSentMessage);
+
+  return () => {
+    socket.off("msg-sent", handleSentMessage);
+  };
+}, [socket, currentUser, conversation]);
+
+
+
+
+useEffect(() => {
+  if (!currentUser || !conversation) return;
+
+  const handleIncomingOrSentMessage = (msg: SocketMessage) => {
+    const isRelevant =
+      (msg.senderId === currentUser._id && msg.receiverId === conversation.id) ||
+      (msg.senderId === conversation.id && msg.receiverId === currentUser._id);
+
+    if (!isRelevant) return;
+
+    setMessages(prev => {
+      // Replace temp message if exists
+      const tempIndex = prev.findIndex(m => m.id === msg.tempId);
+      if (tempIndex !== -1) {
+        const updated = [...prev];
+        updated[tempIndex] = mapSocketToMessage(msg, currentUser, conversation);
+        return updated;
+      }
+
+      // Skip duplicate messages
+      if (prev.some(m => m.id === msg._id)) return prev;
+
+      // Add new message
       return [...prev, mapSocketToMessage(msg, currentUser, conversation)];
     });
 
     setShouldAutoScroll(true);
   };
 
- socket.on("msg-receive", handleIncomingMessage);
+  socket.on("msg-receive", handleIncomingOrSentMessage);
+  socket.on("msg-sent", handleIncomingOrSentMessage);
 
-  // ✅ Cleanup function
   return () => {
-    socket.off("msg-receive", handleIncomingMessage);
+    socket.off("msg-receive", handleIncomingOrSentMessage);
+    socket.off("msg-sent", handleIncomingOrSentMessage);
   };
 }, [socket, currentUser, conversation]);
+
 
 
 
@@ -252,45 +284,47 @@ useEffect(() => {
   };
 
   const onSendMessage = async (text: string, files?: File[]) => {
-    if (blockStatus.blockedMe || blockStatus.iBlocked) {
-      alert("You cannot send messages to this user.");
-      return;
-    }
-    if (!currentUser || !conversation.id) return;
-    if (!text.trim() && (!files || files.length === 0)) return;
+  if (blockStatus.blockedMe || blockStatus.iBlocked) {
+    alert("You cannot send messages to this user.");
+    return;
+  }
+  if (!currentUser || !conversation.id) return;
+  if (!text.trim() && (!files || files.length === 0)) return;
 
-    const tempId = `temp-${Date.now()}`;
-    let uploadedFiles: MessageFile[] = [];
+  // 🔹 यहाँ generate करो tempId
+  const tempId = `temp-${Date.now()}-${Math.floor(Math.random()*1000)}`;
 
-    if (files && files.length > 0) uploadedFiles = await uploadFiles(files);
+  let uploadedFiles: MessageFile[] = [];
+  if (files && files.length > 0) uploadedFiles = await uploadFiles(files);
 
-    const optimistic: Message = {
-      id: tempId,
-      senderId: currentUser._id,
-      receiverId: conversation.id,
-      text: text.trim(),
-      timestamp: new Date().toISOString(),
-      sender: "me",
-      avatar: currentUser.profileImage || "/my-avatar.png",
-      files: uploadedFiles.length ? uploadedFiles : undefined,
-      replyTo: replyingMessage || undefined,
-    };
-
-    setMessages((prev) => [...prev, optimistic]);
-    setShouldAutoScroll(true);
-    setReplyingMessage(null);
-
-    socket.emit("send-msg", {
-      tempId,
-      from: currentUser._id,
-      to: conversation.id,
-      messageText: text.trim(),
-      ...(uploadedFiles.length > 0 && { files: uploadedFiles }),
-      ...(replyingMessage && { replyToId: replyingMessage.id }),
-    });
-
-    onMessageSent(conversation.id, text.trim());
+  const optimistic: Message = {
+    id: tempId,
+    senderId: currentUser._id,
+    receiverId: conversation.id,
+    text: text.trim(),
+    timestamp: new Date().toISOString(),
+    sender: "me",
+    avatar: currentUser.profileImage || "/my-avatar.png",
+    files: uploadedFiles.length ? uploadedFiles : undefined,
+    replyTo: replyingMessage || undefined,
   };
+
+  setMessages((prev) => [...prev, optimistic]);
+  setShouldAutoScroll(true);
+  setReplyingMessage(null);
+
+  socket.emit("send-msg", {
+    tempId,
+    from: currentUser._id,
+    to: conversation.id,
+    messageText: text.trim(),
+    ...(uploadedFiles.length > 0 && { files: uploadedFiles }),
+    ...(replyingMessage && { replyToId: replyingMessage.id }),
+  });
+
+  onMessageSent(conversation.id, text.trim());
+};
+
 
   const handleBlockUser = async () => {
     if (!conversation.id) return;
