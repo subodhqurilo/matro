@@ -945,11 +945,9 @@ if (profileImage) {
                 adhaarCardBackImage={adhaarCardBackImage}
                 setAdhaarCardBackImage={setAdhaarCardBackImage}
                 onBack={handleBack}
-                  handleContinueStep7={handleContinueStep7}  
-
                 onSuccess={(uploadedData) => {
-      handleProfileUpdateSuccess(uploadedData); 
-      setIsProfileSetupOpen(false);             
+      handleProfileUpdateSuccess(uploadedData); // update localStorage & state
+      setIsProfileSetupOpen(false);             // ✅ close modal
       setProfileStep(1);
       setErrorMessage('');
     }}

@@ -69,50 +69,43 @@ const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => 
     );
   };
 
-  const handleSave = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+const handleSave = async () => {
+  setUpdateStatus(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found. Please log in.');
 
-      const updatedFamilyInfo = {
-        familyDetails: {
-          familyBackground: editValues.find(item => item.label === 'Family Background')?.value || '',
-          fatherOccupation: editValues.find(item => item.label === 'Father is')?.value || '',
-          motherOccupation: editValues.find(item => item.label === 'Mother is')?.value || '',
-          brother: parseInt(editValues.find(item => item.label === 'Brother')?.value || '0', 10) || 0,
-          sister: parseInt(editValues.find(item => item.label === 'Sister')?.value || '0', 10) || 0,
-          familyBasedOutOf: editValues.find(item => item.label === 'Family Based Out of')?.value || '',
-        },
-      };
+    const updatedFamilyInfo = {
+      familyDetails: {
+        familyBackground: editValues.find(item => item.label === 'Family Background')?.value || '',
+        fatherOccupation: editValues.find(item => item.label === 'Father is')?.value || '',
+        motherOccupation: editValues.find(item => item.label === 'Mother is')?.value || '',
+        brother: parseInt(editValues.find(item => item.label === 'Brother')?.value || '0', 10) || 0,
+        sister: parseInt(editValues.find(item => item.label === 'Sister')?.value || '0', 10) || 0,
+        familyBasedOutOf: editValues.find(item => item.label === 'Family Based Out of')?.value || '',
+      },
+    };
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedFamilyInfo),
-      });
+    const response = await fetch(UPDATE_API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedFamilyInfo),
+    });
 
-      if (!response.ok) throw new Error('Failed to update family info');
-      const updatedData = await response.json();
-      const updatedFamilyDetails = updatedData?.data?.familyDetails || updatedData?.familyDetails || {};
-      const mappedFamilyInfo: FamilyInfoItem[] = [
-        { label: 'Family Background', value: updatedFamilyDetails.familyBackground || '' },
-        { label: 'Father is', value: updatedFamilyDetails.fatherOccupation || '' },
-        { label: 'Mother is', value: updatedFamilyDetails.motherOccupation || '' },
-        { label: 'Brother', value: updatedFamilyDetails.brother?.toString() || '' },
-        { label: 'Sister', value: updatedFamilyDetails.sister?.toString() || '' },
-        { label: 'Family Based Out of', value: updatedFamilyDetails.familyBasedOutOf || '' },
-      ];
-      setInfo(mappedFamilyInfo);
-      setModalOpen(false);
-      setUpdateStatus('Family info updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update family info');
-    }
-  };
+    if (!response.ok) throw new Error('Failed to update family info');
+
+    // Instead of relying on API response, update UI immediately
+    setInfo(editValues);
+    setModalOpen(false);
+    setUpdateStatus('Family info updated successfully!');
+  } catch (err: any) {
+    setUpdateStatus(err.message || 'Failed to update family info');
+  }
+};
+
 
   if (loading) {
     return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;

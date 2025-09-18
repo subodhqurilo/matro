@@ -16,44 +16,50 @@ const UPDATE_API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profil
 const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
   const [info, setInfo] = useState<EducationItem[]>(education);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editValues, setEditValues] = useState<EducationItem[]>(info);
+  const [editValues, setEditValues] = useState<EducationItem[]>(education);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updateStatus, setUpdateStatus] = useState<string | null>(null);
 
-  // Fetch education data on mount
+  // Fetch profile function
+  const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) throw new Error('No authentication token found. Please log in.');
+
+      const response = await fetch(API_URL, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch profile');
+
+      const data = await response.json();
+      const educationDetails = data?.data?.educationDetails || data?.educationDetails || {};
+      const mappedEducation: EducationItem[] = [
+        { label: 'Highest Degree', value: educationDetails.highestDegree || '' },
+        { label: 'Post Graduation', value: educationDetails.postGraduation || '' },
+        { label: 'Under Graduation', value: educationDetails.underGraduation || '' },
+        { label: 'School', value: educationDetails.school || '' },
+        { label: 'School Stream', value: educationDetails.schoolStream || '' },
+      ];
+
+      setInfo(mappedEducation);
+      setEditValues(mappedEducation);
+    } catch (err: any) {
+      setError(err.message || 'Failed to fetch education details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch on mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('No authentication token found. Please log in.');
-        const response = await fetch(API_URL, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) throw new Error('Failed to fetch profile');
-        const data = await response.json();
-        const educationDetails = data?.data?.educationDetails || data?.educationDetails || {};
-        const mappedEducation: EducationItem[] = [
-          { label: 'Highest Degree', value: educationDetails.highestDegree || '' },
-          { label: 'Post Graduation', value: educationDetails.postGraduation || '' },
-          { label: 'Under Graduation', value: educationDetails.underGraduation || '' },
-          { label: 'School', value: educationDetails.school || '' },
-          { label: 'School Stream', value: educationDetails.schoolStream || '' },
-        ];
-        setInfo(mappedEducation);
-        setEditValues(mappedEducation);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch education details');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProfile();
   }, []);
 
@@ -94,16 +100,10 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
       });
 
       if (!response.ok) throw new Error('Failed to update education details');
-      const updatedData = await response.json();
-      const updatedEducationDetails = updatedData?.data?.educationDetails || updatedData?.educationDetails || {};
-      const mappedEducation: EducationItem[] = [
-        { label: 'Highest Degree', value: updatedEducationDetails.highestDegree || '' },
-        { label: 'Post Graduation', value: updatedEducationDetails.postGraduation || '' },
-        { label: 'Under Graduation', value: updatedEducationDetails.underGraduation || '' },
-        { label: 'School', value: updatedEducationDetails.school || '' },
-        { label: 'School Stream', value: updatedEducationDetails.schoolStream || '' },
-      ];
-      setInfo(mappedEducation);
+
+      // Refresh profile after save
+      await fetchProfile();
+
       setModalOpen(false);
       setUpdateStatus('Education details updated successfully!');
     } catch (err: any) {
@@ -137,19 +137,18 @@ const EducationSection: React.FC<EducationSectionProps> = ({ education }) => {
           onClick={handleEdit}
         />
       </div>
-     
-      <div className="space-y-2">
-  {info.map((item, index) => (
-    <div key={index} className="flex text-sm text-gray-700">
-      <div className="w-1/2 flex">
-        <span className="text-gray-600">{item.label}</span>
-        <span className="ml-1">:</span>
-      </div>
-      <div className="w-1/2 font-medium">{item.value || 'Not specified'}</div>
-    </div>
-  ))}
-</div>
 
+      <div className="space-y-2">
+        {info.map((item, index) => (
+          <div key={index} className="flex text-sm text-gray-700">
+            <div className="w-1/2 flex">
+              <span className="text-gray-600">{item.label}</span>
+              <span className="ml-1">:</span>
+            </div>
+            <div className="w-1/2 font-medium">{item.value || 'Not specified'}</div>
+          </div>
+        ))}
+      </div>
 
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="flex flex-col items-center justify-center gap-3 mb-4">

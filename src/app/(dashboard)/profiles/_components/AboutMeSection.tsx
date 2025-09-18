@@ -63,40 +63,36 @@ const AboutMeSection: React.FC<AboutMeSectionProps> = ({ aboutMe }) => {
     setModalOpen(true);
   };
 
-  const handleSave = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error('No authentication token found. Please log in.');
-      }
+  const [saving, setSaving] = useState(false);
 
-      const updatedProfile = {
-        aboutMe: editValue || '', // Ensure it's always a string
-      };
+const handleSave = async () => {
+  if (saving) return;
+  setSaving(true);
+  setUpdateStatus(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found.');
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedProfile),
-      });
+    const updatedProfile = { aboutMe: editValue || '' };
+    const response = await fetch(UPDATE_API_URL, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(updatedProfile),
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-      
-      const updatedData = await response.json();
-      const newAboutMe = updatedData?.data?.aboutMe || updatedData?.aboutMe || editValue || '';
-      setAbout(newAboutMe);
-      setModalOpen(false);
-      setUpdateStatus('Profile updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update profile');
-    }
-  };
+    if (!response.ok) throw new Error('Failed to update profile');
+
+    const updatedData = await response.json();
+    setAbout(updatedData?.data?.aboutMe || editValue);
+    setModalOpen(false);
+    setUpdateStatus('Profile updated successfully!');
+  } catch (err: any) {
+    setUpdateStatus(err.message || 'Failed to update profile');
+  } finally {
+    setSaving(false);
+  }
+};
+
 
   const handleCancel = () => {
     setEditValue(about || ''); // Reset to current value
@@ -158,12 +154,13 @@ const AboutMeSection: React.FC<AboutMeSectionProps> = ({ aboutMe }) => {
           >
             Cancel
           </Button>
-          <Button
-            className="bg-rose-700 hover:bg-rose-800 text-white"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
+<Button
+  className="bg-rose-700 hover:bg-rose-800 text-white"
+  onClick={handleSave}
+  disabled={saving}
+>
+  {saving ? 'Saving...' : 'Save'}
+</Button>
         </div>
       </Modal>
     </div>

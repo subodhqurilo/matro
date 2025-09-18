@@ -132,118 +132,56 @@ const LifestyleInfoSection: React.FC<LifestyleInfoSectionProps> = ({ lifestyleIn
   };
 
   const handleSave = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+  setUpdateStatus(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found. Please log in.');
 
-      const personalHabitsSection = editValues.find(section => section.label === 'Personal Habits')?.items || ['', '', ''];
-      const assetsSection = editValues.find(section => section.label === 'Assets')?.items || ['', '', ''];
-      const foodICookSection = editValues.find(section => section.label === 'Food I Cook')?.items || [''];
-      const hobbiesSection = editValues.find(section => section.label === 'Hobbies')?.items || [''];
-      const interestsSection = editValues.find(section => section.label === 'Interests')?.items || [''];
-      const favoriteMusicSection = editValues.find(section => section.label === 'Favorite Music')?.items || [''];
-      const sportsSection = editValues.find(section => section.label === 'Sports')?.items || [''];
-      const cuisineSection = editValues.find(section => section.label === 'Cuisine')?.items || [''];
-      const moviesSection = editValues.find(section => section.label === 'Movies')?.items || [''];
-      const tvShowsSection = editValues.find(section => section.label === 'TV Shows')?.items || [''];
-      const vacationDestinationSection = editValues.find(section => section.label === 'Vacation Destination')?.items || [''];
+    const personalHabitsSection = editValues.find(section => section.label === 'Personal Habits')?.items || ['', '', ''];
+    const assetsSection = editValues.find(section => section.label === 'Assets')?.items || ['', '', ''];
 
-      const updatedLifestyleInfo = {
-        lifestyleHobbies: {
-          diet: personalHabitsSection[0] || '',
-          smoking: personalHabitsSection[1] || '',
-          drinking: personalHabitsSection[2] || '',
-          openToPets: assetsSection[0] || '',
-          ownCar: assetsSection[1] || '',
-          ownHouse: assetsSection[2] || '',
-          foodICook: foodICookSection.filter(item => item.trim() !== ''),
-          hobbies: hobbiesSection.filter(item => item.trim() !== ''),
-          interests: interestsSection.filter(item => item.trim() !== ''),
-          favoriteMusic: favoriteMusicSection.filter(item => item.trim() !== ''),
-          sports: sportsSection.filter(item => item.trim() !== ''),
-          cuisine: cuisineSection.filter(item => item.trim() !== ''),
-          movies: moviesSection.filter(item => item.trim() !== ''),
-          tvShows: tvShowsSection.filter(item => item.trim() !== ''),
-          vacationDestination: vacationDestinationSection.filter(item => item.trim() !== ''),
-        },
-      };
+    const updatedLifestyleInfo = {
+      lifestyleHobbies: {
+        diet: personalHabitsSection[0] || '',
+        smoking: personalHabitsSection[1] || '',
+        drinking: personalHabitsSection[2] || '',
+        openToPets: assetsSection[0] || '',
+        ownCar: assetsSection[1] || '',
+        ownHouse: assetsSection[2] || '',
+        foodICook: editValues.find(s => s.label === 'Food I Cook')?.items.filter(i => i.trim() !== '') || [],
+        hobbies: editValues.find(s => s.label === 'Hobbies')?.items.filter(i => i.trim() !== '') || [],
+        interests: editValues.find(s => s.label === 'Interests')?.items.filter(i => i.trim() !== '') || [],
+        favoriteMusic: editValues.find(s => s.label === 'Favorite Music')?.items.filter(i => i.trim() !== '') || [],
+        sports: editValues.find(s => s.label === 'Sports')?.items.filter(i => i.trim() !== '') || [],
+        cuisine: editValues.find(s => s.label === 'Cuisine')?.items.filter(i => i.trim() !== '') || [],
+        movies: editValues.find(s => s.label === 'Movies')?.items.filter(i => i.trim() !== '') || [],
+        tvShows: editValues.find(s => s.label === 'TV Shows')?.items.filter(i => i.trim() !== '') || [],
+        vacationDestination: editValues.find(s => s.label === 'Vacation Destination')?.items.filter(i => i.trim() !== '') || [],
+      },
+    };
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedLifestyleInfo),
-      });
+    const response = await fetch(UPDATE_API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      
+      body: JSON.stringify(updatedLifestyleInfo),
+    });
 
-      if (!response.ok) throw new Error('Failed to update lifestyle info');
-      const updatedData = await response.json();
-      const updatedLifestyleHobbies = updatedData?.data?.lifestyleHobbies || updatedData?.lifestyleHobbies || {};
-      const mappedLifestyleInfo: LifestyleSection[] = [
-        {
-          label: 'Personal Habits',
-          items: [
-            updatedLifestyleHobbies.diet || '',
-            updatedLifestyleHobbies.smoking || '',
-            updatedLifestyleHobbies.drinking || '',
-          ],
-          subLabels: ['Diet', 'Smoking', 'Drinking'],
-        },
-        {
-          label: 'Assets',
-          items: [
-            updatedLifestyleHobbies.openToPets || '',
-            updatedLifestyleHobbies.ownCar || '',
-            updatedLifestyleHobbies.ownHouse || '',
-          ],
-          subLabels: ['Open to Pets', 'Own Car', 'Own House'],
-        },
-        {
-          label: 'Food I Cook',
-          items: updatedLifestyleHobbies.foodICook || [''],
-        },
-        {
-          label: 'Hobbies',
-          items: updatedLifestyleHobbies.hobbies || [''],
-        },
-        {
-          label: 'Interests',
-          items: updatedLifestyleHobbies.interests || [''],
-        },
-        {
-          label: 'Favorite Music',
-          items: updatedLifestyleHobbies.favoriteMusic || [''],
-        },
-        {
-          label: 'Sports',
-          items: updatedLifestyleHobbies.sports || [''],
-        },
-        {
-          label: 'Cuisine',
-          items: updatedLifestyleHobbies.cuisine || [''],
-        },
-        {
-          label: 'Movies',
-          items: updatedLifestyleHobbies.movies || [''],
-        },
-        {
-          label: 'TV Shows',
-          items: updatedLifestyleHobbies.tvShows || [''],
-        },
-        {
-          label: 'Vacation Destination',
-          items: updatedLifestyleHobbies.vacationDestination || [''],
-        },
-      ];
-      setInfo(mappedLifestyleInfo);
-      setModalOpen(false);
-      setUpdateStatus('Lifestyle info updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update lifestyle info');
-    }
-  };
+    if (!response.ok) throw new Error('Failed to update lifestyle info');
+
+    // ✅ No need to rebuild from backend
+    setInfo(editValues);
+
+    setModalOpen(false);
+    setUpdateStatus('Lifestyle info updated successfully!');
+  } catch (err: any) {
+    setUpdateStatus(err.message || 'Failed to update lifestyle info');
+  }
+};
+
 
   if (loading) {
     return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;

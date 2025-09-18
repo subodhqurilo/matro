@@ -8,14 +8,16 @@ import { useUser } from '@/components/ui/UserContext';
 import { useState } from 'react';
 
 interface Step7Props {
+  profileImage: File | null;
+  setProfileImage: (file: File | null) => void;
   adhaarCardFrontImage: File | null;
   setAdhaarCardFrontImage: (file: File | null) => void;
   adhaarCardBackImage: File | null;
   setAdhaarCardBackImage: (file: File | null) => void;
   onBack: () => void;
-    onSuccess: (uploadedData: any) => void; // ✅ notify parent
-
+  onSuccess: (uploadedData: any) => void; // ✅ notify parent
 }
+
 
 const Step7Form: React.FC<Step7Props> = ({
   adhaarCardFrontImage,

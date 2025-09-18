@@ -69,47 +69,42 @@ const ReligiousInfoSection: React.FC<ReligiousInfoSectionProps> = ({ religiousIn
   };
 
   const handleSave = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+  setUpdateStatus(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found. Please log in.');
 
-      const updatedReligiousInfo = {
-        religionDetails: {
-          religion: editValues.find(item => item.label === 'Religion')?.value || '',
-          motherTongue: editValues.find(item => item.label === 'Mother Tongue')?.value || '',
-          community: editValues.find(item => item.label === 'Community')?.value || '',
-          casteNoBar: editValues.find(item => item.label === 'Caste No Bar')?.value || '',
-          gothra: editValues.find(item => item.label === 'Gotra/Gothra')?.value || '',
-        },
-      };
+    const updatedReligiousInfo = {
+      religionDetails: {
+        religion: editValues.find(item => item.label === 'Religion')?.value || '',
+        motherTongue: editValues.find(item => item.label === 'Mother Tongue')?.value || '',
+        community: editValues.find(item => item.label === 'Community')?.value || '',
+        casteNoBar: editValues.find(item => item.label === 'Caste No Bar')?.value || '',
+        gothra: editValues.find(item => item.label === 'Gotra/Gothra')?.value || '',
+      },
+    };
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedReligiousInfo),
-      });
+    const response = await fetch(UPDATE_API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedReligiousInfo),
+    });
 
-      if (!response.ok) throw new Error('Failed to update religious info');
-      const updatedData = await response.json();
-      const updatedReligionDetails = updatedData?.data?.religionDetails || updatedData?.religionDetails || {};
-      const mappedReligiousInfo: ReligiousInfoItem[] = [
-        { label: 'Religion', value: updatedReligionDetails.religion || '' },
-        { label: 'Mother Tongue', value: updatedReligionDetails.motherTongue || '' },
-        { label: 'Community', value: updatedReligionDetails.community || '' },
-        { label: 'Caste No Bar', value: updatedReligionDetails.casteNoBar || '' },
-        { label: 'Gotra/Gothra', value: updatedReligionDetails.gothra || '' },
-      ];
-      setInfo(mappedReligiousInfo);
-      setModalOpen(false);
-      setUpdateStatus('Religious info updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update religious info');
-    }
-  };
+    if (!response.ok) throw new Error('Failed to update religious info');
+
+    // ✅ Instantly update UI without needing refresh
+    setInfo(editValues);
+
+    setModalOpen(false);
+    setUpdateStatus('Religious info updated successfully!');
+  } catch (err: any) {
+    setUpdateStatus(err.message || 'Failed to update religious info');
+  }
+};
+
 
   if (loading) {
     return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;

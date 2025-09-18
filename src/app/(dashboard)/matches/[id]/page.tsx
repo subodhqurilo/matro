@@ -1,59 +1,76 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Check, Heart, Star, MapPin, Clock, User, Home, Briefcase, GraduationCap, Users, Calendar, Moon } from "lucide-react";
 import Image from "next/image";
 
-
 interface Horoscope {
-    rashi?: string;
-    nakshatra?: string;
-    manglik?: string;
-    matchRequired?: string;
-  }
-  
-  interface Profile {
-    _id?: string;
-    id?: string;
-    name?: string;
-    profileImage?: string;
-    age?: string;
-    height?: string;
-    motherTongue?: string;
-    profileCreatedBy?: string;
-    maritalStatus?: string;
-    location?: string;
-    eatingHabits?: string;
-    religion?: string;
-    gotra?: string;
-    employedIn?: string;
-    annualIncome?: string;
-    education?: string;
-    designation?: string;
-    familyStatus?: string;
-    familyType?: string;
-    aboutYourself?: string;
-    dateOfBirth?: string;
-    timeOfBirth?: string;
-    lastSeen?: string;
-    horoscope?: Horoscope;
-  }
-  
+  rashi?: string;
+  nakshatra?: string;
+  manglik?: string;
+  matchRequired?: string;
+}
+
+interface Profile {
+  _id?: string;
+  id?: string;
+  name?: string;
+  profileImage?: string;
+  age?: string;
+  height?: string;
+  motherTongue?: string;
+  profileCreatedBy?: string;
+  maritalStatus?: string;
+  location?: string;
+  eatingHabits?: string;
+  religion?: string;
+  gotra?: string;
+  employedIn?: string;
+  annualIncome?: string;
+  education?: string;
+  designation?: string;
+  familyStatus?: string;
+  familyType?: string;
+  aboutYourself?: string;
+  dateOfBirth?: string;
+  timeOfBirth?: string;
+  lastSeen?: string;
+  horoscope?: Horoscope;
+}
 
 function ProfilePage() {
-    const [profileData, setProfileData] = useState<Profile | null>(null);
-
+  const [profileData, setProfileData] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [astroOpen, setAstroOpen] = useState(false);
 
-  // Extract userId from dynamic route
   const { id } = useParams();
-
-  // Fallback image URL
   const fallbackImage = "https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop";
 
+  // Function to save profile view
+  const saveProfileView = async (profileId: string) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      const res = await fetch("https://matrimonial-backend-7ahc.onrender.com/api/profile/view/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ viewedUserId: profileId })
+
+      });
+
+      const data = await res.json();
+      console.log("Save view response:", data);
+    } catch (err) {
+      console.error("Error saving profile view:", err);
+    }
+  };
+
+  // Fetch profile data
   useEffect(() => {
     const fetchProfile = async () => {
       if (!id) {
@@ -64,9 +81,8 @@ function ProfilePage() {
 
       try {
         const response = await fetch(`https://matrimonial-backend-7ahc.onrender.com/api/profile/users/${id}`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        if (!response.ok) throw new Error("Network response was not ok");
+
         const data = await response.json();
         if (data.success) {
           setProfileData(data.profile);
@@ -79,8 +95,16 @@ function ProfilePage() {
         setLoading(false);
       }
     };
+
     fetchProfile();
   }, [id]);
+
+  // Save view after profileData is loaded
+  useEffect(() => {
+    if (profileData?._id) {
+      saveProfileView(profileData._id);
+    }
+  }, [profileData]);
 
   const personalDetails = profileData
     ? [
@@ -101,15 +125,8 @@ function ProfilePage() {
       ]
     : [];
 
-  
-
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (error) return <div className="min-h-screen flex items-center justify-center text-red-600">{error}</div>;
 
   return (
     <div className="min-h-screen bg-white font-['Inter',system-ui,sans-serif]">
@@ -175,7 +192,7 @@ function ProfilePage() {
                     <img src="/Images/You&Me.png" alt="You & Him" className="w-5 h-5" />
                     <span className="text-sm font-medium">You & Him</span>
                   </button>
-                 
+
                   <div className="flex flex-col items-center">
                     <button className="flex items-center justify-center bg-gradient-to-br from-[#2BFF88] to-[#2BD2FF] text-white rounded-full w-12 h-12 transition-all shadow-lg hover:scale-105">
                       <Check className="w-6 h-6" />
@@ -298,8 +315,8 @@ function ProfilePage() {
                 </p>
               </div>
             </div>
-         </div>
-         </div>
+          </div>
+        </div>
       </div>
     </div>
   );

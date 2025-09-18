@@ -56,7 +56,7 @@ const tabs = [
     { name: "Received", count: 32 },
     { name: "Accepted", count: null },
     { name: "Sent", count: null },
-    { name: "Deleted", count: null },
+    { name: "Rejected", count: null },
 ];
 export default function Sent() {
     const [activeTab, setActiveTab] = useState("Sent");

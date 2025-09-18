@@ -77,7 +77,7 @@ export default function ChatArea({
     
 
       {/* Message Input */}
-      <MessageInput onSendMessage={onSendMessage} />
+<MessageInput onSendMessage={onSendMessage} disabled={isBlocked} />
     </div>
   );
 }

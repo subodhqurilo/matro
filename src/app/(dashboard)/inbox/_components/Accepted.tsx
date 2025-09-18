@@ -64,7 +64,7 @@ const tabs = [
   { name: "Received", count: 32 },
   { name: "Accepted", count: profiles.length },
   { name: "Sent", count: null },
-  { name: "Deleted", count: null },
+  { name: "Rejected", count: null },
 ]
 
 export default function Accepted() {

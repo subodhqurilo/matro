@@ -85,67 +85,58 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({ basicInfo, onChange
 
 
   const handleSave = async () => {
-    setUpdateStatus(null);
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) throw new Error('No authentication token found. Please log in.');
+  setUpdateStatus(null);
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No authentication token found. Please log in.');
 
-      // Split the Name field back into firstName, middleName, lastName
-      const nameValue = editValues.find(item => item.label === 'Name')?.value || '';
-      const nameParts = nameValue.trim().split(/\s+/);
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
-      const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : 'None';
+    // Split Name into first, middle, last
+    const nameValue = editValues.find(item => item.label === 'Name')?.value || '';
+    const nameParts = nameValue.trim().split(/\s+/);
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+    const middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(' ') : 'None';
 
-      const updatedBasicInfo = {
-        basicInfo: {
-          postedBy: editValues.find(item => item.label === 'Posted by')?.value || 'Self',
-          firstName,
-          middleName,
-          lastName,
-          age: parseInt(editValues.find(item => item.label === 'Age')?.value || '0', 10) || 0,
-          maritalStatus: editValues.find(item => item.label === 'Marital Status')?.value || '',
-          height: editValues.find(item => item.label === 'Height')?.value || '',
-          anyDisability: editValues.find(item => item.label === 'Any Disability')?.value || 'None',
-          healthInformation: editValues.find(item => item.label === 'Health Information')?.value || 'Not Specified',
-          weight: parseInt(editValues.find(item => item.label === 'Weight')?.value || '0', 10) || 0,
-          complexion: editValues.find(item => item.label === 'Complexion')?.value || '',
-        },
-      };
+    const updatedBasicInfo = {
+      basicInfo: {
+        postedBy: editValues.find(item => item.label === 'Posted by')?.value || 'Self',
+        firstName,
+        middleName,
+        lastName,
+        age: parseInt(editValues.find(item => item.label === 'Age')?.value || '0', 10) || 0,
+        maritalStatus: editValues.find(item => item.label === 'Marital Status')?.value || '',
+        height: editValues.find(item => item.label === 'Height')?.value || '',
+        anyDisability: editValues.find(item => item.label === 'Any Disability')?.value || 'None',
+        healthInformation: editValues.find(item => item.label === 'Health Information')?.value || 'Not Specified',
+        weight: parseInt(editValues.find(item => item.label === 'Weight')?.value || '0', 10) || 0,
+        complexion: editValues.find(item => item.label === 'Complexion')?.value || '',
+      },
+    };
 
-      const response = await fetch(UPDATE_API_URL, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedBasicInfo),
-      });
+    const response = await fetch(UPDATE_API_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedBasicInfo),
+    });
 
-      if (!response.ok) throw new Error('Failed to update basic info');
-      const updatedData = await response.json();
-      const updatedBasicInfoData = updatedData?.data?.basicInfo || updatedData?.basicInfo || {};
-      const mappedBasicInfo: BasicInfoItem[] = [
-        { label: 'Posted by', value: updatedBasicInfoData.postedBy || 'Self' },
-        { 
-          label: 'Name ', 
-          value: `${updatedBasicInfoData.firstName || ''} ${updatedBasicInfoData.middleName !== 'None' ? updatedBasicInfoData.middleName || '' : ''} ${updatedBasicInfoData.lastName || ''}`.replace(/ +/g, ' ').trim() 
-        },
-        { label: 'Age ', value: updatedBasicInfoData.age?.toString() || '' },
-        { label: 'Marital Status', value: updatedBasicInfoData.maritalStatus || '' },
-        { label: 'Height', value: updatedBasicInfoData.height || '' },
-        { label: 'Any Disability', value: updatedBasicInfoData.anyDisability || 'None' },
-        { label: 'Health Information', value: updatedBasicInfoData.healthInformation || 'Not Specified' },
-        { label: 'Weight', value: updatedBasicInfoData.weight?.toString() || '' },
-        { label: 'Complexion', value: updatedBasicInfoData.complexion || '' },
-      ];
-      setInfo(mappedBasicInfo);
-      setModalOpen(false);
-      setUpdateStatus('Basic info updated successfully!');
-    } catch (err: any) {
-      setUpdateStatus(err.message || 'Failed to update basic info');
-    }
-  };
+    if (!response.ok) throw new Error('Failed to update basic info');
+
+    // ✅ Instead of re-fetching, update UI instantly
+    setInfo(editValues);
+
+    // also notify parent if provided
+    if (onChange) onChange(editValues);
+
+    setModalOpen(false);
+    setUpdateStatus('Basic info updated successfully!');
+  } catch (err: any) {
+    setUpdateStatus(err.message || 'Failed to update basic info');
+  }
+};
+
 
   if (loading) {
     return <div className="bg-[#FFF8F0]  p-6 shadow-sm text-gray-600">Loading...</div>;
