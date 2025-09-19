@@ -6,10 +6,9 @@ import Follow2Form from './follow2';
 
 
 interface SignupWrapperProps {
-  onSignupSuccess: (token: string, userData?: any) => void;
+  onSignupSuccess: (token: string, userData?: any) => void; // ✅ add this
   setIsProfileSetupOpen: (value: boolean) => void;
-    closeModal: () => void; // 
-
+  closeModal: () => void;
 }
 
 const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen,closeModal }: SignupWrapperProps) => {
@@ -37,16 +36,6 @@ const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen,closeModal }: Si
     setStep(1);
   };
 
-  const handleOtpVerify = () => {
-    if (otp.length === 4) {
-      alert('OTP Verified. Signup Complete!');
-      // After OTP verification, you can redirect to Step 3 or dashboard
-      setIsProfileSetupOpen(true);
-
-    } else {
-      alert('Please enter a valid OTP.');
-    }
-  };
 
   return (
     <div className="max-w-md mx-auto p-4">
@@ -65,17 +54,24 @@ const SignupWrapper = ({ onSignupSuccess, setIsProfileSetupOpen,closeModal }: Si
           
         />
       )}
-      {step === 2 && (
-        <Follow2Form
-          otp={otp}
-          phoneNumber={mobileNumber}
-          setOtp={setOtp}
-          onBack={handleBackToFollow1}
-          handleContinueFollow1Form={handleOtpVerify}
-              setIsProfileSetupOpen={setIsProfileSetupOpen} 
-              closeModal={closeModal}
-        />
-      )}
+{step === 2 && (
+<Follow2Form
+  otp={otp}
+  phoneNumber={mobileNumber}
+  setOtp={setOtp}
+  onBack={handleBackToFollow1}
+  closeModal={closeModal}
+  setIsProfileSetupOpen={setIsProfileSetupOpen} // ✅ pass it
+  onSignupSuccess={(token, userId) => {
+    onSignupSuccess(token, userId);
+  }}
+/>
+
+
+
+
+)}
+
     </div>
   );
 };

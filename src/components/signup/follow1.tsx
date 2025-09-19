@@ -23,6 +23,19 @@ profileFor?: string;
   handleContinueFollow2: () => void;
 };
 
+
+
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+// Validate 10-digit phone number
+const isValidPhoneNumber = (number: string) => {
+  const phoneRegex = /^\d{10}$/;
+  return phoneRegex.test(number);
+};
+
 const Follow1Form = ({
  
   firstName,
@@ -40,50 +53,64 @@ const Follow1Form = ({
   const [error, setError] = useState('');
 
   // Function to handle registration API call
-  const handleRegister = async () => {
-    if (!firstName.trim() || !lastName.trim() || !mobileNumber.trim()) {
-      setError('Please fill in all required fields');
-      return;
-    }
+const handleRegister = async () => {
+  // Check required fields
+  if (!firstName.trim() || !lastName.trim() || !mobileNumber.trim()) {
+    setError('Please fill in all required fields');
+    return;
+  }
 
-    setIsLoading(true);
-    setError('');
+  // Validate phone number
+  if (!isValidPhoneNumber(mobileNumber)) {
+    setError('Please enter a valid 10-digit mobile number');
+    return;
+  }
 
-    try {
-      const requestBody = {
-        firstName,
-        lastName,
-        email,
-        mobile: mobileNumber,
-      };
+  // Validate email (only if email is entered)
+  if (email && !isValidEmail(email)) {
+    setError('Please enter a valid email address');
+    return;
+  }
 
-      console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
+  // Reset error and proceed with API call
+  setIsLoading(true);
+  setError('');
 
-      const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/otp-request', {
+  try {
+    const requestBody = {
+      firstName,
+      lastName,
+      email,
+      mobile: mobileNumber,
+    };
+
+    console.log('Sending registration request:', JSON.stringify(requestBody, null, 2));
+
+    const response = await fetch(
+      'https://matrimonial-backend-7ahc.onrender.com/auth/otp-request',
+      {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        if (data.token) {
-          localStorage.setItem('authToken', data.token);
-        }
-        handleContinueFollow2();
-      } else {
-        setError(data.message || 'Registration failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError('Network error. Please try again.');
-    } finally {
-      setIsLoading(false);
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      if (data.token) localStorage.setItem('authToken', data.token);
+      handleContinueFollow2();
+    } else {
+      setError(data.message || 'Registration failed. Please try again.');
     }
-  };
+  } catch (error) {
+    console.error('Registration error:', error);
+    setError('Network error. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>

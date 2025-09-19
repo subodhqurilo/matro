@@ -795,11 +795,14 @@ export default function Navbar() {
             >
               ✕
             </button>
-            <SignupWrapper
-              onSignupSuccess={handleLoginSuccess}
-              setIsProfileSetupOpen={setIsProfileSetupOpen}
-              closeModal={() => setIsSignupOpen(false)}
-            />
+<SignupWrapper
+  onSignupSuccess={(token, userData) => {
+    handleLoginSuccess(token, userData?.id || '');
+    setIsMultiStepOpen(true); // open MultiStepForm after OTP verified
+  }}
+  setIsProfileSetupOpen={setIsProfileSetupOpen}
+  closeModal={() => setIsSignupOpen(false)}
+/>
 
           </div>
         </div>
