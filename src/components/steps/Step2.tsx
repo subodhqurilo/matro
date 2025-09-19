@@ -1,6 +1,5 @@
 'use client';
 
-import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,8 +9,9 @@ import { ArrowLeft } from 'lucide-react';
 interface Step2FormProps {
   religion: string;
   setReligion: (value: string) => void;
-  willingToMarryOtherCaste: string;
-  setWillingToMarryOtherCaste: (value: string) => void;
+
+willingToMarryOtherCaste: boolean | null;
+setWillingToMarryOtherCaste: (value: boolean) => void;
   caste: string;
   setCaste: (value: string) => void;
   community: string;
@@ -21,7 +21,7 @@ interface Step2FormProps {
   motherTongue: string;
   setMotherTongue: (value: string) => void;
   onBack: () => void;
-  handleContinueStep2: () => void;
+  handleContinue: () => void;
 }
 
 const Step2Form: React.FC<Step2FormProps> = ({
@@ -38,7 +38,7 @@ const Step2Form: React.FC<Step2FormProps> = ({
   motherTongue,
   setMotherTongue,
   onBack,
-  handleContinueStep2,
+  handleContinue,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -51,10 +51,9 @@ const Step2Form: React.FC<Step2FormProps> = ({
     </div>
 
     <div className="space-y-4 mb-6">
+      {/* Religion */}
       <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Religion *
-        </Label>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">Religion *</Label>
         <Select value={religion} onValueChange={setReligion}>
           <SelectTrigger>
             <SelectValue placeholder="Select your religion" />
@@ -71,25 +70,29 @@ const Step2Form: React.FC<Step2FormProps> = ({
         </Select>
       </div>
 
-      <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Willing to Marry Other Caste *
-        </Label>
-        <Select value={willingToMarryOtherCaste} onValueChange={setWillingToMarryOtherCaste}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select preference" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Yes">Yes</SelectItem>
-            <SelectItem value="No">No</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Willing to Marry Other Caste */}
+<div>
+  <Label className="text-sm font-medium text-gray-700 mb-2 block">
+    Willing to Marry Other Caste *
+  </Label>
+  <Select
+    value={willingToMarryOtherCaste === null ? '' : String(willingToMarryOtherCaste)}
+    onValueChange={(val) => setWillingToMarryOtherCaste(val === 'true')}
+  >
+    <SelectTrigger>
+      <SelectValue placeholder="Select preference" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="true">Yes</SelectItem>
+      <SelectItem value="false">No</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
+
+      {/* Caste */}
       <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Caste
-        </Label>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">Caste</Label>
         <Input
           placeholder="Enter your caste (optional)"
           value={caste}
@@ -98,10 +101,9 @@ const Step2Form: React.FC<Step2FormProps> = ({
         />
       </div>
 
+      {/* Community */}
       <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Community
-        </Label>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">Community</Label>
         <Input
           placeholder="Enter your community (optional)"
           value={community}
@@ -110,10 +112,9 @@ const Step2Form: React.FC<Step2FormProps> = ({
         />
       </div>
 
+      {/* Gotra */}
       <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Gotra
-        </Label>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">Gotra</Label>
         <Input
           placeholder="Enter your gotra (optional)"
           value={gotra}
@@ -122,10 +123,9 @@ const Step2Form: React.FC<Step2FormProps> = ({
         />
       </div>
 
+      {/* Mother Tongue */}
       <div>
-        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-          Mother Tongue *
-        </Label>
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">Mother Tongue *</Label>
         <Select value={motherTongue} onValueChange={setMotherTongue}>
           <SelectTrigger>
             <SelectValue placeholder="Select your mother tongue" />
@@ -146,31 +146,13 @@ const Step2Form: React.FC<Step2FormProps> = ({
       </div>
     </div>
 
-    <Button 
-      onClick={handleContinueStep2}
+    <Button
+      onClick={handleContinue}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
-      size="lg"
     >
       Continue
     </Button>
   </>
 );
-
-Step2Form.propTypes = {
-  religion: PropTypes.string.isRequired,
-  setReligion: PropTypes.func.isRequired,
-  willingToMarryOtherCaste: PropTypes.string.isRequired,
-  setWillingToMarryOtherCaste: PropTypes.func.isRequired,
-  caste: PropTypes.string,
-  setCaste: PropTypes.func.isRequired,
-  community: PropTypes.string,
-  setCommunity: PropTypes.func.isRequired,
-  gotra: PropTypes.string,
-  setGotra: PropTypes.func.isRequired,
-  motherTongue: PropTypes.string.isRequired,
-  setMotherTongue: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-  handleContinueStep2: PropTypes.func.isRequired,
-};
 
 export default Step2Form;

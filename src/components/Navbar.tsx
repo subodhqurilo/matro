@@ -1,20 +1,16 @@
 'use client';
 
-import { useUser } from './ui/UserContext';  
+import { useUser } from './ui/UserContext';
 import React, { useState, useEffect } from 'react';
 import { FaHeart, FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaChevronDown } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import SignupWrapper from './signup/SignupWrapper';
 import Level1 from './login/Level1';
-import Step1Form from './steps/Step1';
-import Step2Form from './steps/Step2';
-import Step3Form from './steps/Step3';
-import Step4Form from './steps/Step4';
-import Step5Form from './steps/Step5';
-import Step6Form from './steps/Step6';
-import Step7Form from './steps/Step7';
 import { PROFILE } from '@/utils/Api';
 import Link from 'next/link';
+import MultiStepForm from './steps/MultiStepForm';
+
+
 const DEFAULT_PROFILE_IMAGE =
   "https://res.cloudinary.com/dppe3ni5z/image/upload/v1234567890/default-profile.png";
 
@@ -39,140 +35,106 @@ export default function Navbar() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
-  const { profileImage, setProfileImage } = useUser();   
+  const { profileImage, setProfileImage } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMultiStepOpen, setIsMultiStepOpen] = useState(false);
 
   // Login state
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
 
   // Profile setup states
-  const [profileFor, setProfileFor] = useState('');
-  const [personalFirstName, setPersonalFirstName] = useState('');
-  const [personalMiddleName, setPersonalMiddleName] = useState('');
-  const [personalLastName, setPersonalLastName] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [gender, setGender] = useState('');
-  const [maritalStatus, setMaritalStatus] = useState('');
-  const [numberOfChildren, setNumberOfChildren] = useState(0);
-  const [isChildrenLivingWithYou, setIsChildrenLivingWithYou] = useState(false);
-  const [religion, setReligion] = useState('');
-  const [willingToMarryOtherCaste, setWillingToMarryOtherCaste] = useState('');
-  const [caste, setCaste] = useState('');
-  const [community, setCommunity] = useState('');
-  const [gotra, setGotra] = useState('');
-  const [motherTongue, setMotherTongue] = useState('');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [complexion, setComplexion] = useState('');
-  const [anyDisability, setAnyDisability] = useState('');
-  const [diet, setDiet] = useState('');
-  const [familyType, setFamilyType] = useState('');
-  const [familyStatus, setFamilyStatus] = useState('');
-  const [country, setCountry] = useState('');
-  const [state, setState] = useState('');
-  const [city, setCity] = useState('');
-  const [highestEducation, setHighestEducation] = useState('');
-  const [employedIn, setEmployedIn] = useState('');
-  const [annualIncome, setAnnualIncome] = useState('');
-  const [workLocation, setWorkLocation] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [profileData, setProfileData] = useState<any>({});
-  const [profileImageLocal, setProfileImageLocal] = useState<File | string | null>(null);
-  
-  const [adhaarCardFrontImage, setAdhaarCardFrontImage] = useState<File | null>(null);
-  const [adhaarCardBackImage, setAdhaarCardBackImage] = useState<File | null>(null);
 
-const convertStringToBooleanLocal = (value: string): boolean => {
-  return value === 'Yes' || value === 'true';
-};
+  const convertStringToBooleanLocal = (value: string): boolean => {
+    return value === 'Yes' || value === 'true';
+  };
 
-  
+
   const getUserFirstName = (userData: any) => {
-  return (
-    userData.basicInfo?.firstName ||
-    userData.firstName ||
-    userData.user?.firstName ||
-    'User'
-  );
-};
-const fetchUser = async () => {
-  try {
-    const token = localStorage.getItem('authToken');
-    if (!token) return;
+    return (
+      userData.basicInfo?.firstName ||
+      userData.firstName ||
+      userData.user?.firstName ||
+      'User'
+    );
+  };
+  const fetchUser = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
 
-    const res = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/user', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
+      const res = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/user', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) {
-      console.error('Failed to fetch user data', res.status);
-      return;
+      if (!res.ok) {
+        console.error('Failed to fetch user data', res.status);
+        return;
+      }
+
+      const result = await res.json();
+
+      // Safely get first name
+      const firstName =
+        result.basicInfo?.firstName ||
+        result.firstName ||
+        result.user?.firstName ||
+        '';
+
+      setUserFirstName(firstName); // ✅ update navbar
+      localStorage.setItem('userData', JSON.stringify(result)); // optional, keep storage updated
+    } catch (error) {
+      console.error('Error fetching user:', error);
     }
-
-    const result = await res.json();
-
-    // Safely get first name
-    const firstName =
-      result.basicInfo?.firstName ||
-      result.firstName ||
-      result.user?.firstName ||
-      '';
-
-    setUserFirstName(firstName); // ✅ update navbar
-    localStorage.setItem('userData', JSON.stringify(result)); // optional, keep storage updated
-  } catch (error) {
-    console.error('Error fetching user:', error);
-  }
-};
+  };
 
 
 
   // Check auth status on component mount
-useEffect(() => {
-  const token = localStorage.getItem('authToken');
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
 
-  if (token) {
-    setIsAuthenticated(true);
+    if (token) {
+      setIsAuthenticated(true);
 
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      try {
-        const parsedData = JSON.parse(userData);
+      const userData = localStorage.getItem('userData');
+      if (userData) {
+        try {
+          const parsedData = JSON.parse(userData);
 
-        // ✅ Name set
-        const firstName =
-          parsedData.basicInfo?.firstName ||
-          parsedData.firstName ||
-          parsedData.user?.firstName ||
-          '';
-        setUserFirstName(firstName);
+          // ✅ Name set
+          const firstName =
+            parsedData.basicInfo?.firstName ||
+            parsedData.firstName ||
+            parsedData.user?.firstName ||
+            '';
+          setUserFirstName(firstName);
 
-        // ✅ Profile Image set
-// ✅ Profile Image set (fallback included)
-const storedImage =
-  parsedData.profileImage ||
-  parsedData.basicInfo?.profileImage ||
-  parsedData.user?.profileImage ||
-  DEFAULT_PROFILE_IMAGE;
+          // ✅ Profile Image set
+          // ✅ Profile Image set (fallback included)
+          const storedImage =
+            parsedData.profileImage ||
+            parsedData.basicInfo?.profileImage ||
+            parsedData.user?.profileImage ||
+            DEFAULT_PROFILE_IMAGE;
 
-setProfileImage(storedImage); // हमेशा कोई न कोई image set होगी
+          setProfileImage(storedImage); // हमेशा कोई न कोई image set होगी
 
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+        }
       }
+
+      fetchUser(); // fetch latest user info (backend se)
     }
-
-    fetchUser(); // fetch latest user info (backend se)
-  }
-}, [setProfileImage]);
+  }, [setProfileImage]);
 
 
-  
+
 
 
   const handleLoginSuccess = async (token: string, userId: string) => {
@@ -265,310 +227,310 @@ setProfileImage(storedImage); // हमेशा कोई न कोई image s
 
   // Login handlers
   const handleContinueLevel1 = () => setCurrentLevel(2);
-  const handleContinueLevel2 = async () => {
-    try {
-      const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ phoneNumber, otp }),
-      });
+  // const handleContinueLevel2 = async () => {
+  //   try {
+  //     const response = await fetch('https://matrimonial-backend-7ahc.onrender.com/auth/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ phoneNumber, otp }),
+  //     });
 
-      const data = await response.json();
-      if (data.success) {
-        handleLoginSuccess(data.token, data.userData);
-        setPhoneNumber('');
+  //     const data = await response.json();
+  //     if (data.success) {
+  //       handleLoginSuccess(data.token, data.userData);
+  //       setPhoneNumber('');
 
-        setOtp('');
-      } else {
-        console.error('OTP verification failed:', data.message);
-        setErrorMessage('OTP verification failed. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error verifying OTP:', error);
-      setErrorMessage('Error verifying OTP. Please try again.');
-    }
-  };
+  //       setOtp('');
+  //     } else {
+  //       console.error('OTP verification failed:', data.message);
+  //       setErrorMessage('OTP verification failed. Please try again.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error verifying OTP:', error);
+  //     setErrorMessage('Error verifying OTP. Please try again.');
+  //   }
+  // };
 
   const handleBackLevel1 = () => setCurrentLevel(1);
   const handleBackLevel2 = () => setCurrentLevel(1);
 
   // Profile setup validation
-  const validateStep = (step: number): boolean => {
-    switch (step) {
-      case 1:
-        if (!profileFor || !personalFirstName || !personalLastName || !dateOfBirth || !gender || !maritalStatus) {
-          setErrorMessage('Please fill all required fields in Basic Details.');
-          return false;
-        }
-        break;
-      case 2:
-        if (!religion || !willingToMarryOtherCaste || !motherTongue) {
-          setErrorMessage('Please fill all required fields in Religion & Community.');
-          return false;
-        }
-        break;
-      case 3:
-        if (!height || !weight || !complexion || !anyDisability || !diet) {
-          setErrorMessage('Please fill all required fields in Physical Attributes.');
-          return false;
-        }
-        break;
-      case 4:
-        if (!familyType || !familyStatus) {
-          setErrorMessage('Please fill all required fields in Family Background.');
-          return false;
-        }
-        break;
-      case 5:
-        if (!country || !state || !city || !highestEducation) {
-          setErrorMessage('Please fill all required fields in Location & Education.');
-          return false;
-        }
-        break;
-      case 6:
-        if (!employedIn || !annualIncome || !workLocation || !designation) {
-          setErrorMessage('Please fill all required fields in Professional Details.');
-          return false;
-        }
-        break;
-      case 7:
-        if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
-          setErrorMessage('Please upload all required images in Aadhaar & Photo Verification.');
-          return false;
-        }
-        break;
-      default:
-        return true;
-    }
-    setErrorMessage('');
-    return true;
-  };
+  // const validateStep = (step: number): boolean => {
+  //   switch (step) {
+  //     case 1:
+  //       if (!profileFor || !personalFirstName || !personalLastName || !dateOfBirth || !gender || !maritalStatus) {
+  //         setErrorMessage('Please fill all required fields in Basic Details.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 2:
+  //       if (!religion || !willingToMarryOtherCaste || !motherTongue) {
+  //         setErrorMessage('Please fill all required fields in Religion & Community.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 3:
+  //       if (!height || !weight || !complexion || !anyDisability || !diet) {
+  //         setErrorMessage('Please fill all required fields in Physical Attributes.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 4:
+  //       if (!familyType || !familyStatus) {
+  //         setErrorMessage('Please fill all required fields in Family Background.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 5:
+  //       if (!country || !state || !city || !highestEducation) {
+  //         setErrorMessage('Please fill all required fields in Location & Education.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 6:
+  //       if (!employedIn || !annualIncome || !workLocation || !designation) {
+  //         setErrorMessage('Please fill all required fields in Professional Details.');
+  //         return false;
+  //       }
+  //       break;
+  //     case 7:
+  //       if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
+  //         setErrorMessage('Please upload all required images in Aadhaar & Photo Verification.');
+  //         return false;
+  //       }
+  //       break;
+  //     default:
+  //       return true;
+  //   }
+  //   setErrorMessage('');
+  //   return true;
+  // };
 
   // Profile setup handlers
-  const handleContinueStep1 = () => {
-    if (validateStep(1)) setProfileStep(2);
-  };
-  const handleContinueStep2 = () => {
-    if (validateStep(2)) setProfileStep(3);
-  };
-  const handleContinueStep3 = () => {
-    if (validateStep(3)) setProfileStep(4);
-  };
-  const handleContinueStep4 = () => {
-    if (validateStep(4)) setProfileStep(5);
-  };
-  const handleContinueStep5 = () => {
-    if (validateStep(5)) setProfileStep(6);
-  };
-  const handleContinueStep6 = () => {
-    if (validateStep(6)) setProfileStep(7);
-  };
-  const handleContinueStep7 = async () => {
-    if (!validateStep(7)) return;
+  //   const handleContinueStep1 = () => {
+  //     if (validateStep(1)) setProfileStep(2);
+  //   };
+  //   const handleContinueStep2 = () => {
+  //     if (validateStep(2)) setProfileStep(3);
+  //   };
+  //   const handleContinueStep3 = () => {
+  //     if (validateStep(3)) setProfileStep(4);
+  //   };
+  //   const handleContinueStep4 = () => {
+  //     if (validateStep(4)) setProfileStep(5);
+  //   };
+  //   const handleContinueStep5 = () => {
+  //     if (validateStep(5)) setProfileStep(6);
+  //   };
+  //   const handleContinueStep6 = () => {
+  //     if (validateStep(6)) setProfileStep(7);
+  //   };
+  //   const handleContinueStep7 = async () => {
+  //     if (!validateStep(7)) return;
 
-    setIsSubmitting(true);
-    setErrorMessage('');
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setErrorMessage('Authentication token not found. Please log in again.');
-        setIsSubmitting(false);
-        return;
-      }
+  //     setIsSubmitting(true);
+  //     setErrorMessage('');
+  //     try {
+  //       const token = localStorage.getItem('authToken');
+  //       if (!token) {
+  //         setErrorMessage('Authentication token not found. Please log in again.');
+  //         setIsSubmitting(false);
+  //         return;
+  //       }
 
-      const requiredFields = {
-        profileFor,
-        personalFirstName,
-        personalLastName,
-        dateOfBirth,
-        gender,
-        maritalStatus,
-        religion,
-        willingToMarryOtherCaste,
-        motherTongue,
-        height,
-        weight,
-        complexion,
-        anyDisability,
-        diet,
-        familyType,
-        familyStatus,
-        country,
-        state,
-        city,
-        highestEducation,
-        employedIn,
-        annualIncome,
-        workLocation,
-        designation
-      };
+  //       const requiredFields = {
+  //         profileFor,
+  //         personalFirstName,
+  //         personalLastName,
+  //         dateOfBirth,
+  //         gender,
+  //         maritalStatus,
+  //         religion,
+  //         willingToMarryOtherCaste,
+  //         motherTongue,
+  //         height,
+  //         weight,
+  //         complexion,
+  //         anyDisability,
+  //         diet,
+  //         familyType,
+  //         familyStatus,
+  //         country,
+  //         state,
+  //         city,
+  //         highestEducation,
+  //         employedIn,
+  //         annualIncome,
+  //         workLocation,
+  //         designation
+  //       };
 
-      const missingFields = Object.entries(requiredFields)
-        .filter(([key, value]) => !value)
-        .map(([key]) => key);
+  //       const missingFields = Object.entries(requiredFields)
+  //         .filter(([key, value]) => !value)
+  //         .map(([key]) => key);
 
-      if (missingFields.length > 0) {
-        setErrorMessage(`Missing required fields: ${missingFields.join(', ')}`);
-        setIsSubmitting(false);
-        return;
-      }
+  //       if (missingFields.length > 0) {
+  //         setErrorMessage(`Missing required fields: ${missingFields.join(', ')}`);
+  //         setIsSubmitting(false);
+  //         return;
+  //       }
 
-      const formData = new FormData();
-      // Step 1
-      formData.append('profileFor', profileFor === 'myself' ? 'Self' : profileFor);
-      formData.append('personalFirstName', personalFirstName);
-      formData.append('personalMiddleName', personalMiddleName || '');
-      formData.append('personalLastName', personalLastName);
-      formData.append('dateOfBirth', dateOfBirth);
-      formData.append('gender', gender);
-      formData.append('maritalStatus', maritalStatus);
-      formData.append('numberOfChildren', numberOfChildren.toString());
-      formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
-      // Step 2
-      formData.append('religion', religion);
-      const willingToMarryOtherCasteBool = convertStringToBoolean(willingToMarryOtherCaste);
-      formData.append('willingToMarryOtherCaste', willingToMarryOtherCasteBool.toString());
-      formData.append('caste', caste || '');
-      formData.append('community', community || '');
-      formData.append('gotra', gotra || '');
-      formData.append('motherTongue', motherTongue);
-      // Step 3
-      formData.append('height', height);
-      formData.append('weight', weight);
-      formData.append('complexion', complexion);
-      const anyDisabilityBool = convertStringToBoolean(anyDisability);
-      formData.append('anyDisability', anyDisabilityBool.toString());
-      formData.append('diet', diet);
-      // Step 4
-      formData.append('familyType', familyType);
-      formData.append('familyStatus', familyStatus);
-      // Step 5
-      formData.append('country', country);
-      formData.append('state', state);
-      formData.append('city', city);
-      formData.append('highestEducation', highestEducation);
-      // Step 6
-      formData.append('employedIn', employedIn);
-      formData.append('annualIncome', annualIncome);
-      formData.append('workLocation', workLocation);
-      formData.append('designation', designation);
-      // Step 7
-      if (profileImage) {
-  if (profileImage instanceof File) {
-    formData.append('profileImage', profileImage, profileImage.name);
-  } else if (typeof profileImage === 'string') {
-    // If it's a string URL, you may need to fetch it first as a Blob
-    const response = await fetch(profileImage);
-    const blob = await response.blob();
-    formData.append('profileImage', blob, 'profileImage.jpg'); // give it a name
-  }
-}
-      if (adhaarCardFrontImage) formData.append('adhaarCardFrontImage', adhaarCardFrontImage, adhaarCardFrontImage.name);
-      if (adhaarCardBackImage) formData.append('adhaarCardBackImage', adhaarCardBackImage, adhaarCardBackImage.name);
+  //       const formData = new FormData();
+  //       // Step 1
+  //       formData.append('profileFor', profileFor === 'myself' ? 'Self' : profileFor);
+  //       formData.append('personalFirstName', personalFirstName);
+  //       formData.append('personalMiddleName', personalMiddleName || '');
+  //       formData.append('personalLastName', personalLastName);
+  //       formData.append('dateOfBirth', dateOfBirth);
+  //       formData.append('gender', gender);
+  //       formData.append('maritalStatus', maritalStatus);
+  //       formData.append('numberOfChildren', numberOfChildren.toString());
+  //       formData.append('isChildrenLivingWithYou', isChildrenLivingWithYou.toString());
+  //       // Step 2
+  //       formData.append('religion', religion);
+  //       const willingToMarryOtherCasteBool = convertStringToBoolean(willingToMarryOtherCaste);
+  //       formData.append('willingToMarryOtherCaste', willingToMarryOtherCasteBool.toString());
+  //       formData.append('caste', caste || '');
+  //       formData.append('community', community || '');
+  //       formData.append('gotra', gotra || '');
+  //       formData.append('motherTongue', motherTongue);
+  //       // Step 3
+  //       formData.append('height', height);
+  //       formData.append('weight', weight);
+  //       formData.append('complexion', complexion);
+  //       const anyDisabilityBool = convertStringToBoolean(anyDisability);
+  //       formData.append('anyDisability', anyDisabilityBool.toString());
+  //       formData.append('diet', diet);
+  //       // Step 4
+  //       formData.append('familyType', familyType);
+  //       formData.append('familyStatus', familyStatus);
+  //       // Step 5
+  //       formData.append('country', country);
+  //       formData.append('state', state);
+  //       formData.append('city', city);
+  //       formData.append('highestEducation', highestEducation);
+  //       // Step 6
+  //       formData.append('employedIn', employedIn);
+  //       formData.append('annualIncome', annualIncome);
+  //       formData.append('workLocation', workLocation);
+  //       formData.append('designation', designation);
+  //       // Step 7
+  //       if (profileImage) {
+  //   if (profileImage instanceof File) {
+  //     formData.append('profileImage', profileImage, profileImage.name);
+  //   } else if (typeof profileImage === 'string') {
+  //     // If it's a string URL, you may need to fetch it first as a Blob
+  //     const response = await fetch(profileImage);
+  //     const blob = await response.blob();
+  //     formData.append('profileImage', blob, 'profileImage.jpg'); // give it a name
+  //   }
+  // }
+  //       if (adhaarCardFrontImage) formData.append('adhaarCardFrontImage', adhaarCardFrontImage, adhaarCardFrontImage.name);
+  //       if (adhaarCardBackImage) formData.append('adhaarCardBackImage', adhaarCardBackImage, adhaarCardBackImage.name);
 
-      // Add additional fields that might be required by the API
-      formData.append('casteNoBar', 'true');
-      formData.append('openToPets', 'true');
-      formData.append('ownCar', 'false');
-      formData.append('ownHouse', 'false');
-      formData.append('manglik', 'false');
-      formData.append('smoking', 'false');
-      formData.append('drinking', 'false');
+  //       // Add additional fields that might be required by the API
+  //       formData.append('casteNoBar', 'true');
+  //       formData.append('openToPets', 'true');
+  //       formData.append('ownCar', 'false');
+  //       formData.append('ownHouse', 'false');
+  //       formData.append('manglik', 'false');
+  //       formData.append('smoking', 'false');
+  //       formData.append('drinking', 'false');
 
-      // Log FormData contents for debugging
-      const formDataEntries: any[] = [];
-      formData.forEach((value, key) => {
-        formDataEntries.push({ key, value: value instanceof File ? value.name : value });
-      });
-      console.log('FormData contents:', formDataEntries);
-      console.log('Token being used:', token ? 'Token present' : 'No token');
-      console.log('API URL:', PROFILE.UPDATE_PROFILE);
+  //       // Log FormData contents for debugging
+  //       const formDataEntries: any[] = [];
+  //       formData.forEach((value, key) => {
+  //         formDataEntries.push({ key, value: value instanceof File ? value.name : value });
+  //       });
+  //       console.log('FormData contents:', formDataEntries);
+  //       console.log('Token being used:', token ? 'Token present' : 'No token');
+  //       console.log('API URL:', PROFILE.UPDATE_PROFILE);
 
-      // Log request details
-      console.log('Request method: POST');
-      console.log('Request headers:', {
-        Authorization: `Bearer ${token.substring(0, 20)}...`,
-        
-      });
+  //       // Log request details
+  //       console.log('Request method: POST');
+  //       console.log('Request headers:', {
+  //         Authorization: `Bearer ${token.substring(0, 20)}...`,
 
-      // Test if the API endpoint is accessible
+  //       });
 
-console.log('Submitting profile to:', PROFILE.UPDATE_PROFILE);
+  //       // Test if the API endpoint is accessible
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+  // console.log('Submitting profile to:', PROFILE.UPDATE_PROFILE);
 
-      const response = await fetch(PROFILE.UPDATE_PROFILE, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-        signal: controller.signal,
-      });
+  //       const controller = new AbortController();
+  //       const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
 
-      clearTimeout(timeoutId);
+  //       const response = await fetch(PROFILE.UPDATE_PROFILE, {
+  //         method: 'POST',
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //         body: formData,
+  //         signal: controller.signal,
+  //       });
 
-      const responseText = await response.text();
-      console.log('API Response Status:', response.status);
-      console.log('API Response Headers:', response.headers);
-      console.log('API Response Text:', responseText);
+  //       clearTimeout(timeoutId);
 
-      if (response.ok) {
-        try {
-          const responseData = JSON.parse(responseText);
+  //       const responseText = await response.text();
+  //       console.log('API Response Status:', response.status);
+  //       console.log('API Response Headers:', response.headers);
+  //       console.log('API Response Text:', responseText);
 
-if (responseData.success && responseData.data) {
-    
-    handleProfileUpdateSuccess(responseData.data);
-    alert('Profile submitted successfully!');
-}
+  //       if (response.ok) {
+  //         try {
+  //           const responseData = JSON.parse(responseText);
+
+  // if (responseData.success && responseData.data) {
+
+  //     handleProfileUpdateSuccess(responseData.data);
+  //     alert('Profile submitted successfully!');
+  // }
 
 
-          else {
-            setErrorMessage('Invalid response format from server. Please try again.');
-            console.error('Invalid response format:', responseData);
-          }
-        } catch (error) {
-          setErrorMessage('Failed to parse server response. Please try again.');
-          console.error('Error parsing response:', error, 'Response text:', responseText);
-        }
-      } else {
-        let errorData;
-        try {
-          errorData = JSON.parse(responseText);
-        } catch {
-          errorData = { message: responseText || 'Unknown server error' };
-        }
+  //           else {
+  //             setErrorMessage('Invalid response format from server. Please try again.');
+  //             console.error('Invalid response format:', responseData);
+  //           }
+  //         } catch (error) {
+  //           setErrorMessage('Failed to parse server response. Please try again.');
+  //           console.error('Error parsing response:', error, 'Response text:', responseText);
+  //         }
+  //       } else {
+  //         let errorData;
+  //         try {
+  //           errorData = JSON.parse(responseText);
+  //         } catch {
+  //           errorData = { message: responseText || 'Unknown server error' };
+  //         }
 
-        const errorMessage = errorData.message || errorData.error || 'Unknown server error';
-        setErrorMessage(`Profile submission failed: ${errorMessage} (Status: ${response.status})`);
-        console.error('Profile submission failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData,
-          responseText
-        });
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          setErrorMessage('Request timed out. Please try again.');
-        } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-          setErrorMessage('Network error. Please check your internet connection and try again.');
-        } else {
-          setErrorMessage(`Error submitting profile: ${error.message}`);
-        }
-      } else {
-        setErrorMessage('Error submitting profile. Please check your network and try again.');
-      }
-      console.error('Error submitting profile:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //         const errorMessage = errorData.message || errorData.error || 'Unknown server error';
+  //         setErrorMessage(`Profile submission failed: ${errorMessage} (Status: ${response.status})`);
+  //         console.error('Profile submission failed:', {
+  //           status: response.status,
+  //           statusText: response.statusText,
+  //           errorData,
+  //           responseText
+  //         });
+  //       }
+  //     } catch (error) {
+  //       if (error instanceof Error) {
+  //         if (error.name === 'AbortError') {
+  //           setErrorMessage('Request timed out. Please try again.');
+  //         } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+  //           setErrorMessage('Network error. Please check your internet connection and try again.');
+  //         } else {
+  //           setErrorMessage(`Error submitting profile: ${error.message}`);
+  //         }
+  //       } else {
+  //         setErrorMessage('Error submitting profile. Please check your network and try again.');
+  //       }
+  //       console.error('Error submitting profile:', error);
+  //     } finally {
+  //       setIsSubmitting(false);
+  //     }
+  //   };
 
   const handleBack = () => {
     if (profileStep > 1) {
@@ -621,54 +583,54 @@ if (responseData.success && responseData.data) {
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center space-x-2 focus:outline-none"
               >
-<div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-  {(() => {
-    // 1️⃣ Try context
-if (profileImage) {
-  return (
-    <img
-      src={
-        typeof profileImage === 'string'
-          ? profileImage
-          : URL.createObjectURL(profileImage)
-      }
-      alt="Profile"
-      className="w-full h-full object-cover"
-      onError={(e) => {
-        e.currentTarget.src = DEFAULT_PROFILE_IMAGE; // fallback जब image टूटे
-      }}
-    />
-  );
-}
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                  {(() => {
+                    // 1️⃣ Try context
+                    if (profileImage) {
+                      return (
+                        <img
+                          src={
+                            typeof profileImage === 'string'
+                              ? profileImage
+                              : URL.createObjectURL(profileImage)
+                          }
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = DEFAULT_PROFILE_IMAGE; // fallback जब image टूटे
+                          }}
+                        />
+                      );
+                    }
 
-    // 2️⃣ Try localStorage
-    const storedUserData = localStorage.getItem('userData');
-    if (storedUserData) {
-      try {
-        const parsed = JSON.parse(storedUserData);
-        const storedImage =
-          parsed.profileImage ||
-          parsed.basicInfo?.profileImage ||
-          parsed.user?.profileImage;
+                    // 2️⃣ Try localStorage
+                    const storedUserData = localStorage.getItem('userData');
+                    if (storedUserData) {
+                      try {
+                        const parsed = JSON.parse(storedUserData);
+                        const storedImage =
+                          parsed.profileImage ||
+                          parsed.basicInfo?.profileImage ||
+                          parsed.user?.profileImage;
 
-        if (storedImage) {
-          return (
-            <img
-              src={storedImage}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          );
-        }
-      } catch (e) {
-        console.error("Error parsing stored userData:", e);
-      }
-    }
+                        if (storedImage) {
+                          return (
+                            <img
+                              src={storedImage}
+                              alt="Profile"
+                              className="w-full h-full object-cover"
+                            />
+                          );
+                        }
+                      } catch (e) {
+                        console.error("Error parsing stored userData:", e);
+                      }
+                    }
 
-    // 3️⃣ Default icon
-    return <FaUserCircle className="text-3xl text-gray-600" />;
-  })()}
-</div>
+                    // 3️⃣ Default icon
+                    return <FaUserCircle className="text-3xl text-gray-600" />;
+                  })()}
+                </div>
 
                 <div className="flex items-center space-x-1">
                   <span className="font-medium text-gray-800">
@@ -691,8 +653,8 @@ if (profileImage) {
                   </div>
                   <button
                     onClick={() => {
-                      setIsProfileOpen(false);
-                      setIsProfileSetupOpen(true);
+                      setIsProfileOpen(false);      // close dropdown
+                      setIsMultiStepOpen(true);     // open multi-step form
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -710,6 +672,23 @@ if (profileImage) {
             </div>
           )}
         </div>
+
+        {/* MULTI-STEP PROFILE FORM MODAL */}
+{isMultiStepOpen && (
+  <MultiStepForm
+    onClose={() => setIsMultiStepOpen(false)}
+    onSuccess={(updatedData) => {
+      console.log('Profile updated via MultiStepForm:', updatedData);
+
+      // Optional: Update Navbar state (first name, profile image)
+      setUserFirstName(updatedData.FirstName || updatedData.firstName || 'User');
+      if (updatedData.profileImage) setProfileImage(updatedData.profileImage);
+
+      setIsMultiStepOpen(false); // close modal
+    }}
+  />
+)}
+
 
         {/* Mobile Hamburger Menu */}
         <button
@@ -841,7 +820,7 @@ if (profileImage) {
                 {errorMessage}
               </div>
             )}
-            {profileStep === 1 && (
+            {/* {profileStep === 1 && (
               <Step1Form
                 profileFor={profileFor}
                 setProfileFor={setProfileFor}
@@ -957,7 +936,7 @@ if (profileImage) {
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="text-white">Submitting...</div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       )}

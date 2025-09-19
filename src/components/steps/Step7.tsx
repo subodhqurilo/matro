@@ -1,95 +1,37 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 import { ArrowLeft, Upload } from 'lucide-react';
-import { useUser } from '@/components/ui/UserContext';
-import { useState } from 'react';
 
 interface Step7Props {
-  profileImage: File | null;
-  setProfileImage: (file: File | null) => void;
+  profileImage: File | string | null;
+  setProfileImage: (file: File | string | null) => void;
   adhaarCardFrontImage: File | null;
   setAdhaarCardFrontImage: (file: File | null) => void;
   adhaarCardBackImage: File | null;
   setAdhaarCardBackImage: (file: File | null) => void;
   onBack: () => void;
-  onSuccess: (uploadedData: any) => void; // ✅ notify parent
+  handleContinue: () => void;   // ✅ use same as other steps
+  errorMessage?: string;
+  isSubmitting?: boolean;
 }
 
-
 const Step7Form: React.FC<Step7Props> = ({
+  profileImage,
+  setProfileImage,
   adhaarCardFrontImage,
   setAdhaarCardFrontImage,
   adhaarCardBackImage,
   setAdhaarCardBackImage,
   onBack,
-  onSuccess,
+  handleContinue,
+  errorMessage,
+  isSubmitting = false,
 }) => {
-  const { setProfileImage: setGlobalProfileImage } = useUser();
-  const [loading, setLoading] = useState(false);
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-
-  const handleContinueStep7 = async () => {
-    if (!profileImage || !adhaarCardFrontImage || !adhaarCardBackImage) {
-      alert('Please upload all required files.');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append('profileImage', profileImage);
-      formData.append('adhaarCardFrontImage', adhaarCardFrontImage);
-      formData.append('adhaarCardBackImage', adhaarCardBackImage);
-
-      const token = localStorage.getItem('authToken');
-
-      const res = await fetch(
-        'https://matrimonial-backend-7ahc.onrender.com/auth/profile',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      let data;
-      try {
-        data = await res.json();
-        console.log(data);
-      } catch (jsonErr) {
-        console.error('Backend did not return JSON:', await res.text());
-        throw new Error('Invalid server response');
-      }
-
-      if (res.ok && data.success) {
-        const uploadedUrl = data.data.profileImage;
-        setGlobalProfileImage(uploadedUrl);
-        localStorage.setItem('profileImage', uploadedUrl);
-onSuccess(data.data);
-        // Notify parent to close modal
-        if (onSuccess) onSuccess(uploadedUrl);
-
-        alert('Profile updated successfully ✅');
-      } else {
-        console.error('Upload failed', data);
-        alert(data.message || 'Something went wrong while uploading');
-      }
-    } catch (err) {
-      console.error('Upload error', err);
-      alert('Server error. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <>
+    <div>
       <div className="flex items-center space-x-3 mb-6">
         <button type="button" onClick={onBack}>
           <ArrowLeft className="h-5 w-5 text-gray-500 hover:text-rose-600 transition-colors" />
@@ -99,94 +41,81 @@ onSuccess(data.data);
         </h2>
       </div>
 
-      <div className="space-y-4 mb-6">
-        {/* Profile Image */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            Profile Image *
-          </Label>
-          <div className="relative">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setProfileImage(file);
-                  const previewUrl = URL.createObjectURL(file);
-                  setGlobalProfileImage(previewUrl);
-                }
-              }}
-              className="w-full bg-white"
-              required
-            />
-            <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-          </div>
-          {profileImage && (
-            <p className="text-sm text-gray-600 mt-1">{profileImage.name}</p>
-          )}
+      {/* Profile Image */}
+      <div className="mb-4">
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Profile Image *
+        </Label>
+        <div className="relative">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              e.target.files && setProfileImage(e.target.files[0])
+            }
+            className="w-full bg-white"
+          />
+          <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
         </div>
-
-        {/* Aadhaar Front */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            Aadhaar Card Front Image *
-          </Label>
-          <div className="relative">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setAdhaarCardFrontImage(file);
-              }}
-              className="w-full bg-white"
-              required
-            />
-            <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-          </div>
-          {adhaarCardFrontImage && (
-            <p className="text-sm text-gray-600 mt-1">{adhaarCardFrontImage.name}</p>
-          )}
-        </div>
-
-        {/* Aadhaar Back */}
-        <div>
-          <Label className="text-sm font-medium text-gray-700 mb-2 block">
-            Aadhaar Card Back Image *
-          </Label>
-          <div className="relative">
-            <Input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setAdhaarCardBackImage(file);
-              }}
-              className="w-full bg-white"
-              required
-            />
-            <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-          </div>
-          {adhaarCardBackImage && (
-            <p className="text-sm text-gray-600 mt-1">{adhaarCardBackImage.name}</p>
-          )}
-        </div>
+        {profileImage && typeof profileImage !== 'string' && (
+          <p className="text-sm mt-1">{profileImage.name}</p>
+        )}
       </div>
 
-      <p className="text-sm text-gray-600 mb-6">
-        Upload your profile image and Aadhaar card images to verify your identity.
-      </p>
+      {/* Aadhaar Front */}
+      <div className="mb-4">
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Aadhaar Front *
+        </Label>
+        <div className="relative">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              e.target.files && setAdhaarCardFrontImage(e.target.files[0])
+            }
+            className="w-full bg-white"
+          />
+          <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+        </div>
+        {adhaarCardFrontImage && (
+          <p className="text-sm mt-1">{adhaarCardFrontImage.name}</p>
+        )}
+      </div>
+
+      {/* Aadhaar Back */}
+      <div className="mb-6">
+        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+          Aadhaar Back *
+        </Label>
+        <div className="relative">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={(e) =>
+              e.target.files && setAdhaarCardBackImage(e.target.files[0])
+            }
+            className="w-full bg-white"
+          />
+          <Upload className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+        </div>
+        {adhaarCardBackImage && (
+          <p className="text-sm mt-1">{adhaarCardBackImage.name}</p>
+        )}
+      </div>
+
+      {errorMessage && (
+        <p className="text-sm text-red-500 mb-4">{errorMessage}</p>
+      )}
 
       <Button
-        onClick={handleContinueStep7}
-        disabled={loading}
-        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
-        size="lg"
+        onClick={handleContinue}
+        disabled={isSubmitting}
+        className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium"
       >
-        {loading ? 'Uploading...' : 'Submit'}
+        {isSubmitting ? 'Submitting...' : 'Continue'}
       </Button>
-    </>
+    </div>
   );
 };
 

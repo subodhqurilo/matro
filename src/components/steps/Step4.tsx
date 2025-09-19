@@ -1,6 +1,5 @@
 'use client';
 
-import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,7 +11,7 @@ interface Step4FormProps {
   familyStatus: string;
   setFamilyStatus: (value: string) => void;
   onBack: () => void;
-  handleContinueStep4: () => void;
+  handleContinue: () => void;
 }
 
 const Step4Form: React.FC<Step4FormProps> = ({
@@ -21,7 +20,7 @@ const Step4Form: React.FC<Step4FormProps> = ({
   familyStatus,
   setFamilyStatus,
   onBack,
-  handleContinueStep4,
+  handleContinue,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -73,7 +72,7 @@ const Step4Form: React.FC<Step4FormProps> = ({
     </p>
 
     <Button
-      onClick={handleContinueStep4}
+      onClick={handleContinue}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
       size="lg"
     >
@@ -81,14 +80,5 @@ const Step4Form: React.FC<Step4FormProps> = ({
     </Button>
   </>
 );
-
-Step4Form.propTypes = {
-  familyType: PropTypes.string.isRequired,
-  setFamilyType: PropTypes.func.isRequired,
-  familyStatus: PropTypes.string.isRequired,
-  setFamilyStatus: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-  handleContinueStep4: PropTypes.func.isRequired,
-};
 
 export default Step4Form;

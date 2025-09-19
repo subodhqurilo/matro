@@ -11,7 +11,7 @@ interface FamilyInfoSectionProps {
 }
 
 const API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/self';
-const UPDATE_API_URL = 'https://matrimonial-backend-7ahc.onrender.com/api/profile/update-profile';
+const UPDATE_API_URL = '/api/profile/update-profile';
 
 const FamilyInfoSection: React.FC<FamilyInfoSectionProps> = ({ familyInfo }) => {
   const [info, setInfo] = useState<FamilyInfoItem[]>(familyInfo);

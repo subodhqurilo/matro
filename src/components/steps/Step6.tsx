@@ -1,13 +1,12 @@
 'use client';
 
-import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 
-interface Step6Props {
+interface Step6FormProps {
   employedIn: string;
   setEmployedIn: (value: string) => void;
   annualIncome: string;
@@ -17,9 +16,10 @@ interface Step6Props {
   designation: string;
   setDesignation: (value: string) => void;
   onBack: () => void;
-  handleContinueStep6: () => void;
+  handleContinue: () => void;
 }
-const Step6Form: React.FC<Step6Props> = ({
+
+const Step6Form: React.FC<Step6FormProps> = ({
   employedIn,
   setEmployedIn,
   annualIncome,
@@ -29,7 +29,7 @@ const Step6Form: React.FC<Step6Props> = ({
   designation,
   setDesignation,
   onBack,
-  handleContinueStep6,
+  handleContinue,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -108,7 +108,7 @@ const Step6Form: React.FC<Step6Props> = ({
     </p>
 
     <Button
-      onClick={handleContinueStep6}
+      onClick={handleContinue}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
       size="lg"
     >
@@ -116,18 +116,5 @@ const Step6Form: React.FC<Step6Props> = ({
     </Button>
   </>
 );
-
-Step6Form.propTypes = {
-  employedIn: PropTypes.string.isRequired,
-  setEmployedIn: PropTypes.func.isRequired,
-  annualIncome: PropTypes.string.isRequired,
-  setAnnualIncome: PropTypes.func.isRequired,
-  workLocation: PropTypes.string.isRequired,
-  setWorkLocation: PropTypes.func.isRequired,
-  designation: PropTypes.string.isRequired,
-  setDesignation: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-  handleContinueStep6: PropTypes.func.isRequired,
-};
 
 export default Step6Form;

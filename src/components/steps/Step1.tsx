@@ -20,12 +20,12 @@ const profileOptions = [
 interface Step1FormProps {
   profileFor: string;
   setProfileFor: (value: string) => void;
-  personalFirstName: string;
-  setPersonalFirstName: (value: string) => void;
-  personalMiddleName: string;
-  setPersonalMiddleName: (value: string) => void;
-  personalLastName: string;
-  setPersonalLastName: (value: string) => void;
+  FirstName: string;
+  setFirstName: (value: string) => void;
+  MiddleName: string;
+  setMiddleName: (value: string) => void;
+  LastName: string;
+  setLastName: (value: string) => void;
   dateOfBirth: string;
   setDateOfBirth: (value: string) => void;
   gender: string;
@@ -36,19 +36,18 @@ interface Step1FormProps {
   setNumberOfChildren: (value: number) => void;
   isChildrenLivingWithYou: boolean;
   setIsChildrenLivingWithYou: (value: boolean) => void;
-  handleContinueStep1: () => void;
-  children?: ReactNode;
+  handleContinue: () => void;
 }
 
 const Step1Form: React.FC<Step1FormProps> = ({
   profileFor,
   setProfileFor,
-  personalFirstName,
-  setPersonalFirstName,
-  personalMiddleName,
-  setPersonalMiddleName,
-  personalLastName,
-  setPersonalLastName,
+  FirstName,
+  setFirstName,
+  MiddleName,
+  setMiddleName,
+  LastName,
+  setLastName,
   dateOfBirth,
   setDateOfBirth,
   gender,
@@ -59,7 +58,7 @@ const Step1Form: React.FC<Step1FormProps> = ({
   setNumberOfChildren,
   isChildrenLivingWithYou,
   setIsChildrenLivingWithYou,
-  handleContinueStep1,
+  handleContinue,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -70,13 +69,12 @@ const Step1Form: React.FC<Step1FormProps> = ({
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Select a profile for
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Select a profile for</Label>
       <div className="grid grid-cols-3 gap-2">
         {profileOptions.map((option) => (
           <button
             key={option.id}
+            type="button"
             onClick={() => setProfileFor(option.id)}
             className={`px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200 ${
               profileFor === option.id
@@ -91,48 +89,40 @@ const Step1Form: React.FC<Step1FormProps> = ({
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        First Name *
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">First Name *</Label>
       <Input
         type="text"
         placeholder="Enter first name"
-        value={personalFirstName}
-        onChange={(e) => setPersonalFirstName(e.target.value)}
+        value={FirstName}
+        onChange={(e) => setFirstName(e.target.value)}
         className="w-full bg-white"
       />
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Middle Name
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Middle Name</Label>
       <Input
         type="text"
         placeholder="Enter middle name"
-        value={personalMiddleName}
-        onChange={(e) => setPersonalMiddleName(e.target.value)}
+        value={MiddleName}
+        onChange={(e) => setMiddleName(e.target.value)}
         className="w-full bg-white"
       />
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Last Name *
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Last Name *</Label>
       <Input
         type="text"
         placeholder="Enter last name"
-        value={personalLastName}
-        onChange={(e) => setPersonalLastName(e.target.value)}
+        value={LastName}
+        onChange={(e) => setLastName(e.target.value)}
         className="w-full bg-white"
       />
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Date of Birth *
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Date of Birth *</Label>
       <Input
         type="date"
         value={dateOfBirth}
@@ -142,87 +132,70 @@ const Step1Form: React.FC<Step1FormProps> = ({
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Gender *
-      </Label>
-      <RadioGroup 
-        value={gender} 
-        onValueChange={setGender}
-        className="flex space-x-6"
-      >
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Gender *</Label>
+      <RadioGroup value={gender} onValueChange={setGender} className="flex space-x-6">
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Male" id="male" className="text-rose-600" />
+          <RadioGroupItem value="Male" id="male" />
           <Label htmlFor="male" className="font-medium">Male</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Female" id="female" className="text-rose-600" />
+          <RadioGroupItem value="Female" id="female" />
           <Label htmlFor="female" className="font-medium">Female</Label>
         </div>
       </RadioGroup>
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Marital Status *
-      </Label>
-      <RadioGroup 
-        value={maritalStatus} 
-        onValueChange={setMaritalStatus}
-        className="flex space-x-6"
-      >
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Marital Status *</Label>
+      <RadioGroup value={maritalStatus} onValueChange={setMaritalStatus} className="flex space-x-6">
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Unmarried" id="unmarried" className="text-rose-600" />
+          <RadioGroupItem value="Unmarried" id="unmarried" />
           <Label htmlFor="unmarried" className="font-medium">Unmarried</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Divorced" id="divorced" className="text-rose-600" />
+          <RadioGroupItem value="Divorced" id="divorced" />
           <Label htmlFor="divorced" className="font-medium">Divorced</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="Widowed" id="widowed" className="text-rose-600" />
+          <RadioGroupItem value="Widowed" id="widowed" />
           <Label htmlFor="widowed" className="font-medium">Widowed</Label>
         </div>
       </RadioGroup>
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Number of Children
-      </Label>
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Number of Children</Label>
       <Input
         type="number"
         placeholder="Enter number of children"
         value={numberOfChildren}
         onChange={(e) => setNumberOfChildren(Number(e.target.value))}
         className="w-full bg-white"
-        min="0"
+        min={0}
       />
     </div>
 
     <div className="mb-6">
-      <Label className="text-sm font-medium text-gray-700 mb-3 block">
-        Children Living With You
-      </Label>
-      <RadioGroup 
-        value={isChildrenLivingWithYou.toString()} 
+      <Label className="text-sm font-medium text-gray-700 mb-3 block">Children Living With You</Label>
+      <RadioGroup
+        value={isChildrenLivingWithYou.toString()}
         onValueChange={(value) => setIsChildrenLivingWithYou(value === 'true')}
         className="flex space-x-6"
       >
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="true" id="children-yes" className="text-rose-600" />
+          <RadioGroupItem value="true" id="children-yes" />
           <Label htmlFor="children-yes" className="font-medium">Yes</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="false" id="children-no" className="text-rose-600" />
+          <RadioGroupItem value="false" id="children-no" />
           <Label htmlFor="children-no" className="font-medium">No</Label>
         </div>
       </RadioGroup>
     </div>
 
-    <Button 
-      onClick={handleContinueStep1}
+    <Button
+      onClick={handleContinue}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
-      size="lg"
     >
       Continue
     </Button>

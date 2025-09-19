@@ -1,6 +1,5 @@
 'use client';
 
-import PropTypes from 'prop-types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,8 +16,9 @@ interface Step5FormProps {
   highestEducation: string;
   setHighestEducation: (value: string) => void;
   onBack: () => void;
-  handleContinueStep5: () => void;
+  handleContinue: () => void;
 }
+
 const Step5Form: React.FC<Step5FormProps> = ({
   country,
   setCountry,
@@ -29,7 +29,7 @@ const Step5Form: React.FC<Step5FormProps> = ({
   highestEducation,
   setHighestEducation,
   onBack,
-  handleContinueStep5,
+  handleContinue,
 }) => (
   <>
     <div className="flex items-center space-x-3 mb-6">
@@ -114,7 +114,7 @@ const Step5Form: React.FC<Step5FormProps> = ({
     </p>
 
     <Button
-      onClick={handleContinueStep5}
+      onClick={handleContinue}
       className="w-full bg-rose-700 hover:bg-rose-800 text-white py-3 font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200"
       size="lg"
     >
@@ -122,18 +122,5 @@ const Step5Form: React.FC<Step5FormProps> = ({
     </Button>
   </>
 );
-
-Step5Form.propTypes = {
-  country: PropTypes.string.isRequired,
-  setCountry: PropTypes.func.isRequired,
-  state: PropTypes.string.isRequired,
-  setState: PropTypes.func.isRequired,
-  city: PropTypes.string.isRequired,
-  setCity: PropTypes.func.isRequired,
-  highestEducation: PropTypes.string.isRequired,
-  setHighestEducation: PropTypes.func.isRequired,
-  onBack: PropTypes.func.isRequired,
-  handleContinueStep5: PropTypes.func.isRequired,
-};
 
 export default Step5Form;

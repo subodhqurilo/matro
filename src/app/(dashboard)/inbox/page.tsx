@@ -554,8 +554,12 @@ const router = useRouter();
   };
 
 const handleChatClick = (profile: Profile) => {
-  localStorage.setItem("chatUser", JSON.stringify(profile));
-  router.push(`https://matro-m6d5.vercel.app/messages?userId=${profile.id}&name=${profile.name}`);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("chatUser", JSON.stringify(profile));
+
+    const baseUrl = window.location.origin; // 👈 localhost:3000 ya vercel domain
+    router.push(`${baseUrl}/messages?userId=${profile.id}&name=${profile.name}`);
+  }
 };
 
 
